@@ -1090,7 +1090,43 @@
                         visits: a.visits, commute: a.commute, totalKm: a.totalKm, 
                         status: newStatus 
                     };
-                    trackData[dS] = pts.map(p => ({ lat: p.lat, lon: p.lon, time: p.time }));
+                    // 1. Datenmenge drastisch reduzieren (Downsampling)
+                    let lastP = null;
+                    trackData[dS] = pts.filter(p => {
+                        if (!lastP) { lastP = p; return true; }
+                        // Punkt nur behalten, wenn mind. 30 Sekunden vergangen sind ODER Distanz > 20 Meter
+                        if (p.time - lastP.time > 30000 || getDist(lastP.lat, lastP.lon, p.lat, p.lon) > 20) {
+                            lastP = p;
+                            return true;
+                        }
+                        return false;
+                    }).map(p => ({ lat: p.lat, lon: p.lon, time: p.time }));
+            
+                    // 2. Arbeitszeiten speichern (sind winzig, passen immer)
+                    localStorage.setItem('workData', JSON.stringify(workData));
+                    
+                    // 3. Routen-Daten speichern (hier das Speicherlimit sauber abfangen)
+                    try {
+                        localStorage.setItem('trackData', JSON.stringify(trackData));
+                    } catch (e) {
+                        console.warn("Speicherlimit für Routen erreicht.", e);
+                        // Wenn der Speicher voll ist, werfen wir die ältesten Routen weg, um Platz zu machen
+                        const days = Object.keys(trackData).sort(); // Älteste Tage zuerst
+                        while (days.length > 0) {
+                            const oldestDay = days.shift();
+                            if (oldestDay !== dS) { // Den aktuell importierten Tag nicht löschen
+                                delete trackData[oldestDay];
+                                try {
+                                    localStorage.setItem('trackData', JSON.stringify(trackData));
+                                    break; // Wenn das Speichern jetzt klappt, Schleife abbrechen
+                                } catch (err) {
+                                    // Immer noch zu groß -> nächsten alten Tag löschen
+                                }
+                            }
+                        }
+                        // Hinweis für den Nutzer (optional, kann auch weggelassen werden)
+                        showToast("Speicher voll: Älteste Routen wurden gelöscht.");
+                    }
                 }
             }
             localStorage.setItem("workData", JSON.stringify(workData)); 
