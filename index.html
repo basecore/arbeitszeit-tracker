@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GPS Arbeitszeit-Tracker v1.6</title>
+    <title>GPS Arbeitszeit-Tracker v1.7</title>
 
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#006400" />
@@ -436,16 +436,8 @@
 
         <div class="upload-section">
             <div class="file-input-wrapper">
-                <input type="file" id="gpxFile" class="file-input" accept=".gpx" />
-                <label for="gpxFile" class="file-input-label">📍 GPX laden</label>
-            </div>
-            <div class="file-input-wrapper">
-                <input type="file" id="kmlFile" class="file-input" accept=".kml" />
-                <label for="kmlFile" class="file-input-label">🗺️ KML laden</label>
-            </div>
-            <div class="file-input-wrapper">
-                <input type="file" id="csvFile" class="file-input" accept=".csv" />
-                <label for="csvFile" class="file-input-label">📊 CSV laden</label>
+                <input type="file" id="trackFile" class="file-input" accept=".gpx,.kml,.csv" />
+                <label for="trackFile" class="file-input-label">📍 Strecke laden (GPX/KML/CSV)</label>
             </div>
             
             <div class="file-input-wrapper">
@@ -597,7 +589,7 @@
 
         <div class="footer">
             <div class="footer-info">
-                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.6</a></p>
+                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.7</a></p>
                 <p>Entwickelt von <b>Sebastian Rößer</b></p>
                 <p>
                     <a href="https://github.com/basecore/arbeitszeit-tracker" target="_blank">GitHub Projekt</a> |
@@ -1373,29 +1365,31 @@
             renderCal(); 
             calcStats();
             
-            document.getElementById("gpxFile").addEventListener("change", async e => { 
-                if (e.target.files[0]) { 
+            document.getElementById("trackFile").addEventListener("change", async e => { 
+                const file = e.target.files[0];
+                if (file) { 
                     startProgress(); 
-                    try { finishLoad(parseGPX(await e.target.files[0].text())); } 
-                    catch { finishProgress(); alert("Fehler GPX"); } 
-                } 
-                e.target.value = ""; 
-            });
-            
-            document.getElementById("kmlFile").addEventListener("change", async e => { 
-                if (e.target.files[0]) { 
-                    startProgress(); 
-                    try { finishLoad(parseKML(await e.target.files[0].text())); } 
-                    catch { finishProgress(); alert("Fehler KML"); } 
-                } 
-                e.target.value = ""; 
-            });
-            
-            document.getElementById("csvFile").addEventListener("change", async e => { 
-                if (e.target.files[0]) { 
-                    startProgress(); 
-                    try { finishLoad(parseCSV(await e.target.files[0].text())); } 
-                    catch { finishProgress(); alert("Fehler CSV"); } 
+                    try { 
+                        const text = await file.text();
+                        const name = file.name.toLowerCase();
+                        let parsedData;
+                        
+                        if (name.endsWith('.gpx')) {
+                            parsedData = parseGPX(text);
+                        } else if (name.endsWith('.kml')) {
+                            parsedData = parseKML(text);
+                        } else if (name.endsWith('.csv')) {
+                            parsedData = parseCSV(text);
+                        } else {
+                            throw new Error("Unbekanntes Dateiformat. Bitte GPX, KML oder CSV verwenden.");
+                        }
+                        
+                        finishLoad(parsedData); 
+                    } 
+                    catch (err) { 
+                        finishProgress(); 
+                        alert("Fehler beim Laden: " + err.message); 
+                    } 
                 } 
                 e.target.value = ""; 
             });
