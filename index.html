@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GPS Arbeitszeit-Tracker v1.2</title>
+    <title>GPS Arbeitszeit-Tracker v1.3</title>
 
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#006400" />
@@ -21,7 +21,6 @@
             --green-light: #32cd32;
             --blue-light: #e6f0fa;
             --green-bg: #e6f5e6;
-            --border: #dfe5df;
             --text: #333;
             --muted: #666;
             --danger: #dc3545;
@@ -120,31 +119,12 @@
             transform: translateY(-1px);
         }
 
-        .btn-secondary {
-            background: #6c757d;
-        }
-
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-
-        .btn-warning {
-            background: #ff9800;
-            color: #fff;
-        }
-
-        .btn-warning:hover {
-            background: #f08a00;
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: #fff;
-        }
-
-        .btn-danger:hover {
-            background: #c82333;
-        }
+        .btn-secondary { background: #6c757d; }
+        .btn-secondary:hover { background: #5a6268; }
+        .btn-warning { background: #ff9800; color: #fff; }
+        .btn-warning:hover { background: #f08a00; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-danger:hover { background: #c82333; }
 
         .progress-bar {
             flex: 1 1 240px;
@@ -253,31 +233,15 @@
             margin-top: 4px;
         }
 
-        .maps-grid {
-            padding: 0 20px 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .map-card {
-            background: #fff;
-            border: 1px solid #eee;
-            border-radius: 10px;
+        .map-container {
+            margin-top: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-        }
-
-        .map-card h3 {
-            margin: 0;
-            padding: 12px 14px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #eee;
-            font-size: 15px;
         }
 
         .map {
-            height: 280px;
+            height: 300px;
             width: 100%;
         }
 
@@ -312,13 +276,8 @@
             font-size: 13px;
         }
 
-        .val-positive {
-            color: #28a745;
-        }
-
-        .val-negative {
-            color: var(--danger);
-        }
+        .val-positive { color: #28a745; }
+        .val-negative { color: var(--danger); }
 
         .calendar-wrap {
             padding: 0 20px 20px;
@@ -333,23 +292,6 @@
             flex-wrap: wrap;
         }
 
-        .calendar-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .calendar-title h2 {
-            margin: 0;
-            font-size: 1.25rem;
-        }
-
-        .calendar-controls {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
         .calendar-list {
             border: 1px solid #eee;
             border-radius: 10px;
@@ -360,27 +302,24 @@
         .workday-entry {
             display: flex;
             align-items: flex-start;
-            gap: 10px;
+            gap: 12px;
             padding: 12px 14px;
             border-bottom: 1px solid #eee;
             font-size: 13px;
         }
 
-        .workday-entry:last-child {
-            border-bottom: none;
-        }
+        .workday-entry:last-child { border-bottom: none; }
 
-        .col-date {
-            width: 115px;
-            font-weight: 700;
-            padding-top: 4px;
-            flex-shrink: 0;
-        }
+        /* Feste Breiten für den Desktop um eine Lücke zu vermeiden */
+        .col-date { width: 110px; font-weight: 700; padding-top: 4px; flex-shrink: 0; }
+        .col-status { width: 90px; flex-shrink: 0; padding-top: 4px; }
+        .col-times { width: 160px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+        .col-duration { width: 100px; text-align: center; flex-shrink: 0; padding-top: 4px; }
+        .col-commute { width: 220px; font-size: 12px; color: var(--muted); border-left: 1px solid #eee; padding-left: 12px; flex-shrink: 0; }
+        .col-controls { width: 150px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; margin-left: 10px; }
 
-        .date-main {
-            font-weight: 700;
-        }
-
+        .date-main { font-weight: 700; }
+        
         .mobile-subline {
             display: none;
             font-size: 11px;
@@ -388,21 +327,9 @@
             margin-top: 2px;
             line-height: 1.2;
         }
-
-        .date-status {
-            color: #444;
-        }
-
-        .leave-worktime {
-            color: var(--green-dark);
-            font-weight: 600;
-        }
-
-        .col-status {
-            width: 90px;
-            flex-shrink: 0;
-            padding-top: 4px;
-        }
+        
+        .date-status { color: #444; }
+        .leave-worktime { color: var(--green-dark); font-weight: 600; }
 
         .status-badge {
             display: inline-block;
@@ -420,25 +347,14 @@
         .status-na { background: #e9ecef; color: #495057; }
         .status-holiday { background: #fde2e1; color: #9b1c1c; }
 
-        .col-times {
-            width: 170px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-
         .time-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 8px;
-            white-space: nowrap;
         }
 
-        .time-row span {
-            color: var(--muted);
-        }
+        .time-row span { color: var(--muted); }
 
         .time-display {
             background: #f8f9fa;
@@ -451,23 +367,8 @@
             user-select: none;
         }
 
-        .time-display:hover {
-            background: #eef7ee;
-        }
-
-        .time-input {
-            width: 92px;
-            padding: 4px 6px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-
-        .col-duration {
-            width: 110px;
-            text-align: center;
-            flex-shrink: 0;
-            padding-top: 4px;
-        }
+        .time-display:hover { background: #eef7ee; }
+        .time-input { width: 92px; padding: 4px 6px; border: 1px solid #ccc; border-radius: 6px; }
 
         .duration-header {
             display: block;
@@ -477,36 +378,9 @@
             text-transform: uppercase;
         }
 
-        .work-duration {
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .overtime {
-            color: #28a745;
-        }
-
-        .undertime {
-            color: var(--danger);
-        }
-
-        .col-commute {
-            flex: 1;
-            font-size: 12px;
-            color: var(--muted);
-            border-left: 1px solid #eee;
-            padding-left: 10px;
-            min-width: 120px;
-        }
-
-        .col-controls {
-            width: 158px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            align-items: flex-end;
-            flex-shrink: 0;
-        }
+        .work-duration { font-weight: 700; font-size: 14px; }
+        .overtime { color: #28a745; }
+        .undertime { color: var(--danger); }
 
         .status-select {
             width: 100%;
@@ -520,7 +394,6 @@
         .btn-row {
             display: flex;
             gap: 4px;
-            flex-wrap: nowrap;
             justify-content: flex-end;
         }
 
@@ -538,7 +411,6 @@
         .btn-info { background: var(--info); }
         .btn-edit { background: var(--warning); color: #333; }
         .btn-save { background: #28a745; }
-        .btn-delete { background: var(--danger); }
 
         .details-panel {
             display: none;
@@ -549,9 +421,7 @@
             color: #333;
         }
 
-        .details-panel.show {
-            display: block;
-        }
+        .details-panel.show { display: block; }
 
         .holiday-indicator {
             background: #fff3cd;
@@ -559,24 +429,6 @@
             font-size: 12px;
             padding: 6px 14px 8px 124px;
             border-top: 1px solid #f1df9d;
-        }
-
-        .copy-notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #28a745;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 8px;
-            z-index: 3000;
-            opacity: 0;
-            transition: opacity 0.25s ease;
-            pointer-events: none;
-        }
-
-        .copy-notification.show {
-            opacity: 1;
         }
 
         .toast-save {
@@ -594,9 +446,7 @@
             z-index: 3000;
         }
 
-        .toast-save.show {
-            opacity: 0.92;
-        }
+        .toast-save.show { opacity: 0.92; }
 
         .footer {
             margin-top: 30px;
@@ -611,9 +461,7 @@
             color: #555;
         }
 
-        .footer-info p {
-            margin: 6px 0;
-        }
+        .footer-info p { margin: 6px 0; }
 
         .footer-info a {
             color: var(--green-dark);
@@ -621,9 +469,7 @@
             font-weight: 600;
         }
 
-        .footer-info a:hover {
-            text-decoration: underline;
-        }
+        .footer-info a:hover { text-decoration: underline; }
 
         .modal {
             display: none;
@@ -651,26 +497,11 @@
             align-items: center;
         }
 
-        .modal-header h3 {
-            margin: 0;
-        }
+        .modal-header h3 { margin: 0; }
+        .modal-close { font-size: 24px; cursor: pointer; color: #666; line-height: 1; }
+        .modal-body { padding: 16px 18px 20px; }
 
-        .modal-close {
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
-            line-height: 1;
-        }
-
-        .modal-body {
-            padding: 16px 18px 20px;
-        }
-
-        #traceMap {
-            height: 420px;
-            border-radius: 10px;
-            overflow: hidden;
-        }
+        #traceMap { height: 420px; border-radius: 10px; overflow: hidden; }
 
         textarea#holidayEditor {
             width: 100%;
@@ -678,82 +509,45 @@
             border: 1px solid #ccc;
             border-radius: 8px;
             padding: 10px;
-            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            font-family: monospace;
             font-size: 13px;
             resize: vertical;
         }
 
-        .legend {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 8px;
-        }
-
-        @media (max-width: 1100px) {
-            .maps-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
+        /* --- MOBILE OPTIMIERUNG --- */
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            .upload-section {
-                padding: 14px 12px;
-            }
-
-            .config-container,
-            .stats-wrap,
-            .calendar-wrap {
-                padding-left: 12px;
-                padding-right: 12px;
-            }
+            body { padding: 10px; }
+            .upload-section { padding: 14px 12px; }
+            .config-container, .stats-wrap, .calendar-wrap { padding-left: 8px; padding-right: 8px; }
 
             .workday-entry {
-                padding: 10px 8px;
+                padding: 10px 4px;
                 gap: 6px;
             }
 
             .col-date {
-                width: 92px;
-                font-size: 12px;
+                width: 70px;
+                font-size: 11px;
             }
 
-            .col-status {
-                display: none;
-            }
+            .col-status, .col-duration { display: none; }
 
             .col-times {
-                width: 92px;
-                font-size: 12px;
-            }
-
-            .col-duration {
-                display: none;
+                width: 90px;
+                font-size: 11px;
             }
 
             .col-commute {
-                min-width: 60px;
-                font-size: 11px;
+                width: 85px;
+                font-size: 10px;
                 padding-left: 6px;
+                border-left: none;
             }
 
-            .col-controls {
-                width: 122px;
-            }
+            .col-controls { width: 90px; margin-left: 0; }
 
-            .status-select {
-                font-size: 11px;
-                padding: 4px;
-            }
-
-            .action-btn {
-                padding: 4px 5px;
-                min-width: 26px;
-                font-size: 11px;
-            }
+            .status-select { font-size: 11px; padding: 4px 2px; }
+            .action-btn { padding: 4px 4px; min-width: 24px; font-size: 11px; }
 
             .time-row {
                 align-items: flex-start;
@@ -761,26 +555,18 @@
                 gap: 2px;
             }
 
-            .time-display,
-            .time-input {
+            .time-display, .time-input {
                 min-width: 100%;
                 width: 100%;
-                font-size: 12px;
+                font-size: 11px;
             }
 
-            .mobile-subline {
-                display: block;
-            }
-
-            .details-panel,
-            .holiday-indicator {
-                padding-left: 12px;
-            }
+            .mobile-subline { display: block; }
+            .details-panel, .holiday-indicator { padding-left: 12px; }
         }
     </style>
 </head>
 <body>
-    <div class="copy-notification" id="copyNotification">Kopiert</div>
     <div class="toast-save" id="toastSave">Gespeichert</div>
 
     <div class="container">
@@ -800,13 +586,7 @@
                 <label for="csvFile" class="file-input-label">📊 CSV-Datei laden</label>
             </div>
 
-            <div class="file-input-wrapper">
-                <input type="file" id="jsonFile" class="file-input" accept=".json" />
-                <label for="jsonFile" class="file-input-label">🧾 JSON-Konfig laden</label>
-            </div>
-
             <button class="btn btn-secondary" onclick="exportData()">💾 Export</button>
-            <button class="btn btn-warning" onclick="openHolidayEditor()">🎉 Feiertage</button>
             <button class="btn btn-danger" onclick="resetAll()">🗑️ Reset</button>
 
             <div class="progress-bar">
@@ -827,41 +607,37 @@
                             <label>Adresse / Name</label>
                             <input type="text" id="wpAddr" placeholder="z. B. Forschungszentrum Garching" />
                         </div>
-
                         <div class="config-group">
                             <label>Breitengrad</label>
                             <input type="number" id="wpLat" step="0.000001" onchange="autoSave('wp')" />
                         </div>
-
                         <div class="config-group">
                             <label>Längengrad</label>
                             <input type="number" id="wpLon" step="0.000001" onchange="autoSave('wp')" />
                         </div>
-
                         <div class="config-group">
                             <label>Radius (m)</label>
                             <input type="number" id="wpRad" step="1" onchange="autoSave('wp')" />
                         </div>
-
                         <div class="config-group">
                             <label>Sollstunden / Tag</label>
                             <input type="number" id="wpHours" step="0.25" onchange="autoSave('wp')" />
                         </div>
-
                         <div class="config-group">
                             <label>Standardpause (Min.)</label>
                             <input type="number" id="wpBreak" step="1" onchange="autoSave('wp')" />
                         </div>
                     </div>
-
                     <div class="config-actions">
-                        <button class="btn" onclick="searchAddress('wp')">🔎 Adresse suchen</button>
-                        <button class="btn btn-secondary" onclick="reverseLookup('wp')">📌 Adresse aus Koordinaten</button>
+                        <button class="btn" onclick="searchAddress('wp')">🔎 Adresse aus Text suchen</button>
                         <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
                     </div>
 
-                    <div class="help-text">
-                        Beim ersten Start ist ein neutraler Standard gesetzt: Forschungszentrum Garching.
+                    <div class="map-container">
+                        <div id="mapWp" class="map"></div>
+                    </div>
+                    <div class="help-text" style="text-align: center; margin-top: 6px;">
+                        Tipp: <b>Klicke einfach auf die Karte</b>, um den Arbeitsplatz direkt an dieser Stelle zu setzen.
                     </div>
                 </div>
             </div>
@@ -878,38 +654,36 @@
                             <label>Adresse / Name</label>
                             <input type="text" id="homeAddr" placeholder="z. B. Rathaus München" />
                         </div>
-
                         <div class="config-group">
                             <label>Breitengrad</label>
                             <input type="number" id="homeLat" step="0.000001" onchange="autoSave('home')" />
                         </div>
-
                         <div class="config-group">
                             <label>Längengrad</label>
                             <input type="number" id="homeLon" step="0.000001" onchange="autoSave('home')" />
                         </div>
-
                         <div class="config-group">
                             <label>Radius (m)</label>
                             <input type="number" id="homeRad" step="1" onchange="autoSave('home')" />
                         </div>
                     </div>
-
                     <div class="config-actions">
-                        <button class="btn" onclick="searchAddress('home')">🔎 Adresse suchen</button>
-                        <button class="btn btn-secondary" onclick="reverseLookup('home')">📌 Adresse aus Koordinaten</button>
+                        <button class="btn" onclick="searchAddress('home')">🔎 Adresse aus Text suchen</button>
                         <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
                     </div>
 
-                    <div class="help-text">
-                        Beim ersten Start ist ein neutraler Standard gesetzt: Rathaus München.
+                    <div class="map-container">
+                        <div id="mapHome" class="map"></div>
+                    </div>
+                    <div class="help-text" style="text-align: center; margin-top: 6px;">
+                        Tipp: <b>Klicke einfach auf die Karte</b>, um das Zuhause direkt an dieser Stelle zu setzen.
                     </div>
                 </div>
             </div>
 
             <div class="config-section misc" id="sec-misc">
                 <div class="config-header" onclick="toggleSection('sec-misc')">
-                    <h3>⚙️ Allgemeine Einstellungen</h3>
+                    <h3>⚙️ Allgemeine Einstellungen & Feiertage</h3>
                     <span class="toggle-icon">▼</span>
                 </div>
 
@@ -919,12 +693,10 @@
                             <label>Tages-Offset</label>
                             <input type="number" id="dayOffset" step="1" min="-2" max="2" />
                         </div>
-
                         <div class="config-group">
                             <label>Stunden-Offset</label>
                             <input type="number" id="hourOffset" step="1" min="-24" max="24" />
                         </div>
-
                         <div class="config-group">
                             <label>Zeitzonenmodus</label>
                             <select id="tzMode">
@@ -934,31 +706,19 @@
                         </div>
                     </div>
 
-                    <div class="config-group">
-                        <label>JSON-Konfiguration (optional, Format: {"YYYY-MM-DD":"Name"})</label>
-                        <textarea id="jsonConfig" placeholder='{
+                    <div class="config-group" style="margin-top: 15px;">
+                        <label>JSON-Namenskonfiguration (optional, Format: {"YYYY-MM-DD":"Name"})</label>
+                        <textarea id="jsonConfig" style="height: 80px;" placeholder='{
   "2026-04-09": "Sebastian Rößer",
   "2026-04-10": "Sebastian Rößer"
 }'></textarea>
                     </div>
 
                     <div class="config-actions">
-                        <button class="btn" onclick="applyTimezoneSettings()">Zeiteinstellungen speichern</button>
-                        <button class="btn btn-secondary" onclick="applyJsonConfig()">JSON anwenden</button>
+                        <button class="btn" onclick="applyTimezoneSettings()">Einstellungen anwenden</button>
+                        <button class="btn btn-warning" onclick="openHolidayEditor()">🎉 Feiertage bearbeiten</button>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="maps-grid">
-            <div class="map-card">
-                <h3>🏢 Arbeitsplatz-Zone</h3>
-                <div id="mapWp" class="map"></div>
-            </div>
-
-            <div class="map-card">
-                <h3>🏠 Zuhause-Zone</h3>
-                <div id="mapHome" class="map"></div>
             </div>
         </div>
 
@@ -968,35 +728,26 @@
                     <div class="stat-val" id="statDays">0</div>
                     <div class="stat-lbl">Analysierte Tage</div>
                 </div>
-
                 <div class="stat-card">
                     <div class="stat-val" id="statWork">0:00</div>
                     <div class="stat-lbl">Gesamte Arbeitszeit</div>
                 </div>
-
                 <div class="stat-card">
                     <div class="stat-val" id="statTarget">0:00</div>
                     <div class="stat-lbl">Sollzeit</div>
                 </div>
-
                 <div class="stat-card">
                     <div class="stat-val" id="statDiff">0:00</div>
                     <div class="stat-lbl">Differenz</div>
                 </div>
-
                 <div class="stat-card">
                     <div class="stat-val" id="statDistance">0.0 km</div>
                     <div class="stat-lbl">Gesamtstrecke</div>
                 </div>
-
                 <div class="stat-card">
                     <div class="stat-val" id="statCommute">0.0 km</div>
                     <div class="stat-lbl">Pendeldistanz</div>
                 </div>
-            </div>
-
-            <div class="legend">
-                Mobile Ansicht: Status steht unter dem Datum, Arbeitszeit unter „Gehen“, damit die rechte Icon-Spalte sichtbar bleibt.
             </div>
         </div>
 
@@ -1005,11 +756,10 @@
                 <div class="calendar-title">
                     <h2 id="monthLabel">Monat</h2>
                 </div>
-
                 <div class="calendar-controls">
-                    <button class="btn btn-secondary" onclick="changeMonth(-1)">◀ Vorheriger Monat</button>
+                    <button class="btn btn-secondary" onclick="changeMonth(-1)">◀ Vorheriger</button>
                     <button class="btn btn-secondary" onclick="changeMonth(0)">Heute</button>
-                    <button class="btn btn-secondary" onclick="changeMonth(1)">Nächster Monat ▶</button>
+                    <button class="btn btn-secondary" onclick="changeMonth(1)">Nächster ▶</button>
                 </div>
             </div>
 
@@ -1018,7 +768,7 @@
 
         <div class="footer">
             <div class="footer-info">
-                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.2</a></p>
+                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.3</a></p>
                 <p>Entwickelt von <b>Sebastian Rößer</b></p>
                 <p>
                     <a href="https://github.com/basecore/arbeitszeit-tracker" target="_blank">GitHub Projekt</a> |
@@ -1028,6 +778,7 @@
         </div>
     </div>
 
+    <!-- Modals -->
     <div class="modal" id="traceModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1059,74 +810,25 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // --- Default Configuration ---
         const DEFAULT_CFG = {
-            wp: {
-                lat: 48.26134,
-                lon: 11.67175,
-                rad: 100,
-                hours: 7,
-                break: 30,
-                addr: "Forschungszentrum Garching"
-            },
-            home: {
-                lat: 48.13743,
-                lon: 11.57549,
-                rad: 100,
-                addr: "Rathaus München"
-            },
-            tz: {
-                dayOff: 0,
-                hourOff: 0,
-                mode: "auto"
-            }
+            wp: { lat: 48.26134, lon: 11.67175, rad: 100, hours: 7, break: 30, addr: "Forschungszentrum Garching" },
+            home: { lat: 48.13743, lon: 11.57549, rad: 100, addr: "Rathaus München" },
+            tz: { dayOff: 0, hourOff: 0, mode: "auto" }
         };
 
         const defaultHolidays = {
-            "2025-01-01": "Neujahr",
-            "2025-01-06": "Hl. 3 Könige",
-            "2025-04-18": "Karfreitag",
-            "2025-04-21": "Ostermontag",
-            "2025-05-01": "Tag der Arbeit",
-            "2025-05-29": "Himmelfahrt",
-            "2025-06-09": "Pfingstmontag",
-            "2025-06-19": "Fronleichnam",
-            "2025-08-15": "Mariä Himmelfahrt",
-            "2025-10-03": "Tag der Deutschen Einheit",
-            "2025-11-01": "Allerheiligen",
-            "2025-12-25": "1. Weihnachtstag",
-            "2025-12-26": "2. Weihnachtstag",
-
-            "2026-01-01": "Neujahr",
-            "2026-01-06": "Hl. 3 Könige",
-            "2026-04-03": "Karfreitag",
-            "2026-04-06": "Ostermontag",
-            "2026-05-01": "Tag der Arbeit",
-            "2026-05-14": "Himmelfahrt",
-            "2026-05-25": "Pfingstmontag",
-            "2026-06-04": "Fronleichnam",
-            "2026-08-15": "Mariä Himmelfahrt",
-            "2026-10-03": "Tag der Deutschen Einheit",
-            "2026-11-01": "Allerheiligen",
-            "2026-12-25": "1. Weihnachtstag",
+            "2026-01-01": "Neujahr", "2026-01-06": "Hl. 3 Könige", "2026-04-03": "Karfreitag",
+            "2026-04-06": "Ostermontag", "2026-05-01": "Tag der Arbeit", "2026-05-14": "Himmelfahrt",
+            "2026-05-25": "Pfingstmontag", "2026-06-04": "Fronleichnam", "2026-08-15": "Mariä Himmelfahrt",
+            "2026-10-03": "Tag der Dt. Einheit", "2026-11-01": "Allerheiligen", "2026-12-25": "1. Weihnachtstag",
             "2026-12-26": "2. Weihnachtstag",
-
-            "2027-01-01": "Neujahr",
-            "2027-01-06": "Hl. 3 Könige",
-            "2027-03-26": "Karfreitag",
-            "2027-03-29": "Ostermontag",
-            "2027-05-01": "Tag der Arbeit",
-            "2027-05-06": "Himmelfahrt",
-            "2027-05-17": "Pfingstmontag",
-            "2027-05-27": "Fronleichnam",
-            "2027-08-15": "Mariä Himmelfahrt",
-            "2027-10-03": "Tag der Deutschen Einheit",
-            "2027-11-01": "Allerheiligen",
-            "2027-12-25": "1. Weihnachtstag",
+            "2027-01-01": "Neujahr", "2027-01-06": "Hl. 3 Könige", "2027-03-26": "Karfreitag",
+            "2027-03-29": "Ostermontag", "2027-05-01": "Tag der Arbeit", "2027-05-06": "Himmelfahrt",
+            "2027-05-17": "Pfingstmontag", "2027-05-27": "Fronleichnam", "2027-08-15": "Mariä Himmelfahrt",
+            "2027-10-03": "Tag der Dt. Einheit", "2027-11-01": "Allerheiligen", "2027-12-25": "1. Weihnachtstag",
             "2027-12-26": "2. Weihnachtstag"
         };
 
-        // --- State ---
         let cfg = structuredClone(DEFAULT_CFG);
         let activeHolidays = {};
         let workData = {};
@@ -1139,7 +841,6 @@
         let traceMap, traceLayer;
         let progressTimer = null;
 
-        // --- Helpers ---
         function showToast(msg = "Gespeichert") {
             const el = document.getElementById("toastSave");
             el.textContent = msg;
@@ -1148,39 +849,30 @@
             el._t = setTimeout(() => el.classList.remove("show"), 1500);
         }
 
-        function showCopyNotification(msg = "Kopiert") {
-            const el = document.getElementById("copyNotification");
-            el.textContent = msg;
-            el.classList.add("show");
-            clearTimeout(el._t);
-            el._t = setTimeout(() => el.classList.remove("show"), 1200);
-        }
-
-        function clip(text, node) {
-            if (!text || text === "--:--" || text === "—") return;
-            navigator.clipboard?.writeText(text);
-            if (node) node.classList.add("copied");
-            showCopyNotification("Kopiert: " + text);
-            setTimeout(() => node && node.classList.remove("copied"), 900);
-        }
-
         function toggleSection(id) {
             const sec = document.getElementById(id);
             sec.classList.toggle("collapsed");
+            setTimeout(() => {
+                if (id === 'sec-wp' && mapWp) mapWp.invalidateSize();
+                if (id === 'sec-home' && mapHome) mapHome.invalidateSize();
+            }, 100);
+        }
+
+        function collapseConfigs() {
+            document.getElementById('sec-wp').classList.add('collapsed');
+            document.getElementById('sec-home').classList.add('collapsed');
+            document.getElementById('sec-misc').classList.add('collapsed');
         }
 
         function fmtTime(ts) {
             if (!ts) return "--:--";
-            const d = new Date(ts);
-            return d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+            return new Date(ts).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
         }
 
         function timeToInput(ts) {
             if (!ts) return "";
             const d = new Date(ts);
-            const h = String(d.getHours()).padStart(2, "0");
-            const m = String(d.getMinutes()).padStart(2, "0");
-            return h + ":" + m;
+            return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
         }
 
         function fmtDurationHours(hours) {
@@ -1191,22 +883,8 @@
             return sign + Math.floor(abs / 60) + ":" + String(abs % 60).padStart(2, "0");
         }
 
-        function round15(date) {
-            if (!(date instanceof Date)) date = new Date(date);
-            const ms = 1000 * 60 * 15;
-            return new Date(Math.round(date.getTime() / ms) * ms);
-        }
-
         function getGermanDateString(d) {
-            const y = d.getFullYear();
-            const m = String(d.getMonth() + 1).padStart(2, "0");
-            const day = String(d.getDate()).padStart(2, "0");
-            return y + "-" + m + "-" + day;
-        }
-
-        function combineDateAndTime(dateStr, hhmm) {
-            if (!hhmm) return null;
-            return new Date(dateStr + "T" + hhmm + ":00").getTime();
+            return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
         }
 
         function haversine(lat1, lon1, lat2, lon2) {
@@ -1214,27 +892,21 @@
             const toRad = x => x * Math.PI / 180;
             const dLat = toRad(lat2 - lat1);
             const dLon = toRad(lon2 - lon1);
-            const a =
-                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(toRad(lat1)) *
-                    Math.cos(toRad(lat2)) *
-                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
             return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         }
 
-        function getDist(lat1, lon1, lat2, lon2) {
-            return haversine(lat1, lon1, lat2, lon2);
-        }
+        function getDist(lat1, lon1, lat2, lon2) { return haversine(lat1, lon1, lat2, lon2); }
 
         function getPathLen(pts, startIdx, endIdx) {
             if (!pts || pts.length < 2) return 0;
             let len = 0;
             const dir = startIdx <= endIdx ? 1 : -1;
             for (let i = startIdx; i !== endIdx; i += dir) {
-                const a = pts[i];
-                const b = pts[i + dir];
-                if (!a || !b) break;
-                len += getDist(a.lat, a.lon, b.lat, b.lon);
+                if (!pts[i] || !pts[i + dir]) break;
+                len += getDist(pts[i].lat, pts[i].lon, pts[i + dir].lat, pts[i + dir].lon);
             }
             return len / 1000;
         }
@@ -1254,91 +926,47 @@
             const bar = document.getElementById("progressFill");
             clearInterval(progressTimer);
             bar.style.width = "100%";
-            setTimeout(() => {
-                bar.style.width = "0%";
-            }, 500);
-        }
-
-        function safeParseFloat(v, fallback = 0) {
-            const n = parseFloat(v);
-            return Number.isFinite(n) ? n : fallback;
-        }
-
-        function safeParseInt(v, fallback = 0) {
-            const n = parseInt(v, 10);
-            return Number.isFinite(n) ? n : fallback;
+            setTimeout(() => { bar.style.width = "0%"; }, 500);
         }
 
         function getStLabel(st) {
-            switch (st) {
-                case "work": return "Büro";
-                case "homeoffice": return "Home";
-                case "vacation": return "Urlaub";
-                case "free": return "Frei";
-                case "holiday": return "Feiertag";
-                default: return "N.A.";
-            }
+            const m = { "work": "Büro", "homeoffice": "Home", "vacation": "Urlaub", "free": "Frei", "holiday": "Feiertag" };
+            return m[st] || "N.A.";
         }
 
-        function getStatusClass(st) {
-            if (!st) return "status-na";
-            return "status-" + st;
-        }
+        function getStatusClass(st) { return "status-" + (st || "na"); }
+        function hasTrace(dayStr) { return Array.isArray(trackData[dayStr]) && trackData[dayStr].length > 1; }
 
-        function hasTrace(dayStr) {
-            return Array.isArray(trackData[dayStr]) && trackData[dayStr].length > 1;
-        }
-
-        // --- Persistence ---
         function loadHolidays() {
             const s = localStorage.getItem("my_holidays");
-            if (s) {
-                try {
-                    activeHolidays = JSON.parse(s);
-                    return;
-                } catch {}
-            }
+            if (s) { try { activeHolidays = JSON.parse(s); return; } catch {} }
             activeHolidays = structuredClone(defaultHolidays);
         }
 
         function saveHolidays() {
             const txt = document.getElementById("holidayEditor").value.trim();
             try {
-                const parsed = txt ? JSON.parse(txt) : {};
-                activeHolidays = parsed;
+                activeHolidays = txt ? JSON.parse(txt) : {};
                 localStorage.setItem("my_holidays", JSON.stringify(activeHolidays));
                 closeHolidayEditor();
                 renderCal();
                 showToast("Feiertage gespeichert");
-            } catch (e) {
-                alert("Fehler im JSON-Format der Feiertage.");
-            }
+            } catch (e) { alert("Fehler im JSON-Format."); }
         }
 
         function openHolidayEditor() {
             document.getElementById("holidayEditor").value = JSON.stringify(activeHolidays, null, 2);
             document.getElementById("holidayModal").style.display = "block";
         }
-
-        function closeHolidayEditor() {
-            document.getElementById("holidayModal").style.display = "none";
-        }
+        function closeHolidayEditor() { document.getElementById("holidayModal").style.display = "none"; }
 
         function loadSettings() {
             const s = localStorage.getItem("my_cfg");
             if (s) {
                 try {
                     const stored = JSON.parse(s);
-                    cfg = {
-                        wp: { ...DEFAULT_CFG.wp, ...(stored.wp || {}) },
-                        home: { ...DEFAULT_CFG.home, ...(stored.home || {}) },
-                        tz: { ...DEFAULT_CFG.tz, ...(stored.tz || {}) }
-                    };
-                } catch {
-                    cfg = structuredClone(DEFAULT_CFG);
-                }
-            } else {
-                cfg = structuredClone(DEFAULT_CFG);
+                    cfg = { wp: { ...DEFAULT_CFG.wp, ...(stored.wp || {}) }, home: { ...DEFAULT_CFG.home, ...(stored.home || {}) }, tz: { ...DEFAULT_CFG.tz, ...(stored.tz || {}) } };
+                } catch { cfg = structuredClone(DEFAULT_CFG); }
             }
 
             document.getElementById("wpLat").value = cfg.wp.lat;
@@ -1357,213 +985,152 @@
             document.getElementById("hourOffset").value = cfg.tz.hourOff;
             document.getElementById("tzMode").value = cfg.tz.mode;
 
-            const wd = localStorage.getItem("workData");
-            if (wd) {
-                try { workData = JSON.parse(wd); } catch { workData = {}; }
-            }
-
-            const td = localStorage.getItem("trackData");
-            if (td) {
-                try { trackData = JSON.parse(td); } catch { trackData = {}; }
-            }
-
-            const ja = localStorage.getItem("jsonAssignments");
-            if (ja) {
-                try {
-                    jsonAssignments = JSON.parse(ja);
-                    document.getElementById("jsonConfig").value = JSON.stringify(jsonAssignments, null, 2);
-                } catch {}
-            }
+            try { workData = JSON.parse(localStorage.getItem("workData")) || {}; } catch { workData = {}; }
+            try { trackData = JSON.parse(localStorage.getItem("trackData")) || {}; } catch { trackData = {}; }
+            try {
+                jsonAssignments = JSON.parse(localStorage.getItem("jsonAssignments")) || {};
+                document.getElementById("jsonConfig").value = JSON.stringify(jsonAssignments, null, 2);
+            } catch {}
         }
 
         function saveCfg() {
-            cfg.wp.lat = safeParseFloat(document.getElementById("wpLat").value, DEFAULT_CFG.wp.lat);
-            cfg.wp.lon = safeParseFloat(document.getElementById("wpLon").value, DEFAULT_CFG.wp.lon);
-            cfg.wp.rad = safeParseInt(document.getElementById("wpRad").value, DEFAULT_CFG.wp.rad);
-            cfg.wp.hours = safeParseFloat(document.getElementById("wpHours").value, DEFAULT_CFG.wp.hours);
-            cfg.wp.break = safeParseInt(document.getElementById("wpBreak").value, DEFAULT_CFG.wp.break);
+            cfg.wp.lat = parseFloat(document.getElementById("wpLat").value) || DEFAULT_CFG.wp.lat;
+            cfg.wp.lon = parseFloat(document.getElementById("wpLon").value) || DEFAULT_CFG.wp.lon;
+            cfg.wp.rad = parseInt(document.getElementById("wpRad").value) || DEFAULT_CFG.wp.rad;
+            cfg.wp.hours = parseFloat(document.getElementById("wpHours").value) || DEFAULT_CFG.wp.hours;
+            cfg.wp.break = parseInt(document.getElementById("wpBreak").value) || DEFAULT_CFG.wp.break;
             cfg.wp.addr = document.getElementById("wpAddr").value.trim();
 
-            cfg.home.lat = safeParseFloat(document.getElementById("homeLat").value, DEFAULT_CFG.home.lat);
-            cfg.home.lon = safeParseFloat(document.getElementById("homeLon").value, DEFAULT_CFG.home.lon);
-            cfg.home.rad = safeParseInt(document.getElementById("homeRad").value, DEFAULT_CFG.home.rad);
+            cfg.home.lat = parseFloat(document.getElementById("homeLat").value) || DEFAULT_CFG.home.lat;
+            cfg.home.lon = parseFloat(document.getElementById("homeLon").value) || DEFAULT_CFG.home.lon;
+            cfg.home.rad = parseInt(document.getElementById("homeRad").value) || DEFAULT_CFG.home.rad;
             cfg.home.addr = document.getElementById("homeAddr").value.trim();
 
-            cfg.tz.dayOff = safeParseInt(document.getElementById("dayOffset").value, 0);
-            cfg.tz.hourOff = safeParseInt(document.getElementById("hourOffset").value, 0);
-            cfg.tz.mode = document.getElementById("tzMode").value || "auto";
-
             localStorage.setItem("my_cfg", JSON.stringify(cfg));
-            drawZone("wp");
-            drawZone("home");
+            drawZone("wp"); drawZone("home");
             showToast("Konfiguration gespeichert");
         }
 
         function autoSave(type) {
             if (type === "wp") {
-                cfg.wp.lat = safeParseFloat(document.getElementById("wpLat").value, cfg.wp.lat);
-                cfg.wp.lon = safeParseFloat(document.getElementById("wpLon").value, cfg.wp.lon);
-                cfg.wp.rad = safeParseInt(document.getElementById("wpRad").value, cfg.wp.rad);
-                cfg.wp.hours = safeParseFloat(document.getElementById("wpHours").value, cfg.wp.hours);
-                cfg.wp.break = safeParseInt(document.getElementById("wpBreak").value, cfg.wp.break);
+                cfg.wp.lat = parseFloat(document.getElementById("wpLat").value) || cfg.wp.lat;
+                cfg.wp.lon = parseFloat(document.getElementById("wpLon").value) || cfg.wp.lon;
+                cfg.wp.rad = parseInt(document.getElementById("wpRad").value) || cfg.wp.rad;
                 cfg.wp.addr = document.getElementById("wpAddr").value.trim();
                 drawZone("wp");
             }
-
             if (type === "home") {
-                cfg.home.lat = safeParseFloat(document.getElementById("homeLat").value, cfg.home.lat);
-                cfg.home.lon = safeParseFloat(document.getElementById("homeLon").value, cfg.home.lon);
-                cfg.home.rad = safeParseInt(document.getElementById("homeRad").value, cfg.home.rad);
+                cfg.home.lat = parseFloat(document.getElementById("homeLat").value) || cfg.home.lat;
+                cfg.home.lon = parseFloat(document.getElementById("homeLon").value) || cfg.home.lon;
+                cfg.home.rad = parseInt(document.getElementById("homeRad").value) || cfg.home.rad;
                 cfg.home.addr = document.getElementById("homeAddr").value.trim();
                 drawZone("home");
             }
-
             localStorage.setItem("my_cfg", JSON.stringify(cfg));
-            showToast();
+            showToast("Position aktualisiert");
         }
 
         function applyTimezoneSettings() {
-            cfg.tz.dayOff = safeParseInt(document.getElementById("dayOffset").value, 0);
-            cfg.tz.hourOff = safeParseInt(document.getElementById("hourOffset").value, 0);
+            cfg.tz.dayOff = parseInt(document.getElementById("dayOffset").value) || 0;
+            cfg.tz.hourOff = parseInt(document.getElementById("hourOffset").value) || 0;
             cfg.tz.mode = document.getElementById("tzMode").value || "auto";
-            localStorage.setItem("my_cfg", JSON.stringify(cfg));
-            renderCal();
-            showToast("Zeiteinstellungen gespeichert");
-        }
-
-        function applyJsonConfig() {
+            
             const txt = document.getElementById("jsonConfig").value.trim();
             try {
                 jsonAssignments = txt ? JSON.parse(txt) : {};
                 localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments));
-                renderCal();
-                showToast("JSON-Konfiguration gespeichert");
-            } catch {
-                alert("Ungültiges JSON.");
-            }
+            } catch { alert("Ungültiges JSON für Namenskonfiguration."); }
+
+            localStorage.setItem("my_cfg", JSON.stringify(cfg));
+            renderCal();
+            showToast("Einstellungen gespeichert");
         }
 
         function resetAll() {
             if (!confirm("Wirklich alle lokalen Daten und Einstellungen löschen?")) return;
-            localStorage.removeItem("my_cfg");
-            localStorage.removeItem("my_holidays");
-            localStorage.removeItem("workData");
-            localStorage.removeItem("trackData");
-            localStorage.removeItem("jsonAssignments");
+            localStorage.clear();
             location.reload();
         }
 
-        // --- Geocoding ---
         async function searchAddress(type) {
-            const inputId = type === "wp" ? "wpAddr" : "homeAddr";
-            const latId = type === "wp" ? "wpLat" : "homeLat";
-            const lonId = type === "wp" ? "wpLon" : "homeLon";
-            const q = document.getElementById(inputId).value.trim();
+            const q = document.getElementById(type === "wp" ? "wpAddr" : "homeAddr").value.trim();
             if (!q) return alert("Bitte zuerst eine Adresse eingeben.");
-
             try {
-                const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=" + encodeURIComponent(q);
-                const res = await fetch(url, { headers: { "Accept-Language": "de" } });
+                const res = await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=" + encodeURIComponent(q));
                 const data = await res.json();
                 if (!data.length) return alert("Keine Adresse gefunden.");
-
-                document.getElementById(latId).value = parseFloat(data[0].lat).toFixed(6);
-                document.getElementById(lonId).value = parseFloat(data[0].lon).toFixed(6);
+                document.getElementById(type === "wp" ? "wpLat" : "homeLat").value = parseFloat(data[0].lat).toFixed(6);
+                document.getElementById(type === "wp" ? "wpLon" : "homeLon").value = parseFloat(data[0].lon).toFixed(6);
                 autoSave(type);
-            } catch (e) {
-                alert("Fehler bei der Adresssuche.");
-            }
+            } catch (e) { alert("Fehler bei der Adresssuche."); }
         }
 
         async function reverseLookup(type) {
-            const latId = type === "wp" ? "wpLat" : "homeLat";
-            const lonId = type === "wp" ? "wpLon" : "homeLon";
-            const inputId = type === "wp" ? "wpAddr" : "homeAddr";
-            const lat = document.getElementById(latId).value;
-            const lon = document.getElementById(lonId).value;
-            if (!lat || !lon) return;
-
+            const lat = document.getElementById(type === "wp" ? "wpLat" : "homeLat").value;
+            const lon = document.getElementById(type === "wp" ? "wpLon" : "homeLon").value;
             try {
-                const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
-                const res = await fetch(url, { headers: { "Accept-Language": "de" } });
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
                 const data = await res.json();
-                document.getElementById(inputId).value = data.display_name || "";
-                autoSave(type);
-            } catch {
-                alert("Fehler beim Reverse Lookup.");
-            }
+                if (data.display_name) {
+                    document.getElementById(type === "wp" ? "wpAddr" : "homeAddr").value = data.display_name;
+                    autoSave(type);
+                }
+            } catch {}
         }
 
-        // --- Maps ---
         function initMaps() {
             mapWp = L.map("mapWp").setView([cfg.wp.lat, cfg.wp.lon], 14);
             mapHome = L.map("mapHome").setView([cfg.home.lat, cfg.home.lon], 14);
+            const tUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+            L.tileLayer(tUrl, { maxZoom: 19 }).addTo(mapWp);
+            L.tileLayer(tUrl, { maxZoom: 19 }).addTo(mapHome);
 
-            const tileUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-            const tileOpt = {
-                maxZoom: 19,
-                attribution: "&copy; OpenStreetMap"
-            };
+            mapWp.on('click', async (e) => {
+                document.getElementById("wpLat").value = e.latlng.lat.toFixed(6);
+                document.getElementById("wpLon").value = e.latlng.lng.toFixed(6);
+                autoSave("wp");
+                await reverseLookup("wp");
+            });
 
-            L.tileLayer(tileUrl, tileOpt).addTo(mapWp);
-            L.tileLayer(tileUrl, tileOpt).addTo(mapHome);
+            mapHome.on('click', async (e) => {
+                document.getElementById("homeLat").value = e.latlng.lat.toFixed(6);
+                document.getElementById("homeLon").value = e.latlng.lng.toFixed(6);
+                autoSave("home");
+                await reverseLookup("home");
+            });
 
-            drawZone("wp");
-            drawZone("home");
+            drawZone("wp"); drawZone("home");
         }
 
         function drawZone(type) {
             if (type === "wp" && mapWp) {
                 if (wpMarker) mapWp.removeLayer(wpMarker);
                 if (wpCircle) mapWp.removeLayer(wpCircle);
-
-                wpMarker = L.marker([cfg.wp.lat, cfg.wp.lon]).addTo(mapWp);
-                wpCircle = L.circle([cfg.wp.lat, cfg.wp.lon], {
-                    radius: cfg.wp.rad,
-                    color: "#006400",
-                    fillColor: "#32cd32",
-                    fillOpacity: 0.15
-                }).addTo(mapWp);
-
-                wpMarker.bindPopup(cfg.wp.addr || "Arbeitsplatz");
-                mapWp.setView([cfg.wp.lat, cfg.wp.lon], 15);
+                wpMarker = L.marker([cfg.wp.lat, cfg.wp.lon]).addTo(mapWp).bindPopup(cfg.wp.addr || "Arbeitsplatz");
+                wpCircle = L.circle([cfg.wp.lat, cfg.wp.lon], { radius: cfg.wp.rad, color: "#006400", fillColor: "#32cd32", fillOpacity: 0.15 }).addTo(mapWp);
+                mapWp.setView([cfg.wp.lat, cfg.wp.lon]);
             }
-
             if (type === "home" && mapHome) {
                 if (homeMarker) mapHome.removeLayer(homeMarker);
                 if (homeCircle) mapHome.removeLayer(homeCircle);
-
-                homeMarker = L.marker([cfg.home.lat, cfg.home.lon]).addTo(mapHome);
-                homeCircle = L.circle([cfg.home.lat, cfg.home.lon], {
-                    radius: cfg.home.rad,
-                    color: "#003c7d",
-                    fillColor: "#4ea3ff",
-                    fillOpacity: 0.15
-                }).addTo(mapHome);
-
-                homeMarker.bindPopup(cfg.home.addr || "Zuhause");
-                mapHome.setView([cfg.home.lat, cfg.home.lon], 15);
+                homeMarker = L.marker([cfg.home.lat, cfg.home.lon]).addTo(mapHome).bindPopup(cfg.home.addr || "Zuhause");
+                homeCircle = L.circle([cfg.home.lat, cfg.home.lon], { radius: cfg.home.rad, color: "#003c7d", fillColor: "#4ea3ff", fillOpacity: 0.15 }).addTo(mapHome);
+                mapHome.setView([cfg.home.lat, cfg.home.lon]);
             }
         }
 
-        // --- File Parsing ---
         function normalizeTimestamp(tsRaw) {
             if (!tsRaw) return null;
             const d = new Date(tsRaw);
             if (!isNaN(d)) return d.getTime();
-
-            const fixed = tsRaw.replace(" ", "T");
-            const d2 = new Date(fixed);
+            const d2 = new Date(tsRaw.replace(" ", "T"));
             if (!isNaN(d2)) return d2.getTime();
-
             return null;
         }
 
         function getDayFromTimestamp(ts) {
             let d = new Date(ts);
-            if (cfg.tz.mode === "manual") {
-                d = new Date(d.getTime() + cfg.tz.hourOff * 3600000 + cfg.tz.dayOff * 86400000);
-            }
+            if (cfg.tz.mode === "manual") d = new Date(d.getTime() + cfg.tz.hourOff * 3600000 + cfg.tz.dayOff * 86400000);
             return getGermanDateString(d);
         }
 
@@ -1571,76 +1138,58 @@
             const xml = new DOMParser().parseFromString(text, "application/xml");
             const pts = [];
             xml.querySelectorAll("trkpt").forEach(pt => {
-                const lat = parseFloat(pt.getAttribute("lat"));
-                const lon = parseFloat(pt.getAttribute("lon"));
-                const timeNode = pt.querySelector("time");
-                if (!Number.isFinite(lat) || !Number.isFinite(lon) || !timeNode) return;
-                const ts = normalizeTimestamp(timeNode.textContent.trim());
-                if (!ts) return;
-                pts.push({ lat, lon, time: ts });
+                const lat = parseFloat(pt.getAttribute("lat")), lon = parseFloat(pt.getAttribute("lon"));
+                const tNode = pt.querySelector("time");
+                if (Number.isFinite(lat) && Number.isFinite(lon) && tNode) {
+                    const ts = normalizeTimestamp(tNode.textContent.trim());
+                    if (ts) pts.push({ lat, lon, time: ts });
+                }
             });
-
             pts.sort((a, b) => a.time - b.time);
             return splitPointsByDay(pts);
+        }
+
+        function parseCSVLine(line, delim=',') {
+            const out = [];
+            let cur = '', inQ = false;
+            for (let i=0; i<line.length; i++) {
+                if (line[i] === '"') inQ = !inQ;
+                else if (line[i] === delim && !inQ) { out.push(cur); cur = ''; }
+                else cur += line[i];
+            }
+            out.push(cur);
+            return out.map(s => s.trim());
         }
 
         function parseCSV(text) {
-            const rows = text.split(/\r?\n/).filter(Boolean);
-            if (!rows.length) return {};
+            const rows = text.split(/\r?\n/).filter(line => line.trim().length > 0);
+            if (rows.length < 2) return {};
 
-            const headers = splitCsvLine(rows[0]).map(h => h.trim().toLowerCase());
+            // Automatischer Check, ob Komma oder Semikolon
+            const delim = (rows[0].indexOf(';') > -1 && rows[0].indexOf(',') === -1) ? ';' : ',';
+            const headers = parseCSVLine(rows[0], delim).map(h => h.replace(/["']/g, '').toLowerCase());
             const pts = [];
 
-            for (let i = 1; i < rows.length; i++) {
-                const cols = splitCsvLine(rows[i]);
-                if (!cols.length) continue;
+            for (let i=1; i<rows.length; i++) {
+                const cols = parseCSVLine(rows[i], delim).map(c => c.replace(/["']/g, ''));
+                if (cols.length < headers.length - 2) continue;
 
                 const row = {};
-                headers.forEach((h, idx) => row[h] = (cols[idx] || "").trim());
+                headers.forEach((h, idx) => row[h] = cols[idx] || '');
 
-                const lat =
-                    parseFloat(row.latitude ?? row.lat ?? row["gps latitude"] ?? row["latitude(deg)"]);
-                const lon =
-                    parseFloat(row.longitude ?? row.lon ?? row.lng ?? row["gps longitude"] ?? row["longitude(deg)"]);
+                const lat = parseFloat(row['latitude'] || row['lat'] || row['latitude(deg)']);
+                const lon = parseFloat(row['longitude'] || row['lon'] || row['lng'] || row['longitude(deg)']);
+                
+                let tsStr = row['time'] || row['date time'] || row['datetime'] || row['timestamp'];
+                if (!tsStr && row['date']) tsStr = row['date'] + " " + (row['time']||'');
+                const ts = normalizeTimestamp(tsStr);
 
-                let ts = null;
-                if (row.time && row.date) ts = normalizeTimestamp(row.date + " " + row.time);
-                if (!ts && row.timestamp) ts = normalizeTimestamp(row.timestamp);
-                if (!ts && row.datetime) ts = normalizeTimestamp(row.datetime);
-                if (!ts && row.utc_time) ts = normalizeTimestamp(row.utc_time);
-                if (!ts && row["time(utc)"]) ts = normalizeTimestamp(row["time(utc)"]);
-
-                if (!Number.isFinite(lat) || !Number.isFinite(lon) || !ts) continue;
-                pts.push({ lat, lon, time: ts });
-            }
-
-            pts.sort((a, b) => a.time - b.time);
-            return splitPointsByDay(pts);
-        }
-
-        function splitCsvLine(line) {
-            const out = [];
-            let cur = "";
-            let inQ = false;
-
-            for (let i = 0; i < line.length; i++) {
-                const ch = line[i];
-                if (ch === '"') {
-                    if (inQ && line[i + 1] === '"') {
-                        cur += '"';
-                        i++;
-                    } else {
-                        inQ = !inQ;
-                    }
-                } else if (ch === "," && !inQ) {
-                    out.push(cur);
-                    cur = "";
-                } else {
-                    cur += ch;
+                if (Number.isFinite(lat) && Number.isFinite(lon) && ts) {
+                    pts.push({ lat, lon, time: ts });
                 }
             }
-            out.push(cur);
-            return out;
+            pts.sort((a, b) => a.time - b.time);
+            return splitPointsByDay(pts);
         }
 
         function splitPointsByDay(pts) {
@@ -1653,294 +1202,133 @@
             return grouped;
         }
 
-        // --- Analysis ---
         function analyze(points) {
             if (!points || !points.length) return null;
-
             points = [...points].sort((a, b) => a.time - b.time);
-
             const visits = [];
-            let insideWork = false;
-            let startVisit = null;
+            let insideWork = false, startVisit = null;
 
             for (const p of points) {
-                const distWork = getDist(p.lat, p.lon, cfg.wp.lat, cfg.wp.lon);
-                const nowInside = distWork <= cfg.wp.rad;
-
-                if (nowInside && !insideWork) {
-                    insideWork = true;
-                    startVisit = p.time;
-                }
-
+                const nowInside = getDist(p.lat, p.lon, cfg.wp.lat, cfg.wp.lon) <= cfg.wp.rad;
+                if (nowInside && !insideWork) { insideWork = true; startVisit = p.time; }
                 if (!nowInside && insideWork) {
                     insideWork = false;
                     visits.push({ tStart: startVisit, tEnd: p.time });
                     startVisit = null;
                 }
             }
+            if (insideWork && startVisit) visits.push({ tStart: startVisit, tEnd: points[points.length - 1].time });
 
-            if (insideWork && startVisit) {
-                visits.push({ tStart: startVisit, tEnd: points[points.length - 1].time });
-            }
-
-            let arr = null;
-            let dep = null;
-            let grossMs = 0;
-
+            let arr = null, dep = null, grossMs = 0;
             if (visits.length) {
-                arr = visits[0].tStart;
-                dep = visits[visits.length - 1].tEnd;
+                arr = visits[0].tStart; dep = visits[visits.length - 1].tEnd;
                 visits.forEach(v => grossMs += Math.max(0, v.tEnd - v.tStart));
             }
 
             let breakMs = 0;
-            for (let i = 0; i < visits.length - 1; i++) {
-                breakMs += Math.max(0, visits[i + 1].tStart - visits[i].tEnd);
+            for (let i = 0; i < visits.length - 1; i++) breakMs += Math.max(0, visits[i + 1].tStart - visits[i].tEnd);
+
+            const commute = { toW: { k: 0, m: 0 }, toH: { k: 0, m: 0 } };
+            if (arr && dep && points.length > 1) {
+                const iS = points.findIndex(p => p.time >= arr);
+                const iE = points.findIndex(p => p.time >= dep);
+                if (iS > 0) {
+                    for (let i = iS; i >= 0; i--) {
+                        if (getDist(points[i].lat, points[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) {
+                            commute.toW.k = getPathLen(points, i, iS);
+                            commute.toW.m = (points[iS].time - points[i].time) / 60000;
+                            break;
+                        }
+                    }
+                }
+                if (iE > -1 && iE < points.length - 1) {
+                    for (let i = iE; i < points.length; i++) {
+                        if (getDist(points[i].lat, points[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) {
+                            commute.toH.k = getPathLen(points, iE, i);
+                            commute.toH.m = (points[i].time - points[iE].time) / 60000;
+                            break;
+                        }
+                    }
+                }
             }
 
-            let netH = visits.length ? grossMs / 3600000 : null;
-
-            const commute = calcCommute(points, arr, dep);
-
-            const totalKm = getPathLen(points, 0, points.length - 1);
-
             return {
-                arr,
-                dep,
-                visits,
+                arr, dep, visits,
                 gross: visits.length ? grossMs / 3600000 : null,
                 breakMin: Math.round(breakMs / 60000),
-                net: netH,
-                totalKm: totalKm,
+                net: visits.length ? grossMs / 3600000 : null,
+                totalKm: getPathLen(points, 0, points.length - 1),
                 commute
             };
         }
 
-        function calcCommute(pts, arr, dep) {
-            const res = {
-                toW: { k: 0, m: 0 },
-                toH: { k: 0, m: 0 }
-            };
-
-            if (!arr || !dep || !pts || pts.length < 2) return res;
-
-            const iStart = pts.findIndex(p => p.time >= arr);
-            const iEnd = pts.findIndex(p => p.time >= dep);
-
-            if (iStart > 0) {
-                let idxHomeExit = -1;
-                for (let i = iStart; i >= 0; i--) {
-                    if (getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) {
-                        idxHomeExit = i;
-                        break;
-                    }
-                }
-
-                if (idxHomeExit > -1 && idxHomeExit < iStart) {
-                    res.toW.k = getPathLen(pts, idxHomeExit, iStart);
-                    res.toW.m = (pts[iStart].time - pts[idxHomeExit].time) / 60000;
-                }
-            }
-
-            if (iEnd > -1 && iEnd < pts.length - 1) {
-                let idxHomeEnter = -1;
-                for (let i = iEnd; i < pts.length; i++) {
-                    if (getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) {
-                        idxHomeEnter = i;
-                        break;
-                    }
-                }
-
-                if (idxHomeEnter > -1 && idxHomeEnter > iEnd) {
-                    res.toH.k = getPathLen(pts, iEnd, idxHomeEnter);
-                    res.toH.m = (pts[idxHomeEnter].time - pts[iEnd].time) / 60000;
-                }
-            }
-
-            return res;
-        }
-
-        function mergeAnalysisIntoDay(dayStr, analysis, rawPoints) {
-            if (!analysis) return;
-
-            const old = workData[dayStr] || {};
-            const status = old.status || inferDefaultStatus(dayStr);
-
-            workData[dayStr] = {
-                ...old,
-                day: dayStr,
-                arr: analysis.arr,
-                dep: analysis.dep,
-                net: analysis.net,
-                gross: analysis.gross,
-                breakMin: analysis.breakMin,
-                visits: analysis.visits || [],
-                commute: analysis.commute || { toW: { k: 0, m: 0 }, toH: { k: 0, m: 0 } },
-                totalKm: analysis.totalKm || 0,
-                status
-            };
-
-            trackData[dayStr] = rawPoints.map(p => ({
-                lat: p.lat,
-                lon: p.lon,
-                time: p.time
-            }));
-        }
-
-        function inferDefaultStatus(dayStr) {
-            if (activeHolidays[dayStr]) return "holiday";
-            const d = new Date(dayStr + "T12:00:00");
-            const dow = d.getDay();
-            if (dow === 0 || dow === 6) return "free";
-            return "na";
-        }
-
         function finishLoad(groupedData) {
             for (const [dayStr, pts] of Object.entries(groupedData)) {
-                const analysis = analyze(pts);
-                if (analysis) mergeAnalysisIntoDay(dayStr, analysis, pts);
+                const a = analyze(pts);
+                if (a) {
+                    const old = workData[dayStr] || {};
+                    workData[dayStr] = { ...old, day: dayStr, arr: a.arr, dep: a.dep, net: a.net, breakMin: a.breakMin, visits: a.visits, commute: a.commute, totalKm: a.totalKm, status: old.status || (activeHolidays[dayStr] ? "holiday" : ([0,6].includes(new Date(dayStr+"T12:00").getDay()) ? "free" : "na")) };
+                    trackData[dayStr] = pts.map(p => ({ lat: p.lat, lon: p.lon, time: p.time }));
+                }
             }
-
             localStorage.setItem("workData", JSON.stringify(workData));
             localStorage.setItem("trackData", JSON.stringify(trackData));
-            renderCal();
-            calcStats();
-            finishProgress();
-            showToast("Datei analysiert");
+            
+            collapseConfigs();
+            renderCal(); calcStats(); finishProgress();
+            showToast("Datei erfolgreich analysiert");
         }
 
-        // --- Calendar / UI ---
         function renderCal() {
             const list = document.getElementById("calendarList");
             list.innerHTML = "";
+            const y = curMonth.getFullYear(), m = curMonth.getMonth();
+            document.getElementById("monthLabel").textContent = curMonth.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
 
-            const y = curMonth.getFullYear();
-            const m = curMonth.getMonth();
-            document.getElementById("monthLabel").textContent = curMonth.toLocaleDateString("de-DE", {
-                month: "long",
-                year: "numeric"
-            });
-
-            const numDays = new Date(y, m + 1, 0).getDate();
-
-            for (let d = numDays; d >= 1; d--) {
+            for (let d = new Date(y, m + 1, 0).getDate(); d >= 1; d--) {
                 const dayStr = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
                 const dateObj = new Date(y, m, d);
                 const data = workData[dayStr] || {};
                 const holName = activeHolidays[dayStr];
-                const isWe = dateObj.getDay() === 0 || dateObj.getDay() === 6;
-
-                let st = "na";
-                if (holName) st = "holiday";
-                else if (data.status) st = data.status;
-                else if (isWe) st = "free";
-
+                const st = holName ? "holiday" : (data.status || ([0,6].includes(dateObj.getDay()) ? "free" : "na"));
                 const isEdit = !!editModeDays[dayStr];
 
-                let tA = "--:--";
-                let tD = "--:--";
-                let dur = "--:--";
-                let durMobile = "—";
-                let cls = "";
-                let tIn = "";
-                let tOut = "";
-
-                if (data.arr) {
-                    tA = fmtTime(data.arr);
-                    tIn = timeToInput(data.arr);
-                }
-
-                if (data.dep) {
-                    tD = fmtTime(data.dep);
-                    tOut = timeToInput(data.dep);
-                }
-
+                let dur = "--:--", durMobile = "—", cls = "";
                 if (typeof data.net === "number") {
-                    const minNet = Math.round(data.net * 60);
-                    const minTarget = Math.round(cfg.wp.hours * 60);
-                    dur = `${Math.floor(minNet / 60)}:${String(minNet % 60).padStart(2, "0")}`;
+                    const mNet = Math.round(data.net * 60), mTarget = Math.round(cfg.wp.hours * 60);
+                    dur = `${Math.floor(mNet / 60)}:${String(mNet % 60).padStart(2, "0")}`;
                     durMobile = dur;
-
-                    if (data.net >= cfg.wp.hours) {
-                        cls = "overtime";
-                        const diff = minNet - minTarget;
-                        dur += ` (+${Math.floor(diff / 60)}:${String(diff % 60).padStart(2, "0")})`;
-                    } else {
-                        cls = "undertime";
-                        const diff = minTarget - minNet;
-                        dur += ` (-${Math.floor(diff / 60)}:${String(diff % 60).padStart(2, "0")})`;
-                    }
+                    if (mNet >= mTarget) { cls = "overtime"; dur += ` (+${Math.floor((mNet - mTarget) / 60)}:${String((mNet - mTarget) % 60).padStart(2, "0")})`; }
+                    else { cls = "undertime"; dur += ` (-${Math.floor((mTarget - mNet) / 60)}:${String((mTarget - mNet) % 60).padStart(2, "0")})`; }
                 }
 
-                let timeHtml = "";
-                if (!isEdit) {
-                    timeHtml = `
-                        <div class="time-row">
-                            <span>Kommen</span>
-                            <div class="time-display" onclick="clip('${tA}', this)">${tA}</div>
-                        </div>
-                        <div class="time-row">
-                            <span>Gehen</span>
-                            <div style="width:100%;">
-                                <div class="time-display" onclick="clip('${tD}', this)">${tD}</div>
-                                <div class="mobile-subline leave-worktime">${durMobile}</div>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    timeHtml = `
-                        <div class="time-row">
-                            <span>Kommen</span>
-                            <input type="time" id="in_${dayStr}" value="${tIn}" class="time-input" />
-                        </div>
-                        <div class="time-row">
-                            <span>Gehen</span>
-                            <div style="width:100%;">
-                                <input type="time" id="out_${dayStr}" value="${tOut}" class="time-input" />
-                                <div class="mobile-subline leave-worktime">${durMobile}</div>
-                            </div>
-                        </div>
-                    `;
-                }
+                const tHtml = !isEdit ? 
+                    `<div class="time-row"><span>Kommen</span><div class="time-display">${fmtTime(data.arr)}</div></div>
+                     <div class="time-row"><span>Gehen</span><div style="width:100%;"><div class="time-display">${fmtTime(data.dep)}</div><div class="mobile-subline leave-worktime">${durMobile}</div></div></div>` :
+                    `<div class="time-row"><span>Kommen</span><input type="time" id="in_${dayStr}" value="${timeToInput(data.arr)}" class="time-input" /></div>
+                     <div class="time-row"><span>Gehen</span><div style="width:100%;"><input type="time" id="out_${dayStr}" value="${timeToInput(data.dep)}" class="time-input" /><div class="mobile-subline leave-worktime">${durMobile}</div></div></div>`;
 
                 let cTxt = "";
-                if (data.commute) {
-                    const c = data.commute;
-                    if (c.toW?.k > 0) cTxt += `<div>🚲 Hin: ${c.toW.k.toFixed(1)} km (${Math.round(c.toW.m)} min)</div>`;
-                    if (c.toH?.k > 0) cTxt += `<div>🚲 Rück: ${c.toH.k.toFixed(1)} km (${Math.round(c.toH.m)} min)</div>`;
-                    if (!cTxt && data.totalKm) cTxt = `<div>📍 Gesamt: ${data.totalKm.toFixed(1)} km</div>`;
-                } else if (data.totalKm) {
-                    cTxt = `<div>📍 Gesamt: ${data.totalKm.toFixed(1)} km</div>`;
-                }
+                if (data.commute && (data.commute.toW?.k > 0 || data.commute.toH?.k > 0)) {
+                    if (data.commute.toW?.k > 0) cTxt += `<div>🚲 Hin: ${data.commute.toW.k.toFixed(1)} km (${Math.round(data.commute.toW.m)} min)</div>`;
+                    if (data.commute.toH?.k > 0) cTxt += `<div>🚲 Rück: ${data.commute.toH.k.toFixed(1)} km (${Math.round(data.commute.toH.m)} min)</div>`;
+                } else if (data.totalKm) cTxt = `<div>📍 Gesamt: ${data.totalKm.toFixed(1)} km</div>`;
 
-                const displayName = jsonAssignments[dayStr] ? `<div class="help-text">${jsonAssignments[dayStr]}</div>` : "";
-                const statusLabel = holName || getStLabel(st);
+                const dName = jsonAssignments[dayStr] ? `<div class="help-text">${jsonAssignments[dayStr]}</div>` : "";
+                const stLabel = holName || getStLabel(st);
 
-                const wrapper = document.createElement("div");
-
-                let html = `
+                const w = document.createElement("div");
+                w.innerHTML = `
                     <div class="workday-entry">
                         <div class="col-date">
                             <div class="date-main">${dateObj.toLocaleDateString("de-DE", { weekday: "short" })}, ${d}.${m + 1}.</div>
-                            <div class="mobile-subline date-status">${statusLabel}</div>
-                            ${displayName}
+                            <div class="mobile-subline date-status">${stLabel}</div>
+                            ${dName}
                         </div>
-
-                        <div class="col-status">
-                            <span class="status-badge ${getStatusClass(st)}">${statusLabel}</span>
-                        </div>
-
-                        <div class="col-times">
-                            ${timeHtml}
-                        </div>
-
-                        <div class="col-duration">
-                            <span class="duration-header">Arbeitszeit</span>
-                            <div class="work-duration ${cls}">${dur}</div>
-                        </div>
-
+                        <div class="col-status"><span class="status-badge ${getStatusClass(st)}">${stLabel}</span></div>
+                        <div class="col-times">${tHtml}</div>
+                        <div class="col-duration"><span class="duration-header">Arbeitszeit</span><div class="work-duration ${cls}">${dur}</div></div>
                         <div class="col-commute">${cTxt || "—"}</div>
-
                         <div class="col-controls">
                             <select class="status-select" onchange="setStatus('${dayStr}', this.value)">
                                 <option value="na" ${st === "na" ? "selected" : ""}>N.A.</option>
@@ -1950,287 +1338,89 @@
                                 <option value="free" ${st === "free" ? "selected" : ""}>Frei</option>
                                 <option value="holiday" ${st === "holiday" ? "selected" : ""}>Feiertag</option>
                             </select>
-
                             <div class="btn-row">
                                 ${hasTrace(dayStr) ? `<button class="action-btn btn-trace" onclick="showTrace('${dayStr}')" title="Route">🗺️</button>` : ""}
                                 ${(data.visits && data.visits.length > 1) ? `<button class="action-btn btn-info" onclick="toggleDet('${dayStr}')" title="Info">ℹ️</button>` : ""}
-                                ${!isEdit
-                                    ? `<button class="action-btn btn-edit" onclick="toggleEdit('${dayStr}')" title="Bearbeiten">✏️</button>`
-                                    : `<button class="action-btn btn-save" onclick="saveDay('${dayStr}')" title="Speichern">💾</button>`}
+                                ${!isEdit ? `<button class="action-btn btn-edit" onclick="toggleEdit('${dayStr}')" title="Bearbeiten">✏️</button>` : `<button class="action-btn btn-save" onclick="saveDay('${dayStr}')" title="Speichern">💾</button>`}
                             </div>
                         </div>
                     </div>
+                    ${holName ? `<div class="holiday-indicator">🎉 ${holName}</div>` : ""}
+                    ${data.visits && data.visits.length > 1 ? `<div id="det-${dayStr}" class="details-panel">Mehrfache Besuche erfasst.<br/><strong>Pause: ${Math.floor(data.breakMin / 60)}:${String(data.breakMin % 60).padStart(2, "0")}h</strong></div>` : ""}
                 `;
-
-                if (holName) {
-                    html += `<div class="holiday-indicator">🎉 ${holName}</div>`;
-                }
-
-                if (data.visits && data.visits.length > 1) {
-                    let vStr = "";
-                    let breakMs = 0;
-
-                    data.visits.forEach((v, i) => {
-                        vStr += `${i + 1}. ${fmtTime(v.tStart)} - ${fmtTime(v.tEnd)}`;
-                        if (i < data.visits.length - 1) {
-                            const nextV = data.visits[i + 1];
-                            const gap = nextV.tStart - v.tEnd;
-                            breakMs += gap;
-                            vStr += ", ";
-                        }
-                    });
-
-                    const breakMin = Math.round(breakMs / 60000);
-                    const diff = breakMin - cfg.wp.break;
-                    const diffStr = diff >= 0 ? `+${diff}` : `${diff}`;
-                    const breakFmt = `${Math.floor(breakMin / 60)}:${String(breakMin % 60).padStart(2, "0")}h`;
-
-                    html += `
-                        <div id="det-${dayStr}" class="details-panel">
-                            Mehrfache Besuche: ${vStr}<br />
-                            <strong>Pause: ${breakFmt} (${diffStr} min)</strong>
-                        </div>
-                    `;
-                }
-
-                wrapper.innerHTML = html;
-                list.appendChild(wrapper);
+                list.appendChild(w);
             }
         }
 
-        function toggleDet(dayStr) {
-            const el = document.getElementById("det-" + dayStr);
-            if (el) el.classList.toggle("show");
-        }
-
-        function setStatus(dayStr, value) {
-            if (!workData[dayStr]) workData[dayStr] = { day: dayStr };
-            workData[dayStr].status = value;
-            localStorage.setItem("workData", JSON.stringify(workData));
-            renderCal();
-            calcStats();
-            showToast("Status gespeichert");
-        }
-
-        function toggleEdit(dayStr) {
-            editModeDays[dayStr] = !editModeDays[dayStr];
-            renderCal();
-        }
-
-        function saveDay(dayStr) {
-            const inEl = document.getElementById("in_" + dayStr);
-            const outEl = document.getElementById("out_" + dayStr);
-            if (!workData[dayStr]) workData[dayStr] = { day: dayStr };
-
-            const inTs = combineDateAndTime(dayStr, inEl?.value);
-            const outTs = combineDateAndTime(dayStr, outEl?.value);
-
-            workData[dayStr].arr = inTs;
-            workData[dayStr].dep = outTs;
-
-            if (inTs && outTs && outTs > inTs) {
-                const grossH = (outTs - inTs) / 3600000;
-                const breakH = (cfg.wp.break || 0) / 60;
-                workData[dayStr].gross = grossH;
-                workData[dayStr].net = Math.max(0, grossH - breakH);
-                workData[dayStr].visits = [{ tStart: inTs, tEnd: outTs }];
+        function toggleDet(d) { document.getElementById("det-" + d)?.classList.toggle("show"); }
+        function setStatus(d, v) { if (!workData[d]) workData[d] = { day: d }; workData[d].status = v; localStorage.setItem("workData", JSON.stringify(workData)); renderCal(); calcStats(); }
+        function toggleEdit(d) { editModeDays[d] = !editModeDays[d]; renderCal(); }
+        function saveDay(d) {
+            const inV = document.getElementById("in_" + d)?.value, outV = document.getElementById("out_" + d)?.value;
+            if (!workData[d]) workData[d] = { day: d };
+            const iTs = inV ? new Date(d + "T" + inV + ":00").getTime() : null, oTs = outV ? new Date(d + "T" + outV + ":00").getTime() : null;
+            workData[d].arr = iTs; workData[d].dep = oTs;
+            if (iTs && oTs && oTs > iTs) {
+                const g = (oTs - iTs) / 3600000;
+                workData[d].gross = g; workData[d].net = Math.max(0, g - ((cfg.wp.break || 0) / 60));
+                workData[d].visits = [{ tStart: iTs, tEnd: oTs }];
             }
-
-            editModeDays[dayStr] = false;
-            localStorage.setItem("workData", JSON.stringify(workData));
-            renderCal();
-            calcStats();
-            showToast("Tag gespeichert");
+            editModeDays[d] = false; localStorage.setItem("workData", JSON.stringify(workData)); renderCal(); calcStats();
         }
 
-        function changeMonth(offset) {
-            if (offset === 0) {
-                curMonth = new Date();
-            } else {
-                curMonth = new Date(curMonth.getFullYear(), curMonth.getMonth() + offset, 1);
-            }
-            renderCal();
-        }
-
+        function changeMonth(o) { curMonth = o === 0 ? new Date() : new Date(curMonth.getFullYear(), curMonth.getMonth() + o, 1); renderCal(); calcStats(); }
+        
         function calcStats() {
-            const entries = Object.entries(workData);
-            let days = 0;
-            let workH = 0;
-            let targetH = 0;
-            let totalKm = 0;
-            let commuteKm = 0;
-
-            for (const [dayStr, data] of entries) {
-                const d = new Date(dayStr + "T12:00:00");
-                if (d.getFullYear() !== curMonth.getFullYear() || d.getMonth() !== curMonth.getMonth()) continue;
-
-                const st = data.status || inferDefaultStatus(dayStr);
-                if (["work", "homeoffice", "na"].includes(st) && typeof data.net === "number") {
-                    days++;
-                    workH += data.net;
-                    targetH += cfg.wp.hours;
-                }
-
-                if (typeof data.totalKm === "number") totalKm += data.totalKm;
-                if (data.commute) {
-                    commuteKm += (data.commute.toW?.k || 0) + (data.commute.toH?.k || 0);
+            let days = 0, wH = 0, tH = 0, tKm = 0, cKm = 0;
+            for (const [dStr, d] of Object.entries(workData)) {
+                const dt = new Date(dStr + "T12:00");
+                if (dt.getFullYear() === curMonth.getFullYear() && dt.getMonth() === curMonth.getMonth()) {
+                    const st = d.status || (activeHolidays[dStr] ? "holiday" : ([0,6].includes(dt.getDay()) ? "free" : "na"));
+                    if (["work", "homeoffice", "na"].includes(st) && typeof d.net === "number") { days++; wH += d.net; tH += cfg.wp.hours; }
+                    if (d.totalKm) tKm += d.totalKm;
+                    if (d.commute) cKm += (d.commute.toW?.k || 0) + (d.commute.toH?.k || 0);
                 }
             }
-
-            const diff = workH - targetH;
-
-            document.getElementById("statDays").textContent = String(days);
-            document.getElementById("statWork").textContent = fmtDurationHours(workH);
-            document.getElementById("statTarget").textContent = fmtDurationHours(targetH);
-
-            const diffEl = document.getElementById("statDiff");
-            diffEl.textContent = fmtDurationHours(diff);
-            diffEl.className = "stat-val " + (diff >= 0 ? "val-positive" : "val-negative");
-
-            document.getElementById("statDistance").textContent = totalKm.toFixed(1) + " km";
-            document.getElementById("statCommute").textContent = commuteKm.toFixed(1) + " km";
+            document.getElementById("statDays").textContent = days;
+            document.getElementById("statWork").textContent = fmtDurationHours(wH);
+            document.getElementById("statTarget").textContent = fmtDurationHours(tH);
+            const df = document.getElementById("statDiff");
+            df.textContent = fmtDurationHours(wH - tH);
+            df.className = "stat-val " + ((wH - tH) >= 0 ? "val-positive" : "val-negative");
+            document.getElementById("statDistance").textContent = tKm.toFixed(1) + " km";
+            document.getElementById("statCommute").textContent = cKm.toFixed(1) + " km";
         }
 
-        // --- Trace Map ---
-        function closeModal(id) {
-            document.getElementById(id).style.display = "none";
-        }
-
-        function showTrace(dayStr) {
-            const pts = trackData[dayStr];
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
+        function showTrace(d) {
+            const pts = trackData[d];
             if (!pts || pts.length < 2) return;
-
-            document.getElementById("traceTitle").textContent = "Route " + dayStr;
+            document.getElementById("traceTitle").textContent = "Route " + d;
             document.getElementById("traceModal").style.display = "block";
-
             setTimeout(() => {
-                if (!traceMap) {
-                    traceMap = L.map("traceMap");
-                    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-                        maxZoom: 19,
-                        attribution: "&copy; OpenStreetMap"
-                    }).addTo(traceMap);
-                }
-
-                if (traceLayer) {
-                    traceMap.removeLayer(traceLayer);
-                }
-
-                const latlngs = pts.map(p => [p.lat, p.lon]);
-                traceLayer = L.polyline(latlngs, { color: "#006400", weight: 4 }).addTo(traceMap);
-
-                L.marker(latlngs[0]).addTo(traceMap).bindPopup("Start");
-                L.marker(latlngs[latlngs.length - 1]).addTo(traceMap).bindPopup("Ende");
-
+                if (!traceMap) traceMap = L.map("traceMap").setView([0,0],13), L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(traceMap);
+                if (traceLayer) traceMap.removeLayer(traceLayer);
+                const ll = pts.map(p => [p.lat, p.lon]);
+                traceLayer = L.polyline(ll, { color: "#006400", weight: 4 }).addTo(traceMap);
                 traceMap.fitBounds(traceLayer.getBounds(), { padding: [20, 20] });
                 traceMap.invalidateSize();
             }, 80);
         }
 
-        // --- Export ---
         function exportData() {
-            const data = {
-                generatedAt: new Date().toISOString(),
-                cfg,
-                holidays: activeHolidays,
-                assignments: jsonAssignments,
-                workData,
-                trackData
-            };
-
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
-            a.href = url;
-            a.download = "arbeitszeit-export.json";
-            a.click();
-            URL.revokeObjectURL(url);
+            a.href = URL.createObjectURL(new Blob([JSON.stringify({ cfg, holidays: activeHolidays, assignments: jsonAssignments, workData, trackData }, null, 2)], { type: "application/json" }));
+            a.download = "arbeitszeit-export.json"; a.click();
         }
-
-        // --- File Inputs ---
-        async function readTextFile(file) {
-            return await file.text();
-        }
-
-        async function handleGpxUpload(file) {
-            startProgress();
-            try {
-                const txt = await readTextFile(file);
-                const grouped = parseGPX(txt);
-                finishLoad(grouped);
-            } catch (e) {
-                finishProgress();
-                alert("Fehler beim Laden der GPX-Datei.");
-            }
-        }
-
-        async function handleCsvUpload(file) {
-            startProgress();
-            try {
-                const txt = await readTextFile(file);
-                const grouped = parseCSV(txt);
-                finishLoad(grouped);
-            } catch (e) {
-                finishProgress();
-                alert("Fehler beim Laden der CSV-Datei.");
-            }
-        }
-
-        async function handleJsonUpload(file) {
-            try {
-                const txt = await readTextFile(file);
-                const parsed = JSON.parse(txt);
-                jsonAssignments = parsed;
-                document.getElementById("jsonConfig").value = JSON.stringify(jsonAssignments, null, 2);
-                localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments));
-                renderCal();
-                showToast("JSON geladen");
-            } catch {
-                alert("Fehler beim Laden der JSON-Datei.");
-            }
-        }
-
-        // --- Service Worker ---
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("sw.js").catch(() => {});
-            });
-        }
-
-        // --- Init ---
-        window.addEventListener("click", e => {
-            if (e.target.classList.contains("modal")) {
-                e.target.style.display = "none";
-            }
-        });
 
         document.addEventListener("DOMContentLoaded", () => {
-            loadHolidays();
-            loadSettings();
-            initMaps();
-            renderCal();
-            calcStats();
-
-            document.getElementById("gpxFile").addEventListener("change", e => {
-                const file = e.target.files?.[0];
-                if (file) handleGpxUpload(file);
-                e.target.value = "";
+            loadHolidays(); loadSettings(); initMaps(); renderCal(); calcStats();
+            document.getElementById("gpxFile").addEventListener("change", async e => {
+                if (e.target.files[0]) { startProgress(); try { finishLoad(parseGPX(await e.target.files[0].text())); } catch { finishProgress(); alert("Fehler GPX"); } } e.target.value = "";
             });
-
-            document.getElementById("csvFile").addEventListener("change", e => {
-                const file = e.target.files?.[0];
-                if (file) handleCsvUpload(file);
-                e.target.value = "";
+            document.getElementById("csvFile").addEventListener("change", async e => {
+                if (e.target.files[0]) { startProgress(); try { finishLoad(parseCSV(await e.target.files[0].text())); } catch { finishProgress(); alert("Fehler CSV"); } } e.target.value = "";
             });
-
-            document.getElementById("jsonFile").addEventListener("change", e => {
-                const file = e.target.files?.[0];
-                if (file) handleJsonUpload(file);
-                e.target.value = "";
-            });
-
-            document.getElementById("wpAddr").addEventListener("change", () => autoSave("wp"));
-            document.getElementById("homeAddr").addEventListener("change", () => autoSave("home"));
         });
     </script>
 </body>
