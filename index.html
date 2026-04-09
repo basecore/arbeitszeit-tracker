@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GPS Arbeitszeit-Tracker v1.4</title>
+    <title>GPS Arbeitszeit-Tracker v1.5</title>
 
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#006400" />
     <link rel="apple-touch-icon" href="icon-192.png" />
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
@@ -37,54 +36,25 @@
 
         * { box-sizing: border-box; }
 
-        body {
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: var(--bg);
-            color: var(--text);
-            padding-bottom: 100px;
-        }
+        body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background: var(--bg); color: var(--text); padding-bottom: 100px; }
+        .container { max-width: 1600px; margin: 0 auto; background: var(--card); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
 
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            background: var(--card);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-
-        .header {
-            background: linear-gradient(135deg, var(--green-dark), var(--green-light));
-            color: #fff;
-            padding: 24px 20px;
-            text-align: center;
-        }
+        .header { background: linear-gradient(135deg, var(--green-dark), var(--green-light)); color: #fff; padding: 24px 20px; text-align: center; }
         .header h1 { margin: 0; font-size: 2rem; font-weight: 300; }
         .header p { margin: 8px 0 0; opacity: 0.95; }
 
-        .upload-section {
-            padding: 18px 20px; border-bottom: 1px solid #eee; background: #f8f9fa;
-            display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
-        }
+        .upload-section { padding: 18px 20px; border-bottom: 1px solid #eee; background: #f8f9fa; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 
         .file-input-wrapper { position: relative; display: inline-block; }
         .file-input { display: none; }
 
-        .file-input-label, .btn, button {
-            border: none; border-radius: 20px; cursor: pointer; transition: all 0.2s ease;
-            display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;
-        }
+        .file-input-label, .btn, button { border: none; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
         .file-input-label, .btn { background: var(--green-dark); color: #fff; padding: 10px 16px; font-size: 14px; font-weight: 600; }
         .file-input-label:hover, .btn:hover { background: var(--green); transform: translateY(-1px); }
 
-        .btn-secondary { background: #6c757d; }
-        .btn-secondary:hover { background: #5a6268; }
-        .btn-warning { background: #ff9800; color: #fff; }
-        .btn-warning:hover { background: #f08a00; }
-        .btn-danger { background: var(--danger); color: #fff; }
-        .btn-danger:hover { background: #c82333; }
+        .btn-secondary { background: #6c757d; } .btn-secondary:hover { background: #5a6268; }
+        .btn-warning { background: #ff9800; color: #fff; } .btn-warning:hover { background: #f08a00; }
+        .btn-danger { background: var(--danger); color: #fff; } .btn-danger:hover { background: #c82333; }
 
         .progress-bar { flex: 1 1 240px; height: 6px; background: #e9ecef; border-radius: 999px; overflow: hidden; min-width: 160px; }
         .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--green-dark), var(--green-light)); transition: width 0.25s ease; }
@@ -121,13 +91,10 @@
         .calendar-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 10px 0 14px; flex-wrap: wrap; }
         .calendar-list { border: 1px solid #eee; border-radius: 10px; overflow: hidden; background: #fff; }
 
-        .workday-entry {
-            display: flex; align-items: flex-start; gap: 12px; padding: 14px 14px;
-            border-bottom: 1px solid #eee; font-size: 14.5px; /* Schrift vergrößert */
-        }
+        .workday-entry { display: flex; align-items: flex-start; gap: 12px; padding: 14px 14px; border-bottom: 1px solid #eee; font-size: 14.5px; }
         .workday-entry:last-child { border-bottom: none; }
 
-        /* Feste Breiten Desktop */
+        /* Desktop Spalten */
         .col-date { width: 110px; font-weight: 700; padding-top: 4px; flex-shrink: 0; }
         .col-status { width: 90px; flex-shrink: 0; padding-top: 4px; }
         .col-times { width: 170px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
@@ -136,36 +103,30 @@
         .col-controls { width: 150px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; margin-left: auto; }
 
         .date-main { font-weight: 700; }
-        .mobile-subline { display: none; font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.2; }
+        .mobile-subline { display: none; font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.2; text-align: center; }
         .date-status { color: #444; }
         .leave-worktime { color: var(--green-dark); font-weight: 600; }
 
         .status-badge { display: inline-block; border-radius: 999px; font-size: 12px; padding: 4px 8px; font-weight: 700; white-space: nowrap; }
-        .status-work { background: #d4edda; color: #155724; }
-        .status-homeoffice { background: #d1ecf1; color: #0c5460; }
-        .status-vacation { background: #fff3cd; color: #856404; }
-        .status-free { background: #f1f3f5; color: #495057; }
-        .status-na { background: #e9ecef; color: #495057; }
-        .status-holiday { background: #fde2e1; color: #9b1c1c; }
+        .status-work { background: #d4edda; color: #155724; } .status-homeoffice { background: #d1ecf1; color: #0c5460; }
+        .status-vacation { background: #fff3cd; color: #856404; } .status-free { background: #f1f3f5; color: #495057; }
+        .status-na { background: #e9ecef; color: #495057; } .status-holiday { background: #fde2e1; color: #9b1c1c; }
 
-        .time-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .time-row span { color: var(--muted); }
-        .time-display { background: #f8f9fa; border: 1px solid #e6e6e6; border-radius: 6px; padding: 4px 8px; min-width: 66px; text-align: center; cursor: pointer; user-select: none; }
+        .time-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+        .time-row span { color: var(--muted); margin-top: 4px; }
+        
+        .time-wrapper { display: flex; flex-direction: column; align-items: center; width: 66px; }
+        .time-display { background: #f8f9fa; border: 1px solid #e6e6e6; border-radius: 6px; padding: 4px 0; width: 100%; text-align: center; cursor: pointer; user-select: none; }
         .time-display:hover { background: #eef7ee; }
-        .time-input { width: 92px; padding: 4px 6px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        .time-input { width: 100%; padding: 4px 0; text-align: center; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
 
         .duration-header { display: block; color: var(--muted); font-size: 11px; margin-bottom: 4px; text-transform: uppercase; }
-        .work-duration { font-weight: 700; font-size: 15px; }
-        .overtime { color: #28a745; }
-        .undertime { color: var(--danger); }
+        .work-duration { font-weight: 700; font-size: 15px; } .overtime { color: #28a745; } .undertime { color: var(--danger); }
 
         .status-select { width: 100%; padding: 5px 6px; font-size: 13px; border: 1px solid #ddd; border-radius: 6px; background: #fff; }
         .btn-row { display: flex; gap: 4px; justify-content: flex-end; }
         .action-btn { border: none; border-radius: 6px; cursor: pointer; padding: 5px 7px; min-width: 32px; font-size: 13px; color: #fff; }
-        .btn-trace { background: #6c757d; }
-        .btn-info { background: var(--info); }
-        .btn-edit { background: var(--warning); color: #333; }
-        .btn-save { background: #28a745; }
+        .btn-trace { background: #6c757d; } .btn-info { background: var(--info); } .btn-edit { background: var(--warning); color: #333; } .btn-save { background: #28a745; }
 
         .details-panel { display: none; background: #f0f8ff; border-top: 1px solid #dee2e6; padding: 8px 14px 10px 124px; font-size: 13px; color: #333; }
         .details-panel.show { display: block; }
@@ -174,11 +135,7 @@
         /* Inaktive Tage (Feiertag, Urlaub, Frei) */
         .workday-entry.inactive { background-color: #fafafa; }
         .workday-entry.inactive .date-main, .workday-entry.inactive .date-status { color: #888; }
-        .workday-entry.inactive .col-times, 
-        .workday-entry.inactive .col-duration, 
-        .workday-entry.inactive .col-commute { 
-            opacity: 0.35; filter: grayscale(100%); pointer-events: none; 
-        }
+        .workday-entry.inactive .col-times, .workday-entry.inactive .col-duration, .workday-entry.inactive .col-commute { opacity: 0.35; filter: grayscale(100%); pointer-events: none; }
 
         .toast-save { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 10px 16px; border-radius: 999px; font-size: 13px; opacity: 0; transition: opacity 0.25s ease; pointer-events: none; z-index: 3000; }
         .toast-save.show { opacity: 0.92; }
@@ -207,22 +164,18 @@
             body { padding: 10px; }
             .upload-section { padding: 14px 12px; }
             .config-container, .stats-wrap, .calendar-wrap { padding-left: 8px; padding-right: 8px; }
-
             .workday-entry { padding: 12px 6px; gap: 6px; font-size: 13px; }
             .col-date { width: 75px; font-size: 12px; }
             .col-status, .col-duration { display: none; }
             .col-times { width: 100px; font-size: 12px; }
             .col-commute { width: 90px; font-size: 11px; padding-left: 6px; border-left: none; }
             .col-controls { width: 100px; margin-left: auto; }
-
             .status-select { font-size: 12px; padding: 5px 2px; }
             .action-btn { padding: 5px 5px; min-width: 28px; font-size: 12px; }
-
             .time-row { align-items: flex-start; flex-direction: column; gap: 2px; }
-            .time-display, .time-input { min-width: 100%; width: 100%; font-size: 12px; }
+            .time-wrapper { width: 100%; }
             .mobile-subline { display: block; }
             .details-panel, .holiday-indicator { padding-left: 12px; }
-            
             .trace-legend { flex-direction: column; gap: 8px; align-items: flex-start; }
         }
     </style>
@@ -245,6 +198,11 @@
                 <input type="file" id="csvFile" class="file-input" accept=".csv" />
                 <label for="csvFile" class="file-input-label">📊 CSV laden</label>
             </div>
+            
+            <div class="file-input-wrapper">
+                <input type="file" id="importFile" class="file-input" accept=".json" />
+                <label for="importFile" class="file-input-label btn-secondary">📂 Import</label>
+            </div>
             <button class="btn btn-secondary" onclick="exportData()">💾 Export</button>
             <button class="btn btn-danger" onclick="resetAll()">🗑️ Reset</button>
 
@@ -259,10 +217,7 @@
                 </div>
                 <div class="config-content">
                     <div class="config-grid">
-                        <div class="config-group">
-                            <label>Adresse / Name</label>
-                            <input type="text" id="wpAddr" placeholder="z. B. Forschungszentrum Garching" />
-                        </div>
+                        <div class="config-group"><label>Adresse / Name</label><input type="text" id="wpAddr" placeholder="z. B. Forschungszentrum Garching" /></div>
                         <div class="config-group"><label>Breitengrad</label><input type="number" id="wpLat" step="0.000001" onchange="autoSave('wp')" /></div>
                         <div class="config-group"><label>Längengrad</label><input type="number" id="wpLon" step="0.000001" onchange="autoSave('wp')" /></div>
                         <div class="config-group"><label>Radius (m)</label><input type="number" id="wpRad" step="1" onchange="autoSave('wp')" /></div>
@@ -347,7 +302,7 @@
 
         <div class="footer">
             <div class="footer-info">
-                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.4</a></p>
+                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.5</a></p>
                 <p>Entwickelt von <b>Sebastian Rößer</b></p>
                 <p>
                     <a href="https://github.com/basecore/arbeitszeit-tracker" target="_blank">GitHub Projekt</a> |
@@ -357,7 +312,6 @@
         </div>
     </div>
 
-    <!-- Modals -->
     <div class="modal" id="traceModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -396,87 +350,55 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        const DEFAULT_CFG = {
-            wp: { lat: 48.26134, lon: 11.67175, rad: 100, hours: 7, break: 30, addr: "Forschungszentrum Garching" },
-            home: { lat: 48.13743, lon: 11.57549, rad: 100, addr: "Rathaus München" },
-            tz: { dayOff: 0, hourOff: 0, mode: "auto" }
-        };
-
+        const DEFAULT_CFG = { wp: { lat: 48.26134, lon: 11.67175, rad: 100, hours: 7, break: 30, addr: "Forschungszentrum Garching" }, home: { lat: 48.13743, lon: 11.57549, rad: 100, addr: "Rathaus München" }, tz: { dayOff: 0, hourOff: 0, mode: "auto" } };
         const defaultHolidays = {
-            "2026-01-01": "Neujahr", "2026-01-06": "Hl. 3 Könige", "2026-04-03": "Karfreitag",
-            "2026-04-06": "Ostermontag", "2026-05-01": "Tag der Arbeit", "2026-05-14": "Himmelfahrt",
-            "2026-05-25": "Pfingstmontag", "2026-06-04": "Fronleichnam", "2026-08-15": "Mariä Himmelfahrt",
-            "2026-10-03": "Tag der Dt. Einheit", "2026-11-01": "Allerheiligen", "2026-12-25": "1. Weihnachtstag",
-            "2026-12-26": "2. Weihnachtstag"
+            "2026-01-01": "Neujahr", "2026-01-06": "Hl. 3 Könige", "2026-04-03": "Karfreitag", "2026-04-06": "Ostermontag", "2026-05-01": "Tag der Arbeit", "2026-05-14": "Himmelfahrt",
+            "2026-05-25": "Pfingstmontag", "2026-06-04": "Fronleichnam", "2026-08-15": "Mariä Himmelfahrt", "2026-10-03": "Tag der Dt. Einheit", "2026-11-01": "Allerheiligen", "2026-12-25": "1. Weihnachtstag", "2026-12-26": "2. Weihnachtstag"
         };
 
         let cfg = structuredClone(DEFAULT_CFG), activeHolidays = {}, workData = {}, trackData = {}, jsonAssignments = {}, curMonth = new Date(), editModeDays = {};
         let mapWp, mapHome, wpMarker, homeMarker, wpCircle, homeCircle, traceMap, traceLayerGroup, progressTimer = null;
 
-        function showToast(msg = "Gespeichert") {
-            const el = document.getElementById("toastSave"); el.textContent = msg; el.classList.add("show");
-            clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("show"), 1500);
-        }
-
-        function toggleSection(id) {
-            document.getElementById(id).classList.toggle("collapsed");
-            setTimeout(() => { if (id === 'sec-wp' && mapWp) mapWp.invalidateSize(); if (id === 'sec-home' && mapHome) mapHome.invalidateSize(); }, 100);
-        }
-
-        function collapseConfigs() {
-            document.getElementById('sec-wp').classList.add('collapsed');
-            document.getElementById('sec-home').classList.add('collapsed');
-            document.getElementById('sec-misc').classList.add('collapsed');
-        }
-
+        function showToast(msg = "Gespeichert") { const el = document.getElementById("toastSave"); el.textContent = msg; el.classList.add("show"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("show"), 1500); }
+        function toggleSection(id) { document.getElementById(id).classList.toggle("collapsed"); setTimeout(() => { if (id === 'sec-wp' && mapWp) mapWp.invalidateSize(); if (id === 'sec-home' && mapHome) mapHome.invalidateSize(); }, 100); }
+        function collapseConfigs() { document.getElementById('sec-wp').classList.add('collapsed'); document.getElementById('sec-home').classList.add('collapsed'); document.getElementById('sec-misc').classList.add('collapsed'); }
         function fmtTime(ts) { return !ts ? "--:--" : new Date(ts).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }); }
         function timeToInput(ts) { if (!ts) return ""; const d = new Date(ts); return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"); }
         function fmtDurationHours(h) { if (typeof h !== "number" || isNaN(h)) return "--:--"; const m = Math.round(h * 60), a = Math.abs(m); return (m < 0 ? "-" : "") + Math.floor(a/60) + ":" + String(a%60).padStart(2,"0"); }
         function getGermanDateString(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
-
-        function haversine(lat1, lon1, lat2, lon2) {
-            const R = 6371000, toRad = x => x * Math.PI / 180, dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
-            const a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)*Math.sin(dLon/2);
-            return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        }
+        function haversine(lat1, lon1, lat2, lon2) { const R = 6371000, toRad = x => x * Math.PI / 180, dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1); const a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)*Math.sin(dLon/2); return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); }
         function getDist(l1, ln1, l2, ln2) { return haversine(l1, ln1, l2, ln2); }
-        function getPathLen(pts, s, e) {
-            if (!pts || pts.length < 2) return 0;
-            let len = 0, dir = s <= e ? 1 : -1;
-            for (let i = s; i !== e; i += dir) { if (!pts[i] || !pts[i+dir]) break; len += getDist(pts[i].lat, pts[i].lon, pts[i+dir].lat, pts[i+dir].lon); }
-            return len / 1000;
-        }
-
-        function startProgress() {
-            const b = document.getElementById("progressFill"); let v = 10; b.style.width = v + "%"; clearInterval(progressTimer);
-            progressTimer = setInterval(() => { v = Math.min(v + 7, 90); b.style.width = v + "%"; }, 120);
-        }
+        function getPathLen(pts, s, e) { if (!pts || pts.length < 2) return 0; let len = 0, dir = s <= e ? 1 : -1; for (let i = s; i !== e; i += dir) { if (!pts[i] || !pts[i+dir]) break; len += getDist(pts[i].lat, pts[i].lon, pts[i+dir].lat, pts[i+dir].lon); } return len / 1000; }
+        
+        function startProgress() { const b = document.getElementById("progressFill"); let v = 10; b.style.width = v + "%"; clearInterval(progressTimer); progressTimer = setInterval(() => { v = Math.min(v + 7, 90); b.style.width = v + "%"; }, 120); }
         function finishProgress() { clearInterval(progressTimer); document.getElementById("progressFill").style.width = "100%"; setTimeout(() => document.getElementById("progressFill").style.width = "0%", 500); }
 
-        function getStLabel(st) { const m = { "work":"Büro", "homeoffice":"Home", "vacation":"Urlaub", "free":"Frei", "holiday":"Feiertag" }; return m[st] || "N.A."; }
+        function getStLabel(st) { const m = { "work":"Büro", "homeoffice":"Home", "vacation":"Urlaub", "free":"Frei", "holiday":"Feiertag", "na":"N.A." }; return m[st] || "N.A."; }
         function getStatusClass(st) { return "status-" + (st || "na"); }
         function hasTrace(d) { return Array.isArray(trackData[d]) && trackData[d].length > 1; }
 
         function loadHolidays() { const s = localStorage.getItem("my_holidays"); if (s) { try { activeHolidays = JSON.parse(s); return; } catch {} } activeHolidays = structuredClone(defaultHolidays); }
-        function saveHolidays() {
-            try { activeHolidays = document.getElementById("holidayEditor").value.trim() ? JSON.parse(document.getElementById("holidayEditor").value.trim()) : {}; localStorage.setItem("my_holidays", JSON.stringify(activeHolidays)); closeHolidayEditor(); renderCal(); showToast("Feiertage gespeichert"); }
-            catch (e) { alert("Fehler im JSON-Format."); }
-        }
+        function saveHolidays() { try { activeHolidays = document.getElementById("holidayEditor").value.trim() ? JSON.parse(document.getElementById("holidayEditor").value.trim()) : {}; localStorage.setItem("my_holidays", JSON.stringify(activeHolidays)); closeHolidayEditor(); renderCal(); showToast("Feiertage gespeichert"); } catch (e) { alert("Fehler im JSON-Format."); } }
         function openHolidayEditor() { document.getElementById("holidayEditor").value = JSON.stringify(activeHolidays, null, 2); document.getElementById("holidayModal").style.display = "block"; }
         function closeHolidayEditor() { document.getElementById("holidayModal").style.display = "none"; }
 
-        function loadSettings() {
-            const s = localStorage.getItem("my_cfg");
-            if (s) { try { const st = JSON.parse(s); cfg = { wp: {...DEFAULT_CFG.wp, ...(st.wp||{})}, home: {...DEFAULT_CFG.home, ...(st.home||{})}, tz: {...DEFAULT_CFG.tz, ...(st.tz||{})} }; } catch { cfg = structuredClone(DEFAULT_CFG); } }
+        function setUIFromCfg() {
             ['wpLat','wpLon','wpRad','wpHours','wpBreak','wpAddr','homeLat','homeLon','homeRad','homeAddr','dayOffset','hourOffset','tzMode'].forEach(id => {
                 const k = id.replace('wp','').replace('home','').toLowerCase();
                 if(id.startsWith('wp')) document.getElementById(id).value = cfg.wp[k === 'addr' ? 'addr' : (k||id)] || '';
                 else if(id.startsWith('home')) document.getElementById(id).value = cfg.home[k === 'addr' ? 'addr' : (k||id)] || '';
                 else document.getElementById(id).value = cfg.tz[id] || '';
             });
+            document.getElementById("jsonConfig").value = JSON.stringify(jsonAssignments, null, 2);
+        }
+
+        function loadSettings() {
+            const s = localStorage.getItem("my_cfg");
+            if (s) { try { const st = JSON.parse(s); cfg = { wp: {...DEFAULT_CFG.wp, ...(st.wp||{})}, home: {...DEFAULT_CFG.home, ...(st.home||{})}, tz: {...DEFAULT_CFG.tz, ...(st.tz||{})} }; } catch { cfg = structuredClone(DEFAULT_CFG); } }
             try { workData = JSON.parse(localStorage.getItem("workData")) || {}; } catch { workData = {}; }
             try { trackData = JSON.parse(localStorage.getItem("trackData")) || {}; } catch { trackData = {}; }
-            try { jsonAssignments = JSON.parse(localStorage.getItem("jsonAssignments")) || {}; document.getElementById("jsonConfig").value = JSON.stringify(jsonAssignments, null, 2); } catch {}
+            try { jsonAssignments = JSON.parse(localStorage.getItem("jsonAssignments")) || {}; } catch {}
+            setUIFromCfg();
         }
 
         function saveCfg() {
@@ -504,8 +426,7 @@
 
         async function searchAddress(t) {
             const q = document.getElementById(t === "wp" ? "wpAddr" : "homeAddr").value.trim(); if (!q) return alert("Bitte eine Adresse eingeben.");
-            try {
-                const res = await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=" + encodeURIComponent(q)); const data = await res.json();
+            try { const res = await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=" + encodeURIComponent(q)); const data = await res.json();
                 if (!data.length) return alert("Keine Adresse gefunden.");
                 document.getElementById(t === "wp" ? "wpLat" : "homeLat").value = parseFloat(data[0].lat).toFixed(6); document.getElementById(t === "wp" ? "wpLon" : "homeLon").value = parseFloat(data[0].lon).toFixed(6); autoSave(t);
             } catch { alert("Fehler bei Adresssuche."); }
@@ -513,13 +434,13 @@
 
         async function reverseLookup(t) {
             const lat = document.getElementById(t === "wp" ? "wpLat" : "homeLat").value, lon = document.getElementById(t === "wp" ? "wpLon" : "homeLon").value;
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`); const data = await res.json();
+            try { const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`); const data = await res.json();
                 if (data.display_name) { document.getElementById(t === "wp" ? "wpAddr" : "homeAddr").value = data.display_name; autoSave(t); }
             } catch {}
         }
 
         function initMaps() {
+            if(mapWp) mapWp.remove(); if(mapHome) mapHome.remove();
             mapWp = L.map("mapWp").setView([cfg.wp.lat, cfg.wp.lon], 14); mapHome = L.map("mapHome").setView([cfg.home.lat, cfg.home.lon], 14);
             L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(mapWp); L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(mapHome);
             mapWp.on('click', async e => { document.getElementById("wpLat").value = e.latlng.lat.toFixed(6); document.getElementById("wpLon").value = e.latlng.lng.toFixed(6); autoSave("wp"); await reverseLookup("wp"); });
@@ -542,18 +463,14 @@
             }
         }
 
-        function normalizeTimestamp(r) {
-            if (!r) return null; const d = new Date(r); if (!isNaN(d)) return d.getTime();
-            const d2 = new Date(r.replace(" ", "T")); return !isNaN(d2) ? d2.getTime() : null;
-        }
+        function normalizeTimestamp(r) { if (!r) return null; const d = new Date(r); if (!isNaN(d)) return d.getTime(); const d2 = new Date(r.replace(" ", "T")); return !isNaN(d2) ? d2.getTime() : null; }
 
         function parseGPX(txt) {
             const pts = [];
             new DOMParser().parseFromString(txt, "application/xml").querySelectorAll("trkpt").forEach(pt => {
                 const lat = parseFloat(pt.getAttribute("lat")), lon = parseFloat(pt.getAttribute("lon")), tNode = pt.querySelector("time");
                 if (Number.isFinite(lat) && Number.isFinite(lon) && tNode) { const ts = normalizeTimestamp(tNode.textContent.trim()); if (ts) pts.push({ lat, lon, time: ts }); }
-            });
-            return splitPointsByDay(pts.sort((a, b) => a.time - b.time));
+            }); return splitPointsByDay(pts.sort((a, b) => a.time - b.time));
         }
 
         function parseCSVLine(line, delim=',') {
@@ -571,8 +488,7 @@
                 const lat = parseFloat(r['latitude']||r['lat']||r['latitude(deg)']), lon = parseFloat(r['longitude']||r['lon']||r['lng']||r['longitude(deg)']);
                 let tsStr = r['time']||r['date time']||r['datetime']||r['timestamp']; if (!tsStr && r['date']) tsStr = r['date'] + " " + (r['time']||'');
                 const ts = normalizeTimestamp(tsStr); if (Number.isFinite(lat) && Number.isFinite(lon) && ts) pts.push({ lat, lon, time: ts });
-            }
-            return splitPointsByDay(pts.sort((a, b) => a.time - b.time));
+            } return splitPointsByDay(pts.sort((a, b) => a.time - b.time));
         }
 
         function splitPointsByDay(pts) {
@@ -608,15 +524,30 @@
         }
 
         function finishLoad(gData) {
+            let latestDay = null;
             for (const [dS, pts] of Object.entries(gData)) {
+                if (!latestDay || dS > latestDay) latestDay = dS;
                 const a = analyze(pts);
                 if (a) {
                     const old = workData[dS] || {};
-                    workData[dS] = { ...old, day: dS, arr: a.arr, dep: a.dep, net: a.net, breakMin: a.breakMin, visits: a.visits, commute: a.commute, totalKm: a.totalKm, status: old.status || (activeHolidays[dS] ? "holiday" : ([0,6].includes(new Date(dS+"T12:00").getDay()) ? "free" : "na")) };
+                    let newStatus = old.status;
+                    if (!newStatus) {
+                        if (activeHolidays[dS]) newStatus = "holiday";
+                        else if ([0,6].includes(new Date(dS+"T12:00").getDay())) newStatus = "free";
+                        else if (a.visits && a.visits.length > 0) newStatus = "work";
+                        else newStatus = "na";
+                    }
+                    workData[dS] = { ...old, day: dS, arr: a.arr, dep: a.dep, net: a.net, breakMin: a.breakMin, visits: a.visits, commute: a.commute, totalKm: a.totalKm, status: newStatus };
                     trackData[dS] = pts.map(p => ({ lat: p.lat, lon: p.lon, time: p.time }));
                 }
             }
             localStorage.setItem("workData", JSON.stringify(workData)); localStorage.setItem("trackData", JSON.stringify(trackData));
+            
+            if (latestDay) {
+                const p = latestDay.split("-");
+                curMonth = new Date(parseInt(p[0]), parseInt(p[1]) - 1, 1);
+            }
+            
             collapseConfigs(); renderCal(); calcStats(); finishProgress(); showToast("Datei analysiert");
         }
 
@@ -637,10 +568,18 @@
                 }
 
                 const tHtml = !isEdit ? 
-                    `<div class="time-row"><span>Kommen</span><div class="time-display">${fmtTime(data.arr)}</div></div>
-                     <div class="time-row"><span>Gehen</span><div style="width:100%;"><div class="time-display">${fmtTime(data.dep)}</div><div class="mobile-subline leave-worktime">${durMob}</div></div></div>` :
-                    `<div class="time-row"><span>Kommen</span><input type="time" id="in_${dS}" value="${timeToInput(data.arr)}" class="time-input" /></div>
-                     <div class="time-row"><span>Gehen</span><div style="width:100%;"><input type="time" id="out_${dS}" value="${timeToInput(data.dep)}" class="time-input" /><div class="mobile-subline leave-worktime">${durMob}</div></div></div>`;
+                    `<div class="time-row">
+                        <span>Kommen</span><div class="time-wrapper"><div class="time-display">${fmtTime(data.arr)}</div></div>
+                     </div>
+                     <div class="time-row">
+                        <span>Gehen</span><div class="time-wrapper"><div class="time-display">${fmtTime(data.dep)}</div><div class="mobile-subline leave-worktime">${durMob}</div></div>
+                     </div>` :
+                    `<div class="time-row">
+                        <span>Kommen</span><div class="time-wrapper"><input type="time" id="in_${dS}" value="${timeToInput(data.arr)}" class="time-input" /></div>
+                     </div>
+                     <div class="time-row">
+                        <span>Gehen</span><div class="time-wrapper"><input type="time" id="out_${dS}" value="${timeToInput(data.dep)}" class="time-input" /><div class="mobile-subline leave-worktime">${durMob}</div></div>
+                     </div>`;
 
                 let cTxt = "";
                 if (data.commute && (data.commute.toW?.k > 0 || data.commute.toH?.k > 0)) {
@@ -662,12 +601,12 @@
                         <div class="col-commute">${cTxt || "—"}</div>
                         <div class="col-controls">
                             <select class="status-select" onchange="setStatus('${dS}', this.value)">
-                                <option value="na" ${st === "na" ? "selected" : ""}>N.A.</option>
                                 <option value="work" ${st === "work" ? "selected" : ""}>Büro</option>
                                 <option value="homeoffice" ${st === "homeoffice" ? "selected" : ""}>Home</option>
                                 <option value="vacation" ${st === "vacation" ? "selected" : ""}>Urlaub</option>
                                 <option value="free" ${st === "free" ? "selected" : ""}>Frei</option>
                                 <option value="holiday" ${st === "holiday" ? "selected" : ""}>Feiertag</option>
+                                <option value="na" ${st === "na" ? "selected" : ""}>N.A.</option>
                             </select>
                             <div class="btn-row">
                                 ${hasTrace(dS) ? `<button class="action-btn btn-trace" onclick="showTrace('${dS}')" title="Route">🗺️</button>` : ""}
@@ -737,30 +676,42 @@
                 let cC = getColor(pts[0].time), cL = [[pts[0].lat, pts[0].lon]];
                 for (let i = 1; i < pts.length; i++) {
                     const p = pts[i], nc = getColor(p.time); cL.push([p.lat, p.lon]);
-                    if (nc !== cC || i === pts.length - 1) {
-                        L.polyline(cL, { color: cC, weight: 5, opacity: 0.8 }).addTo(traceLayerGroup);
-                        cL = [[p.lat, p.lon]]; cC = nc;
-                    }
+                    if (nc !== cC || i === pts.length - 1) { L.polyline(cL, { color: cC, weight: 5, opacity: 0.8 }).addTo(traceLayerGroup); cL = [[p.lat, p.lon]]; cC = nc; }
                 }
 
                 L.marker([pts[0].lat, pts[0].lon]).addTo(traceLayerGroup).bindPopup("Start");
                 L.marker([pts[pts.length - 1].lat, pts[pts.length - 1].lon]).addTo(traceLayerGroup).bindPopup("Ende");
                 L.circle([cfg.wp.lat, cfg.wp.lon], { radius: cfg.wp.rad, color: "#006400", fillColor: "#32cd32", fillOpacity: 0.15 }).addTo(traceLayerGroup);
                 L.circle([cfg.home.lat, cfg.home.lon], { radius: cfg.home.rad, color: "#003c7d", fillColor: "#4ea3ff", fillOpacity: 0.15 }).addTo(traceLayerGroup);
-
-                // Add small fallback bounds logic in case traceLayerGroup bounds fail
-                const lls = pts.map(p => [p.lat, p.lon]);
-                traceMap.fitBounds(L.latLngBounds(lls), { padding: [20, 20] });
-                traceMap.invalidateSize();
+                
+                const lls = pts.map(p => [p.lat, p.lon]); traceMap.fitBounds(L.latLngBounds(lls), { padding: [20, 20] }); traceMap.invalidateSize();
             }, 100);
         }
 
         function exportData() { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ cfg, holidays: activeHolidays, assignments: jsonAssignments, workData, trackData }, null, 2)], { type: "application/json" })); a.download = "arbeitszeit-export.json"; a.click(); }
+        
+        function handleImport(file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const d = JSON.parse(e.target.result);
+                    if (d.cfg) cfg = d.cfg; if (d.holidays) activeHolidays = d.holidays; if (d.assignments) jsonAssignments = d.assignments;
+                    if (d.workData) workData = d.workData; if (d.trackData) trackData = d.trackData;
+                    
+                    localStorage.setItem("my_cfg", JSON.stringify(cfg)); localStorage.setItem("my_holidays", JSON.stringify(activeHolidays)); localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments));
+                    localStorage.setItem("workData", JSON.stringify(workData)); localStorage.setItem("trackData", JSON.stringify(trackData));
+                    
+                    setUIFromCfg(); initMaps(); renderCal(); calcStats(); showToast("Backup erfolgreich importiert");
+                } catch { alert("Ungültige Export-Datei."); }
+            };
+            reader.readAsText(file);
+        }
 
         document.addEventListener("DOMContentLoaded", () => {
             loadHolidays(); loadSettings(); initMaps(); renderCal(); calcStats();
             document.getElementById("gpxFile").addEventListener("change", async e => { if (e.target.files[0]) { startProgress(); try { finishLoad(parseGPX(await e.target.files[0].text())); } catch { finishProgress(); alert("Fehler GPX"); } } e.target.value = ""; });
             document.getElementById("csvFile").addEventListener("change", async e => { if (e.target.files[0]) { startProgress(); try { finishLoad(parseCSV(await e.target.files[0].text())); } catch { finishProgress(); alert("Fehler CSV"); } } e.target.value = ""; });
+            document.getElementById("importFile").addEventListener("change", e => { if (e.target.files[0]) { handleImport(e.target.files[0]); } e.target.value = ""; });
         });
     </script>
 </body>
