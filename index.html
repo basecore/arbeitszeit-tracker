@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS Arbeitszeit-Tracker v1.2</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+            padding-bottom: 100px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #006400, #32cd32);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .header h1 { margin: 0; font-size: 2.0em; font-weight: 300; }
+        
+        .upload-section {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: 5px 10px;
+        }
+        .file-input { display: none; }
+        .file-input-label {
+            background: #006400;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .file-input-label:hover { background: #32cd32; transform: translateY(-2px); }
+        
+        /* Config Styles */
+        .config-container { padding: 0 20px; }
+        
+        .config-section {
+            background: #e6f5e6;
+            border: 1px solid #b3d7b3;
+            border-radius: 8px;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .config-section.home { background: #e6f0fa; border-color: #b3d1e6; }
+        
+        .config-header {
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.03);
+        }
+        .config-header h3 { margin: 0; font-size: 1.1em; color: #004d00; }
+        .config-section.home .config-header h3 { color: #003366; }
+        
+        .config-content { padding: 20px; display: block; }
+        .config-section.collapsed .config-content { display: none; }
+        .toggle-icon { font-weight: bold; }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .config-group { display: flex; flex-direction: column; gap: 5px; }
+        .config-group label { font-weight: 500; font-size: 13px; color: #555; }
+        .config-group input, .config-group select {
+            padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px;
+        }
+        
+        .address-display {
+            font-size: 12px; color: #666; font-style: italic; 
+            background: rgba(255,255,255,0.5); padding: 5px; border-radius: 4px; min-height: 20px;
+        }
+
+        .map-container { height: 250px; width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #ccc; }
+        .map-hint { font-size: 11px; color: #666; margin-top: 5px; font-style: italic; }
+
+        /* Settings Section */
+        .settings-section {
+            background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px;
+            margin: 15px 0; overflow: hidden;
+        }
+        .settings-header {
+            padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between;
+            align-items: center; background: rgba(0,0,0,0.03);
+        }
+        .settings-header h4 { margin: 0; color: #856404; font-size: 1.1em; }
+        .settings-section.collapsed .config-content { display: none; }
+
+        .debug-info {
+            background: #333; color: #0f0; font-family: monospace; 
+            padding: 15px; margin: 15px 20px; border-radius: 5px;
+            white-space: pre-wrap; font-size: 11px; display: none;
+        }
+
+        .worktime-analysis { padding: 20px; }
+        .worktime-calendar {
+            background: white; border: 1px solid #ddd; border-radius: 8px;
+            overflow: hidden; margin-bottom: 20px;
+        }
+        
+        .calendar-controls {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 20px; background: #f8f9fa; border-bottom: 1px solid #ddd;
+        }
+        .nav-btn {
+            background: #6c757d; color: white; border: none; padding: 6px 12px;
+            border-radius: 4px; cursor: pointer; font-size: 13px; margin-left: 5px;
+        }
+        .nav-btn.primary { background: #007bff; }
+        .nav-btn.primary:hover { background: #0056b3; }
+
+        /* Workday Entry */
+        .workday-entry {
+            display: flex; align-items: flex-start; padding: 10px 15px;
+            border-bottom: 1px solid #eee; font-size: 13px;
+        }
+        .workday-entry:hover { background: #f9f9f9; }
+        
+        .col-date { width: 110px; font-weight: 600; padding-top: 5px; }
+        .col-status { width: 90px; margin-right: 10px; padding-top: 5px; }
+        
+        [class^="status-"] {
+            padding: 3px 8px; border-radius: 10px; font-size: 11px;
+            display: block; text-align: center; color: white;
+        }
+        .status-work { background: #28a745; }
+        .status-homeoffice { background: #ffc107; color: #333; }
+        .status-holiday { background: #dc3545; }
+        .status-vacation { background: #fd7e14; }
+        .status-na { background: #6c757d; }
+
+        .col-times { 
+            width: 160px; display: flex; flex-direction: column; gap: 6px; 
+            color: #555; margin-right: 10px;
+        }
+        .time-row { display: flex; justify-content: space-between; align-items: center; height: 24px; }
+        
+        .time-display {
+            padding: 2px 6px; background: #f8f9fa; border: 1px solid #ddd;
+            border-radius: 4px; width: 60px; text-align: center; cursor: pointer;
+            font-family: monospace; font-weight: bold;
+        }
+        .time-display:hover { background: #e2e6ea; }
+        .time-display.copied { background: #d4edda; border-color: #c3e6cb; }
+
+        .time-input {
+            width: 65px; padding: 1px; font-family: monospace; font-size: 12px;
+            border: 1px solid #007bff; border-radius: 3px;
+        }
+
+        .col-duration { width: 100px; text-align: center; margin: 0 10px; padding-top: 5px; }
+        .duration-header { font-size: 10px; text-transform: uppercase; color: #777; margin-bottom: 4px; display:block; }
+        
+        .work-duration {
+            padding: 4px; border-radius: 4px; font-weight: bold; 
+            display: inline-block; min-width: 80px; font-size: 12px;
+        }
+        .work-duration.overtime { background: #e8f5e8; border: 1px solid #28a745; color: #28a745; }
+        .work-duration.undertime { background: #f8d7da; border: 1px solid #dc3545; color: #dc3545; }
+
+        .col-commute {
+            flex: 1; display: flex; flex-direction: column; gap: 4px;
+            font-size: 11px; color: #666; padding-left: 10px; border-left: 1px solid #eee; justify-content: center;
+        }
+
+        .col-controls {
+            width: 150px; display: flex; flex-direction: column; gap: 5px; align-items: flex-end;
+        }
+        
+        .status-select { 
+            width: 100%; padding: 3px; font-size: 11px; 
+            border: 1px solid #ddd; border-radius: 3px;
+            background-color: #fff; color: #333;
+        }
+
+        .btn-row { display: flex; gap: 3px; }
+        .action-btn { border: none; border-radius: 3px; cursor: pointer; padding: 3px 6px; font-size: 12px; color: white; }
+        .btn-trace { background: #6c757d; }
+        .btn-info { background: #17a2b8; }
+        .btn-edit { background: #ffc107; color: #333; }
+        .btn-save { background: #28a745; }
+
+        .details-panel {
+            display: none; width: 100%; background: #f0f8ff; 
+            border-top: 1px solid #dee2e6; padding: 8px 15px; 
+            font-size: 12px; color: #333; margin-left: 110px; margin-bottom: 5px;
+        }
+        .details-panel.show { display: block; }
+
+        .holiday-indicator { width: 100%; background: #fff3cd; font-size: 12px; color: #856404; padding: 4px 15px; }
+
+        /* Stats */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px; margin-top: 20px;
+        }
+        .stat-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center; }
+        .stat-val { font-size: 1.5em; font-weight: bold; color: #006400; }
+        .stat-lbl { font-size: 0.9em; color: #666; margin-top: 5px; }
+        
+        .val-positive { color: #28a745; }
+        .val-negative { color: #dc3545; }
+
+        .copy-notification {
+            position: fixed; top: 20px; right: 20px; background: #28a745;
+            color: white; padding: 10px 20px; border-radius: 4px; z-index: 1000;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .copy-notification.show { opacity: 1; }
+        
+        .toast-save {
+            position: fixed; bottom: 20px; right: 20px; background: #333;
+            color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px;
+            opacity: 0; transition: opacity 0.5s; pointer-events: none; z-index: 3000;
+        }
+        .toast-save.show { opacity: 0.8; }
+
+        .progress-bar { width: 100%; height: 4px; background: #eee; margin-top: 10px; }
+        .progress-fill { height: 100%; background: #006400; width: 0%; transition: width 0.3s; }
+
+        /* Modals */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .modal-close { cursor: pointer; font-size: 1.5em; color: #666; }
+
+        /* Footer */
+        .footer {
+            margin-top: 50px; padding: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 13px;
+        }
+        .version-history {
+            text-align: left; margin: 20px auto; max-width: 800px; background: white; padding: 15px; border-radius: 8px; border: 1px solid #eee; display: none;
+        }
+        .version-entry { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #eee; }
+        .version-date { font-weight: bold; color: #006400; margin-right: 10px; }
+
+        textarea { width: 100%; height: 300px; font-family: monospace; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+    </style>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#006400">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🏢 GPS Arbeitszeit-Tracker</h1>
+        <p>Kompakte Analyse mit Fahrtweg & Zeiterfassung</p>
+    </div>
+
+    <div class="upload-section">
+        <div class="file-input-wrapper">
+            <input type="file" id="gpxFile" class="file-input" accept=".gpx">
+            <label for="gpxFile" class="file-input-label">📍 GPX-Datei laden</label>
+        </div>
+        <div class="file-input-wrapper">
+            <input type="file" id="csvFile" class="file-input" accept=".csv">
+            <label for="csvFile" class="file-input-label">📊 CSV-Datei laden</label>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <div class="config-container">
+        <div class="config-section" id="sec-wp">
+            <div class="config-header" onclick="toggleSection('sec-wp')">
+                <h3>🏢 Arbeitsplatz Konfiguration</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="config-content">
+                <div class="config-grid">
+                    <div class="config-group">
+                        <label>Koordinaten (Lat/Lon)</label>
+                        <div style="display:flex; gap:5px">
+                            <input type="number" id="wpLat" step="0.000001" onchange="autoSave('wp')">
+                            <input type="number" id="wpLon" step="0.000001" onchange="autoSave('wp')">
+                        </div>
+                    </div>
+                    <div class="config-group">
+                        <label>Radius (m)</label>
+                        <input type="number" id="wpRad" onchange="autoSave('wp')">
+                    </div>
+                    <div class="config-group">
+                        <label>Adresse</label>
+                        <div id="wpAddr" class="address-display">Lade...</div>
+                    </div>
+                </div>
+                <div id="mapWp" class="map-container"></div>
+                <div class="map-hint">Klicken Sie auf die Karte, um den Standort zu setzen (speichert automatisch).</div>
+            </div>
+        </div>
+
+        <div class="config-section home" id="sec-home">
+            <div class="config-header" onclick="toggleSection('sec-home')">
+                <h3>🏠 Zuhause Konfiguration</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="config-content">
+                <div class="config-grid">
+                    <div class="config-group">
+                        <label>Koordinaten (Lat/Lon)</label>
+                        <div style="display:flex; gap:5px">
+                            <input type="number" id="homeLat" step="0.000001" onchange="autoSave('home')">
+                            <input type="number" id="homeLon" step="0.000001" onchange="autoSave('home')">
+                        </div>
+                    </div>
+                    <div class="config-group">
+                        <label>Radius (m)</label>
+                        <input type="number" id="homeRad" onchange="autoSave('home')">
+                    </div>
+                    <div class="config-group">
+                        <label>Adresse</label>
+                        <div id="homeAddr" class="address-display">Lade...</div>
+                    </div>
+                </div>
+                <div id="mapHome" class="map-container"></div>
+                <div class="map-hint">Klicken Sie auf die Karte, um den Standort zu setzen (speichert automatisch).</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="config-container">
+        <div class="settings-section collapsed" id="sec-settings">
+            <div class="settings-header" onclick="toggleSection('sec-settings')">
+                <h4>⚙️ Einstellungen, Arbeitszeit & Feiertage</h4>
+                <span class="toggle-icon">▶</span>
+            </div>
+            <div class="config-content">
+                <div class="config-grid" style="border-bottom:1px solid #eee; padding-bottom:15px; margin-bottom:15px;">
+                    <div class="config-group">
+                        <label>Regelarbeitszeit (Std.)</label>
+                        <input type="number" id="wpHours" step="0.5" onchange="autoSave('wp')">
+                    </div>
+                    <div class="config-group">
+                        <label>Pause (Min.)</label>
+                        <input type="number" id="wpBreak" step="15" onchange="autoSave('wp')">
+                    </div>
+                </div>
+
+                <div class="adjustment-controls" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <div class="config-group">
+                        <label>Tag-Offset</label>
+                        <select id="dayOffset" onchange="applyTimezoneSettings()">
+                            <option value="0" selected>0</option>
+                            <option value="-1">-1</option>
+                            <option value="1">+1</option>
+                        </select>
+                    </div>
+                    <div class="config-group">
+                        <label>Std-Offset</label>
+                        <select id="hourOffset" onchange="applyTimezoneSettings()">
+                            <option value="0" selected>0</option>
+                            <option value="-1">-1</option>
+                            <option value="-2">-2</option>
+                            <option value="1">+1</option>
+                            <option value="2">+2</option>
+                        </select>
+                    </div>
+                    <div class="config-group">
+                        <label>Modus</label>
+                        <select id="tzMode" onchange="applyTimezoneSettings()">
+                            <option value="auto">Auto</option>
+                            <option value="manual">Manuell</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-btn" style="background:#007bff; height:32px; margin-top:18px;" onclick="openHolidayEditor()">📅 Feiertage bearbeiten</button>
+                    <button class="action-btn" style="background:#333; height:32px; margin-top:18px;" onclick="toggleDebug()">🐛 Debug</button>
+                </div>
+                <div id="holidayInfo" style="margin-top:10px; font-size:12px; color:#666;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="debugConsole" class="debug-info"></div>
+
+    <div id="analysisArea" class="worktime-analysis" style="display:none;">
+        <div class="worktime-calendar">
+            <div class="calendar-controls">
+                <div style="font-weight:bold; font-size:1.2em;" id="monthLabel">Mai 2025</div>
+                <div>
+                    <button class="nav-btn primary" onclick="recalculate()">🔄 Neuberechnen</button>
+                    <button class="nav-btn" onclick="changeMonth(-1)">‹ Zurück</button>
+                    <button class="nav-btn" onclick="changeMonth(1)">Vor ›</button>
+                    <button class="nav-btn" onclick="exportData()">📤 Export</button>
+                </div>
+            </div>
+            <div id="calendarList"></div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-val" id="stDays">0</div><div class="stat-lbl">Tage</div></div>
+            <div class="stat-card"><div class="stat-val" id="stHrs">0.0</div><div class="stat-lbl">Std (Netto)</div></div>
+            <div class="stat-card"><div class="stat-val" id="stSaldo">0.0</div><div class="stat-lbl">Saldo (Std)</div></div>
+            <div class="stat-card"><div class="stat-val" id="stArr">--:--</div><div class="stat-lbl">Ø Ankunft</div></div>
+            <div class="stat-card"><div class="stat-val" id="stDep">--:--</div><div class="stat-lbl">Ø Abfahrt</div></div>
+            <div class="stat-card"><div class="stat-val" id="stAvgBreak">0.0</div><div class="stat-lbl">Ø Pause (min)</div></div>
+            <div class="stat-card" style="border-top:3px solid #003366"><div class="stat-val" id="stKm">0.0</div><div class="stat-lbl">Km Gesamt</div></div>
+            <div class="stat-card" style="border-top:3px solid #003366"><div class="stat-val" id="stDrive">0.0</div><div class="stat-lbl">Fahrt (h)</div></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div>Kontakt: <strong>Sebastian Rößer</strong> | <a href="mailto:basecore@gmx.de">basecore@gmx.de</a></div>
+        <div style="margin-top:10px;">
+            <a href="#" onclick="document.getElementById('versionHist').style.display='block'; return false;">Version v1.2 - Historie anzeigen</a>
+        </div>
+        <div id="versionHist" class="version-history">
+            <div class="version-entry">
+                <span class="version-date">21.11.2025 - v1.2</span>
+                <ul>
+                    <li><strong>Manuelles Editieren:</strong> Zeiten können nun per Klick auf ✏️ bearbeitet werden.</li>
+                    <li><strong>Berechnung:</strong> Automatische Neuberechnung der Netto-Arbeitszeit beim Speichern manueller Zeiten.</li>
+                    <li>Pausenberechnung bei Mehrfachbuchungen (Zeit zwischen Besuchen).</li>
+                    <li>Gesamt-Saldo und Ø Pausenzeit in Statistik.</li>
+                </ul>
+            </div>
+            <div class="version-entry">
+                <span class="version-date">21.11.2025 - v1.0</span>
+                <ul>
+                    <li>Finales Release mit aufgeräumter Oberfläche.</li>
+                    <li>Feiertage für 2025, 2026, 2027 (Bayern).</li>
+                    <li>Editor für Feiertage.</li>
+                </ul>
+            </div>
+            <button class="action-btn" style="background:#666" onclick="document.getElementById('versionHist').style.display='none'">Schließen</button>
+        </div>
+    </div>
+</div>
+
+<div class="copy-notification" id="copyMsg">📋 Kopiert!</div>
+<div class="toast-save" id="saveToast">💾 Gespeichert</div>
+
+<div id="gpxModal" class="modal" style="display:none;">
+    <div class="modal-content" style="height:80vh;">
+        <div class="modal-header">
+            <h3>GPX Trace</h3>
+            <span class="modal-close" onclick="document.getElementById('gpxModal').style.display='none'">✖</span>
+        </div>
+        <div id="traceMap" style="width:100%; height:100%; min-height:400px; border:1px solid #ccc;"></div>
+    </div>
+</div>
+
+<div id="holidayModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Feiertage Konfigurieren (JSON)</h3>
+            <span class="modal-close" onclick="closeHolidayEditor()">✖</span>
+        </div>
+        <p style="font-size:12px; color:#666;">Bearbeiten Sie die Liste im JSON-Format ("YYYY-MM-DD": "Name").</p>
+        <textarea id="holidayJson"></textarea>
+        <div style="margin-top:10px; text-align:right;">
+            <button class="action-btn" style="background:#6c757d" onclick="closeHolidayEditor()">Abbrechen</button>
+            <button class="action-btn" style="background:#28a745" onclick="saveHolidays()">Speichern & Anwenden</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // --- Configuration & State ---
+    let cfg = {
+        wp: { lat: 49.010949, lon: 12.138058, rad: 100, hours: 7, break: 30 },
+        home: { lat: 49.037889, lon: 12.128024, rad: 100 },
+        tz: { dayOff: 0, hourOff: 0, mode: 'auto' }
+    };
+    
+    // Default Holidays (Bayern 2025-2027)
+    const defaultHolidays = {
+        // 2025
+        '2025-01-01': 'Neujahr', '2025-01-06': 'Hl. 3 Könige', '2025-04-18': 'Karfreitag',
+        '2025-04-21': 'Ostermontag', '2025-05-01': 'Tag d. Arbeit', '2025-05-29': 'Himmelfahrt',
+        '2025-06-09': 'Pfingstmo.', '2025-06-19': 'Fronleichnam', '2025-08-15': 'Mariä Himmelf.',
+        '2025-10-03': 'Dt. Einheit', '2025-11-01': 'Allerheiligen', '2025-12-25': '1. Weih.', '2025-12-26': '2. Weih.',
+        // 2026
+        '2026-01-01': 'Neujahr', '2026-01-06': 'Hl. 3 Könige', '2026-04-03': 'Karfreitag',
+        '2026-04-06': 'Ostermontag', '2026-05-01': 'Tag d. Arbeit', '2026-05-14': 'Himmelfahrt',
+        '2026-05-25': 'Pfingstmo.', '2026-06-04': 'Fronleichnam', '2026-08-15': 'Mariä Himmelf.',
+        '2026-10-03': 'Dt. Einheit', '2026-11-01': 'Allerheiligen', '2026-12-25': '1. Weih.', '2026-12-26': '2. Weih.',
+        // 2027
+        '2027-01-01': 'Neujahr', '2027-01-06': 'Hl. 3 Könige', '2027-03-26': 'Karfreitag',
+        '2027-03-29': 'Ostermontag', '2027-05-01': 'Tag d. Arbeit', '2027-05-06': 'Himmelfahrt',
+        '2027-05-17': 'Pfingstmo.', '2027-05-27': 'Fronleichnam', '2027-08-15': 'Mariä Himmelf.',
+        '2027-10-03': 'Dt. Einheit', '2027-11-01': 'Allerheiligen', '2027-12-25': '1. Weih.', '2027-12-26': '2. Weih.'
+    };
+    
+    let activeHolidays = {}; // Will be loaded
+    let gpsData = [];
+    let workData = {};
+    let curMonth = new Date(); curMonth.setDate(1);
+    
+    let maps = { wp: null, home: null, trace: null };
+    let layers = { wp: [], home: [], trace: null };
+    let editModeDays = {}; // Stores which days are in edit mode
+
+    // --- Initialization ---
+    document.addEventListener('DOMContentLoaded', () => {
+        loadSettings();
+        loadHolidays();
+        initMaps();
+        updateAddr();
+        applyTimezoneSettings();
+    });
+
+    // --- Holiday Management ---
+    function loadHolidays() {
+        const s = localStorage.getItem('my_holidays');
+        if(s) {
+            activeHolidays = JSON.parse(s);
+        } else {
+            activeHolidays = JSON.parse(JSON.stringify(defaultHolidays));
+        }
+    }
+
+    function openHolidayEditor() {
+        document.getElementById('holidayJson').value = JSON.stringify(activeHolidays, null, 4);
+        document.getElementById('holidayModal').style.display = 'flex';
+    }
+
+    function closeHolidayEditor() {
+        document.getElementById('holidayModal').style.display = 'none';
+    }
+
+    function saveHolidays() {
+        try {
+            const txt = document.getElementById('holidayJson').value;
+            activeHolidays = JSON.parse(txt);
+            localStorage.setItem('my_holidays', JSON.stringify(activeHolidays));
+            closeHolidayEditor();
+            showToast();
+            if(gpsData.length) analyze(); // Refresh with new holidays
+        } catch(e) {
+            alert("Fehler beim Parsen des JSON. Bitte Format prüfen.");
+        }
+    }
+
+    // --- Date Logic ---
+    function getGermanDateString(utcDate) {
+        let d;
+        if (cfg.tz.mode === 'manual') {
+            d = new Date(utcDate.getTime() + (cfg.tz.hourOff * 3600000));
+        } else {
+            try { 
+                d = new Date(utcDate.getTime()); 
+                d.setHours(d.getHours() + cfg.tz.hourOff);
+            } catch(e) { d = new Date(utcDate.getTime()); }
+        }
+        d.setDate(d.getDate() + cfg.tz.dayOff);
+        
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    }
+    function fmtTime(d) { 
+        if(!d) return '--:--';
+        return d.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'});
+    }
+    function timeToInput(d) {
+        if(!d) return "";
+        return d.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'});
+    }
+
+    // --- Core Analysis ---
+    function analyze() {
+        // Collapse configs
+        document.getElementById('sec-wp').classList.add('collapsed');
+        document.getElementById('sec-home').classList.add('collapsed');
+        document.getElementById('sec-settings').classList.add('collapsed');
+        document.querySelectorAll('.toggle-icon').forEach(el => el.textContent = '▶');
+        
+        document.getElementById('analysisArea').style.display = 'block';
+
+        workData = {};
+        const pointsByDay = {};
+
+        // 1. Grouping
+        gpsData.forEach(p => {
+            const key = getGermanDateString(p.time);
+            if(!pointsByDay[key]) pointsByDay[key] = [];
+            pointsByDay[key].push(p);
+        });
+
+        // 2. Processing
+        Object.keys(pointsByDay).forEach(dayStr => {
+            const pts = pointsByDay[dayStr].sort((a,b) => a.time - b.time);
+            let visits = [];
+            let inWork = false;
+            let visitStart = null;
+            
+            pts.forEach((p, i) => {
+                const d = getDist(p.lat, p.lon, cfg.wp.lat, cfg.wp.lon);
+                if(d <= cfg.wp.rad) {
+                    if(!inWork) {
+                        if(!visitStart || (p.time - pts[visitStart.idxEnd].time > 600000)) {
+                            visitStart = { tStart: p.time, idxStart: i, tEnd: p.time, idxEnd: i };
+                            visits.push(visitStart);
+                        }
+                        inWork = true;
+                    }
+                    if(visitStart) { visitStart.tEnd = p.time; visitStart.idxEnd = i; }
+                } else {
+                    inWork = false;
+                }
+            });
+
+            if(visits.length > 0) {
+                const first = visits[0];
+                const last = visits[visits.length-1];
+                
+                const comm = calcCommute(pts, first.idxStart, last.idxEnd);
+                
+                const arr = round15(first.tStart, true);
+                const dep = round15(last.tEnd, false);
+                const net = Math.max(0, (dep - arr)/3600000 - (cfg.wp.break/60));
+
+                workData[dayStr] = {
+                    status: 'work',
+                    arr: arr, dep: dep, net: net,
+                    visits: visits, commute: comm
+                };
+            }
+        });
+        
+        renderCal();
+        calcStats();
+        updateDebug();
+    }
+
+    function calcCommute(pts, iStart, iEnd) {
+        let res = { toW: {k:0, m:0}, toH: {k:0, m:0} };
+        
+        let idxHomeExit = -1;
+        for(let i=iStart; i>=0; i--) {
+            if(getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) {
+                idxHomeExit = i; break;
+            }
+        }
+        if(idxHomeExit > -1) {
+            res.toW.k = getPathLen(pts, idxHomeExit, iStart);
+            res.toW.m = (pts[iStart].time - pts[idxHomeExit].time)/60000;
+        }
+        
+        let idxHomeEnter = -1;
+        for(let i=iEnd; i<pts.length; i++) {
+            if(getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) {
+                idxHomeEnter = i; break;
+            }
+        }
+        if(idxHomeEnter > -1) {
+            res.toH.k = getPathLen(pts, iEnd, idxHomeEnter);
+            res.toH.m = (pts[idxHomeEnter].time - pts[iEnd].time)/60000;
+        }
+        return res;
+    }
+
+    function getPathLen(pts, i1, i2) {
+        let d=0;
+        for(let k=i1; k<i2; k++) d += getDist(pts[k].lat, pts[k].lon, pts[k+1].lat, pts[k+1].lon);
+        return d/1000;
+    }
+
+    function recalculate() {
+        if(gpsData.length === 0) { alert("Keine Daten geladen."); return; }
+        analyze();
+        alert("Berechnung aktualisiert.");
+    }
+
+    // --- Rendering ---
+    function renderCal() {
+        const list = document.getElementById('calendarList');
+        list.innerHTML = '';
+        const y = curMonth.getFullYear(), m = curMonth.getMonth();
+        document.getElementById('monthLabel').textContent = curMonth.toLocaleDateString('de-DE', {month:'long', year:'numeric'});
+        const numDays = new Date(y, m+1, 0).getDate();
+
+        for(let d=numDays; d>=1; d--) {
+            const dayStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            const dateObj = new Date(y, m, d);
+            
+            const data = workData[dayStr] || {};
+            const holName = activeHolidays[dayStr];
+            const isWe = (dateObj.getDay()===0 || dateObj.getDay()===6);
+            
+            let st = 'na';
+            if(holName) st = 'holiday';
+            else if(data.status) st = data.status;
+            else if(isWe) st = 'na';
+
+            const div = document.createElement('div');
+            
+            // Determine Display vs Edit
+            const isEdit = editModeDays[dayStr];
+
+            // Times & Calculations
+            let tA = '--:--', tD = '--:--', dur = '--:--', cls = '';
+            let tIn = '', tOut = ''; // for inputs
+
+            if(data.arr) { tA = fmtTime(data.arr); tIn = timeToInput(data.arr); }
+            if(data.dep) { tD = fmtTime(data.dep); tOut = timeToInput(data.dep); }
+            
+            if(typeof data.net === 'number') {
+                const minNet = Math.round(data.net*60);
+                const minTarget = Math.round(cfg.wp.hours * 60);
+                dur = `${Math.floor(minNet/60)}:${String(minNet%60).padStart(2,'0')}`;
+                
+                if(data.net >= cfg.wp.hours) {
+                    cls = 'overtime';
+                    const diff = minNet - minTarget;
+                    dur += ` (+${Math.floor(diff/60)}:${String(diff%60).padStart(2,'0')})`;
+                } else {
+                    cls = 'undertime';
+                    const diff = minTarget - minNet;
+                    dur += ` (-${Math.floor(diff/60)}:${String(diff%60).padStart(2,'0')})`;
+                }
+            }
+
+            let timeHtml = '';
+            if(!isEdit) {
+                timeHtml = `
+                <div class="time-row"><span>Kommen</span><div class="time-display" onclick="clip('${tA}', this)">${tA}</div></div>
+                <div class="time-row"><span>Gehen</span><div class="time-display" onclick="clip('${tD}', this)">${tD}</div></div>`;
+            } else {
+                timeHtml = `
+                <div class="time-row"><span>Kommen</span><input type="time" id="in_${dayStr}" value="${tIn}" class="time-input"></div>
+                <div class="time-row"><span>Gehen</span><input type="time" id="out_${dayStr}" value="${tOut}" class="time-input"></div>`;
+            }
+
+            // Commute
+            let cTxt = '';
+            if(data.commute) {
+                const c = data.commute;
+                if(c.toW.k > 0) cTxt += `<div>🚲 Hin: ${c.toW.k.toFixed(1)}km (${Math.round(c.toW.m)}min)</div>`;
+                if(c.toH.k > 0) cTxt += `<div>🚲 Rück: ${c.toH.k.toFixed(1)}km (${Math.round(c.toH.m)}min)</div>`;
+            }
+
+            // HTML Construction
+            let html = `
+            <div class="workday-entry">
+                <div class="col-date">${dateObj.toLocaleDateString('de-DE', {weekday:'short'})}, ${d}.${m+1}.</div>
+                <div class="col-status"><span class="status-${st}">${holName || getStLabel(st)}</span></div>
+                
+                <div class="col-times">
+                    ${timeHtml}
+                </div>
+                
+                <div class="col-duration">
+                    <span class="duration-header">Arbeitszeit</span>
+                    <div class="work-duration ${cls}">${dur}</div>
+                </div>
+
+                <div class="col-commute">${cTxt}</div>
+
+                <div class="col-controls">
+                    <select class="status-select" onchange="setStatus('${dayStr}', this.value)">
+                        <option value="work" ${st==='work'?'selected':''}>Büro</option>
+                        <option value="homeoffice" ${st==='homeoffice'?'selected':''}>Home-Office</option>
+                        <option value="vacation" ${st==='vacation'?'selected':''}>Urlaub</option>
+                        <option value="holiday" ${st==='holiday'?'selected':''}>Feiertag</option>
+                        <option value="na" ${st==='na'?'selected':''}>N.A.</option>
+                    </select>
+                    <div class="btn-row">
+                        ${hasTrace(dayStr) ? `<button class="action-btn btn-trace" onclick="showTrace('${dayStr}')" title="Route">🗺️</button>` : ''}
+                        ${(data.visits && data.visits.length > 1) ? `<button class="action-btn btn-info" onclick="toggleDet('${dayStr}')" title="Info">ℹ️</button>` : ''}
+                        ${!isEdit ? `<button class="action-btn btn-edit" onclick="toggleEdit('${dayStr}')" title="Bearbeiten">✏️</button>` : ''}
+                        <button class="action-btn btn-save" onclick="saveDay('${dayStr}')" title="Speichern">💾</button>
+                    </div>
+                </div>
+            </div>`;
+            
+            if(holName) html += `<div class="holiday-indicator">🎉 ${holName}</div>`;
+            
+            // Visit Details & Break Calculation
+            if(data.visits && data.visits.length > 1) {
+                let vStr = "";
+                let breakMs = 0;
+                
+                data.visits.forEach((v,i) => {
+                    vStr += `${i+1}. ${fmtTime(v.tStart)} - ${fmtTime(v.tEnd)}`;
+                    if (i < data.visits.length - 1) {
+                        const nextV = data.visits[i+1];
+                        const gap = nextV.tStart - v.tEnd;
+                        breakMs += gap;
+                        vStr += ", ";
+                    }
+                });
+                
+                const breakMin = Math.round(breakMs / 60000);
+                const diff = breakMin - cfg.wp.break;
+                const diffStr = diff >= 0 ? `+${diff}` : `${diff}`;
+                const boldBreak = `<strong>Pause: ${Math.floor(breakMin/60)}:${String(breakMin%60).padStart(2,'0')}h (${diffStr} min)</strong>`;
+                
+                html += `<div id="det-${dayStr}" class="details-panel">
+                    Mehrfache Besuche: ${vStr}<br/>${boldBreak}
+                </div>`;
+            }
+            div.innerHTML = html;
+            list.appendChild(div);
+        }
+    }
+
+    function getStLabel(s) { return {work:'🏢 Büro', homeoffice:'🏠 Home', vacation:'🏖️ Urlaub', holiday:'🎉 Frei', na:'➖ N.A.'}[s] || s; }
+    
+    function setStatus(day, val) {
+        if(!workData[day]) workData[day] = {};
+        workData[day].status = val;
+        renderCal(); calcStats();
+    }
+
+    function toggleEdit(day) {
+        editModeDays[day] = true;
+        renderCal();
+    }
+
+    function saveDay(day) { 
+        // Check if we were in edit mode and inputs exist
+        if(editModeDays[day]) {
+            const iIn = document.getElementById(`in_${day}`);
+            const iOut = document.getElementById(`out_${day}`);
+            
+            if(iIn && iOut && iIn.value && iOut.value) {
+                // Parse dates (combine YYYY-MM-DD with HH:MM)
+                if(!workData[day]) workData[day] = {status:'work'};
+                
+                const dIn = new Date(`${day}T${iIn.value}`);
+                const dOut = new Date(`${day}T${iOut.value}`);
+                
+                workData[day].arr = dIn;
+                workData[day].dep = dOut;
+                
+                // Recalc Net
+                const dur = (dOut - dIn) / 3600000;
+                workData[day].net = Math.max(0, dur - (cfg.wp.break/60));
+            }
+            editModeDays[day] = false; // Exit edit mode
+        }
+        
+        localStorage.setItem('workData', JSON.stringify(workData)); 
+        renderCal(); calcStats(); 
+        showToast();
+    }
+    
+    function toggleDet(id) { document.getElementById('det-'+id).classList.toggle('show'); }
+    function changeMonth(d) { curMonth.setMonth(curMonth.getMonth()+d); renderCal(); calcStats(); }
+    
+    function clip(txt, el) {
+        if(txt==='--:--') return;
+        navigator.clipboard.writeText(txt);
+        el.classList.add('copied');
+        const msg = document.getElementById('copyMsg');
+        msg.classList.add('show');
+        setTimeout(()=>{ el.classList.remove('copied'); msg.classList.remove('show'); }, 1000);
+    }
+    function toggleSection(id) {
+        const el = document.getElementById(id);
+        el.classList.toggle('collapsed');
+        el.querySelector('.toggle-icon').textContent = el.classList.contains('collapsed') ? '▶' : '▼';
+    }
+
+    // --- Config Logic ---
+    function autoSave(type) {
+        if(type === 'wp') {
+            cfg.wp.lat = parseFloat(document.getElementById('wpLat').value);
+            cfg.wp.lon = parseFloat(document.getElementById('wpLon').value);
+            cfg.wp.rad = parseInt(document.getElementById('wpRad').value);
+            cfg.wp.hours = parseFloat(document.getElementById('wpHours').value);
+            cfg.wp.break = parseInt(document.getElementById('wpBreak').value);
+            drawZone('wp'); updateAddrOne('wp');
+        } else if(type === 'home') {
+            cfg.home.lat = parseFloat(document.getElementById('homeLat').value);
+            cfg.home.lon = parseFloat(document.getElementById('homeLon').value);
+            cfg.home.rad = parseInt(document.getElementById('homeRad').value);
+            drawZone('home'); updateAddrOne('home');
+        }
+        localStorage.setItem('my_cfg', JSON.stringify(cfg));
+        showToast();
+    }
+
+    function showToast() {
+        const t = document.getElementById('saveToast');
+        t.classList.add('show');
+        setTimeout(()=>t.classList.remove('show'), 1500);
+    }
+
+    // --- Map ---
+    function initMaps() {
+        ['wp', 'home'].forEach(t => {
+            maps[t] = L.map(t==='wp'?'mapWp':'mapHome').setView([cfg[t].lat, cfg[t].lon], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(maps[t]);
+            maps[t].on('click', e => {
+                document.getElementById(t+'Lat').value = e.latlng.lat.toFixed(6);
+                document.getElementById(t+'Lon').value = e.latlng.lng.toFixed(6);
+                autoSave(t);
+            });
+            drawZone(t);
+        });
+    }
+
+    function drawZone(t) {
+        if(layers[t].length) layers[t].forEach(l => maps[t].removeLayer(l));
+        layers[t] = [
+            L.marker([cfg[t].lat, cfg[t].lon]).addTo(maps[t]),
+            L.circle([cfg[t].lat, cfg[t].lon], {color: t==='wp'?'#006400':'#003366', radius:cfg[t].rad}).addTo(maps[t])
+        ];
+        maps[t].setView([cfg[t].lat, cfg[t].lon], 15);
+    }
+
+    async function updateAddr() { updateAddrOne('wp'); updateAddrOne('home'); }
+    async function updateAddrOne(t) {
+        const el = document.getElementById(t+'Addr');
+        el.textContent = "Lade...";
+        try {
+            const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${cfg[t].lat}&lon=${cfg[t].lon}`);
+            const d = await r.json();
+            el.textContent = d.display_name || "Adresse nicht gefunden";
+        } catch(e) { el.textContent = "Adress-Fehler"; }
+    }
+
+    // --- File I/O ---
+    document.getElementById('gpxFile').addEventListener('change', e => {
+        if(e.target.files[0]) {
+            const r = new FileReader();
+            r.onload = ev => parseGPX(ev.target.result);
+            r.readAsText(e.target.files[0]);
+        }
+    });
+    document.getElementById('csvFile').addEventListener('change', e => {
+        if(e.target.files[0]) {
+            const r = new FileReader();
+            r.onload = ev => parseCSV(ev.target.result);
+            r.readAsText(e.target.files[0]);
+        }
+    });
+
+    function parseGPX(str) {
+        const p = new DOMParser();
+        const xml = p.parseFromString(str, "text/xml");
+        gpsData = Array.from(xml.querySelectorAll('trkpt')).map(x => ({
+            lat: parseFloat(x.getAttribute('lat')),
+            lon: parseFloat(x.getAttribute('lon')),
+            time: new Date(x.querySelector('time').textContent)
+        })).filter(x => !isNaN(x.lat) && x.time);
+        finishLoad();
+    }
+    function parseCSV(str) {
+        const lines = str.trim().split('\n');
+        const h = lines[0].toLowerCase().split(',');
+        const iLat = h.findIndex(x=>x.includes('lat'));
+        const iLon = h.findIndex(x=>x.includes('lon'));
+        const iTime = h.findIndex(x=>x.includes('time')||x.includes('date'));
+        if(iLat<0||iLon<0||iTime<0) { alert("CSV ungültig"); return; }
+        
+        gpsData = lines.slice(1).map(l => {
+            const c = l.split(',');
+            return { lat: parseFloat(c[iLat]), lon: parseFloat(c[iLon]), time: new Date(c[iTime].replace(/"/g,'')) };
+        }).filter(x => !isNaN(x.lat) && !isNaN(x.time.getTime()));
+        finishLoad();
+    }
+    function finishLoad() {
+        document.getElementById('progressFill').style.width='100%';
+        analyze();
+    }
+
+    // --- Stats & Export ---
+    function calcStats() {
+        let d=0, h=0, km=0, drv=0, aSum=0, aC=0, dSum=0, dC=0;
+        let saldo = 0; 
+        let breakSum = 0; let breakCnt = 0;
+
+        const y = curMonth.getFullYear(), m = curMonth.getMonth();
+        
+        Object.entries(workData).forEach(([k, v]) => {
+            const date = new Date(k);
+            if(date.getFullYear()===y && date.getMonth()===m && (v.status==='work'||v.status==='homeoffice')) {
+                d++;
+                const net = v.net || 0;
+                h += net;
+                
+                // Saldo Calculation
+                saldo += (net - cfg.wp.hours);
+
+                if(v.arr) { aSum+=v.arr.getHours()*60+v.arr.getMinutes(); aC++; }
+                if(v.dep) { dSum+=v.dep.getHours()*60+v.dep.getMinutes(); dC++; }
+                if(v.commute) {
+                    km += v.commute.toW.k + v.commute.toH.k;
+                    drv += v.commute.toW.m + v.commute.toH.m;
+                }
+
+                // Avg Break Calc
+                let dailyBreak = 0;
+                if(v.visits && v.visits.length > 1) {
+                    // Sum actual gaps
+                    for(let i=0; i<v.visits.length-1; i++) {
+                        dailyBreak += (v.visits[i+1].tStart - v.visits[i].tEnd);
+                    }
+                    breakSum += (dailyBreak / 60000);
+                } else {
+                    // Assume standard break
+                    breakSum += cfg.wp.break;
+                }
+                breakCnt++;
+            }
+        });
+        
+        document.getElementById('stDays').textContent = d;
+        document.getElementById('stHrs').textContent = h.toFixed(1);
+        document.getElementById('stKm').textContent = km.toFixed(1);
+        document.getElementById('stDrive').textContent = (drv/60).toFixed(1);
+        
+        // Update Saldo
+        const saldoEl = document.getElementById('stSaldo');
+        saldoEl.textContent = (saldo >= 0 ? "+" : "") + saldo.toFixed(1);
+        saldoEl.className = "stat-val " + (saldo >= 0 ? "val-positive" : "val-negative");
+
+        // Update Avg Break
+        const avgBreak = breakCnt > 0 ? Math.round(breakSum / breakCnt) : 0;
+        document.getElementById('stAvgBreak').textContent = avgBreak;
+        
+        const fm = x => x===0 ? '--:--' : `${Math.floor(x/60).toString().padStart(2,'0')}:${Math.round(x%60).toString().padStart(2,'0')}`;
+        document.getElementById('stArr').textContent = fm(aC?aSum/aC:0);
+        document.getElementById('stDep').textContent = fm(dC?dSum/dC:0);
+    }
+
+    function exportData() {
+        let csv = "Datum;Status;Kommen;Gehen;Netto;Hin_Km;Hin_Min;Rueck_Km;Rueck_Min\n";
+        const y = curMonth.getFullYear(), m = curMonth.getMonth();
+        const n = new Date(y, m+1, 0).getDate();
+        
+        for(let i=1; i<=n; i++) {
+            const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+            const d = workData[ds];
+            if(d) {
+                const c = d.commute || {toW:{k:0,m:0}, toH:{k:0,m:0}};
+                csv += `${ds};${d.status};${fmtTime(d.arr)};${fmtTime(d.dep)};${(d.net||0).toFixed(2).replace('.',',')};${c.toW.k.toFixed(1).replace('.',',')};${Math.round(c.toW.m)};${c.toH.k.toFixed(1).replace('.',',')};${Math.round(c.toH.m)}\n`;
+            }
+        }
+        const b = new Blob([csv], {type:'text/csv;charset=utf-8'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `Export_${y}_${m+1}.csv`; a.click();
+    }
+
+    function hasTrace(dayStr) { return gpsData.some(p => getGermanDateString(p.time) === dayStr); }
+    function showTrace(dayStr) {
+        document.getElementById('gpxModal').style.display = 'flex';
+        const pts = gpsData.filter(p => getGermanDateString(p.time) === dayStr).map(p => [p.lat, p.lon]);
+        setTimeout(() => {
+            if(!maps.trace) {
+                maps.trace = L.map('traceMap').setView([0,0], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(maps.trace);
+            }
+            if(layers.trace) maps.trace.removeLayer(layers.trace);
+            if(pts.length) {
+                layers.trace = L.polyline(pts, {color:'red'}).addTo(maps.trace);
+                maps.trace.fitBounds(layers.trace.getBounds());
+            }
+        }, 200);
+    }
+
+    // --- Utils ---
+    function getDist(lat1, lon1, lat2, lon2) {
+        const R = 6371e3;
+        const φ1 = lat1 * Math.PI/180, φ2 = lat2 * Math.PI/180;
+        const Δφ = (lat2-lat1) * Math.PI/180, Δλ = (lon2-lon1) * Math.PI/180;
+        const a = Math.sin(Δφ/2)*Math.sin(Δφ/2) + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)*Math.sin(Δλ/2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+    function round15(d, down) {
+        const x = new Date(d);
+        const m = x.getMinutes();
+        let r = down ? Math.floor(m/15)*15 : Math.ceil(m/15)*15;
+        if(r===60) { r=0; x.setHours(x.getHours()+1); }
+        x.setMinutes(r); x.setSeconds(0); x.setMilliseconds(0);
+        return x;
+    }
+
+    // --- Config Load/Save ---
+    function loadSettings() {
+        const s = localStorage.getItem('my_cfg');
+        if(s) cfg = JSON.parse(s);
+        
+        document.getElementById('wpLat').value = cfg.wp.lat;
+        document.getElementById('wpLon').value = cfg.wp.lon;
+        document.getElementById('wpRad').value = cfg.wp.rad;
+        document.getElementById('wpHours').value = cfg.wp.hours;
+        document.getElementById('wpBreak').value = cfg.wp.break;
+        
+        document.getElementById('homeLat').value = cfg.home.lat;
+        document.getElementById('homeLon').value = cfg.home.lon;
+        document.getElementById('homeRad').value = cfg.home.rad;
+        
+        document.getElementById('dayOffset').value = cfg.tz.dayOff;
+        document.getElementById('hourOffset').value = cfg.tz.hourOff;
+        document.getElementById('tzMode').value = cfg.tz.mode;
+    }
+    
+    function applyTimezoneSettings() {
+        cfg.tz.dayOff = parseInt(document.getElementById('dayOffset').value);
+        cfg.tz.hourOff = parseInt(document.getElementById('hourOffset').value);
+        cfg.tz.mode = document.getElementById('tzMode').value;
+        localStorage.setItem('my_cfg', JSON.stringify(cfg));
+        
+        const d = new Date('2025-01-01'); d.setDate(d.getDate() + cfg.tz.dayOff);
+        document.getElementById('holidayInfo').textContent = `Offset Test: 01.01. wird zu ${d.toISOString().split('T')[0]}`;
+        
+        updateDebug();
+        if(gpsData.length) analyze();
+    }
+
+    function toggleDebug() {
+        const el = document.getElementById('debugConsole');
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        updateDebug();
+    }
+    function updateDebug() {
+        const el = document.getElementById('debugConsole');
+        if(el.style.display==='none') return;
+        let t = `TZ Mode: ${cfg.tz.mode}, Day: ${cfg.tz.dayOff}, Hour: ${cfg.tz.hourOff}\n`;
+        if(gpsData.length) {
+            t += `Points: ${gpsData.length}\nSample (UTC -> Local):\n`;
+            gpsData.slice(0,3).forEach(p => {
+                t += `${p.time.toISOString()} -> ${getGermanDateString(p.time)}\n`;
+            });
+        }
+        el.textContent = t;
+    }
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker registriert', reg))
+        .catch(err => console.error('Service Worker Fehler', err));
+    });
+  }
+</script>
+
+</body>
+</html>
