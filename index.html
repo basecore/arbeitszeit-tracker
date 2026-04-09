@@ -436,7 +436,7 @@
 
         <div class="upload-section">
             <div class="file-input-wrapper">
-                <input type="file" id="trackFile" class="file-input" accept=".gpx,.kml,.csv" />
+                <input type="file" id="trackFile" class="file-input" accept=".gpx,.kml,.csv" multiple>
                 <label for="trackFile" class="file-input-label">📍 Strecke laden (GPX/KML/CSV)</label>
             </div>
             
@@ -1365,33 +1365,58 @@
             renderCal(); 
             calcStats();
             
-            document.getElementById("trackFile").addEventListener("change", async e => { 
-                const file = e.target.files[0];
-                if (file) { 
-                    startProgress(); 
-                    try { 
-                        const text = await file.text();
-                        const name = file.name.toLowerCase();
-                        let parsedData;
-                        
-                        if (name.endsWith('.gpx')) {
-                            parsedData = parseGPX(text);
-                        } else if (name.endsWith('.kml')) {
-                            parsedData = parseKML(text);
-                        } else if (name.endsWith('.csv')) {
-                            parsedData = parseCSV(text);
-                        } else {
-                            throw new Error("Unbekanntes Dateiformat. Bitte GPX, KML oder CSV verwenden.");
+            document.getElementById('trackFile').addEventListener('change', async (e) => {
+                const files = e.target.files;
+                if (files.length > 0) {
+                    startProgress();
+                    try {
+                        let allParsedData = {};
+            
+                        // Alle ausgewählten Dateien durchlaufen
+                        for (let i = 0; i < files.length; i++) {
+                            const file = files[i];
+                            const text = await file.text();
+                            const name = file.name.toLowerCase();
+                            let parsedData = null;
+            
+                            if (name.endsWith('.gpx')) parsedData = parseGPX(text);
+                            else if (name.endsWith('.kml')) parsedData = parseKML(text);
+                            else if (name.endsWith('.csv')) parsedData = parseCSV(text);
+                            else {
+                                console.warn(`Überspringe ${file.name}: Unbekanntes Dateiformat.`);
+                                continue; // Unbekannte Dateien überspringen
+                            }
+            
+                            // Daten aller Dateien in ein gemeinsames Objekt zusammenführen
+                            if (parsedData) {
+                                for (const [dS, pts] of Object.entries(parsedData)) {
+                                    if (!allParsedData[dS]) {
+                                        allParsedData[dS] = [];
+                                    }
+                                    allParsedData[dS].push(...pts);
+                                }
+                            }
                         }
-                        
-                        finishLoad(parsedData); 
-                    } 
-                    catch (err) { 
-                        finishProgress(); 
-                        alert("Fehler beim Laden: " + err.message); 
-                    } 
-                } 
-                e.target.value = ""; 
+            
+                        // Falls Punkte vom selben Tag aus unterschiedlichen Dateien stammen, chronologisch sortieren
+                        for (const dS of Object.keys(allParsedData)) {
+                            allParsedData[dS].sort((a, b) => a.time - b.time);
+                        }
+            
+                        // finishLoad ermittelt automatisch den aktuellsten Tag aus allen übergebenen Daten
+                        if (Object.keys(allParsedData).length > 0) {
+                            finishLoad(allParsedData);
+                        } else {
+                            finishProgress();
+                            alert('Keine gültigen GPS-Daten gefunden.');
+                        }
+            
+                    } catch (err) {
+                        finishProgress();
+                        alert('Fehler beim Laden: ' + err.message);
+                    }
+                    e.target.value = '';
+                }
             });
             
             document.getElementById("importFile").addEventListener("change", e => { 
