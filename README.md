@@ -90,6 +90,12 @@ Wenn du ohnehin deinen Standortverlauf über Google Maps aufzeichnest, kannst du
 7. Warte einen Moment. Sobald Google die Daten zusammengestellt hat, erhältst du eine E-Mail. 
 8. Lade die ZIP-Datei herunter, entpacke sie und lade die darin enthaltene **`.kml`-Datei** über den Upload-Button in das Arbeitszeit-Tracker-Webtool hoch.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/basecore/arbeitszeit-tracker/main/images/takeout_google1.png" width="32%" alt="Schritt 1: Google Takeout Auswahl">
+  <img src="https://raw.githubusercontent.com/basecore/arbeitszeit-tracker/main/images/takeout_google2.png" width="32%" alt="Schritt 2: KML Format auswählen">
+  <img src="https://raw.githubusercontent.com/basecore/arbeitszeit-tracker/main/images/takeout_google3.png" width="32%" alt="Schritt 3: Export erstellen">
+</p>
+
 ---
 
 ## 📊 Was ausgewertet wird
