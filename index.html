@@ -200,6 +200,57 @@
             background: #fff; 
         }
 
+        .simple-table-wrap {
+            padding: 10px 0;
+        }
+
+        .simple-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            background: #fff;
+        }
+
+        .simple-table th,
+        .simple-table td {
+            border-bottom: 2px solid #e5e5e5;
+            padding: 18px 16px;
+            text-align: left;
+        }
+
+        .simple-table th {
+            background: #f3f6f3;
+            color: #006400;
+            font-size: 1.35rem;
+            font-weight: 800;
+        }
+
+        .simple-table td {
+            font-size: 1.55rem;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .simple-table .col-date-simple {
+            width: 40%;
+        }
+
+        .simple-table .col-time-simple {
+            width: 30%;
+            text-align: center;
+        }
+
+        .simple-empty {
+            color: #999;
+            font-weight: 600;
+        }
+
+        .simple-view-active #calendarList {
+            border: 2px solid #dfe7df;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
         .workday-entry { 
             display: flex; 
             align-items: flex-start; 
@@ -409,6 +460,10 @@
             body { padding: 10px; }
             .upload-section { padding: 14px 12px; }
             .config-container, .stats-wrap, .calendar-wrap { padding-left: 8px; padding-right: 8px; }
+            .simple-table th,
+            .simple-table td { padding: 14px 10px; }
+            .simple-table th { font-size: 1.05rem; }
+            .simple-table td { font-size: 1.2rem; }
             .workday-entry { padding: 12px 6px; gap: 6px; font-size: 13px; }
             .col-date { width: 75px; font-size: 12px; }
             .col-status, .col-duration { display: none; }
@@ -579,6 +634,7 @@
             <div class="calendar-header">
                 <div class="calendar-title"><h2 id="monthLabel">Monat</h2></div>
                 <div class="calendar-controls">
+                    <button class="btn btn-secondary" onclick="toggleSimpleView()" id="simpleViewBtn">Einfache Ansicht</button>
                     <button class="btn btn-secondary" onclick="changeMonth(-1)">◀ Vorheriger</button>
                     <button class="btn btn-secondary" onclick="changeMonth(0)">Heute</button>
                     <button class="btn btn-secondary" onclick="changeMonth(1)">Nächster ▶</button>
@@ -653,7 +709,8 @@
             trackData = {}, 
             jsonAssignments = {}, 
             curMonth = new Date(), 
-            editModeDays = {};
+            editModeDays = {},
+            simpleView = false;
             
         let mapWp, mapHome, wpMarker, homeMarker, wpCircle, homeCircle, traceMap, traceLayerGroup, progressTimer = null;
 
@@ -677,6 +734,13 @@
             document.getElementById('sec-wp').classList.add('collapsed'); 
             document.getElementById('sec-home').classList.add('collapsed'); 
             document.getElementById('sec-misc').classList.add('collapsed'); 
+        }
+
+        function toggleSimpleView() {
+            simpleView = !simpleView;
+            document.body.classList.toggle('simple-view-active', simpleView);
+            document.getElementById('simpleViewBtn').textContent = simpleView ? 'Normale Ansicht' : 'Einfache Ansicht';
+            renderCal();
         }
         
         function fmtTime(ts) { 
@@ -1146,100 +1210,119 @@
         }
 
         function renderCal() {
-            const list = document.getElementById("calendarList"); 
+            const list = document.getElementById("calendarList");
             list.innerHTML = "";
             const y = curMonth.getFullYear(), m = curMonth.getMonth();
             document.getElementById("monthLabel").textContent = curMonth.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
+            const simpleBtn = document.getElementById("simpleViewBtn");
+            if (simpleBtn) simpleBtn.textContent = simpleView ? "Normale Ansicht" : "Einfache Ansicht";
+            document.body.classList.toggle("simple-view-active", simpleView);
+
+            if (simpleView) {
+                let rows = "";
+
+                for (let d = new Date(y, m + 1, 0).getDate(); d >= 1; d--) {
+                    const dS = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+                    const dObj = new Date(y, m, d);
+                    const data = workData[dS] || {};
+                    const arr = fmtTime(data.arr);
+                    const dep = fmtTime(data.dep);
+
+                    rows += `
+                        <tr>
+                            <td class="col-date-simple">${dObj.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" })}</td>
+                            <td class="col-time-simple">${arr !== "--:--" ? arr : '<span class="simple-empty">--:--</span>'}</td>
+                            <td class="col-time-simple">${dep !== "--:--" ? dep : '<span class="simple-empty">--:--</span>'}</td>
+                        </tr>
+                    `;
+                }
+
+                list.innerHTML = `
+                    <div class="simple-table-wrap">
+                        <table class="simple-table">
+                            <thead>
+                                <tr>
+                                    <th>Datum</th>
+                                    <th>Kommen</th>
+                                    <th>Gehen</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                `;
+                return;
+            }
 
             for (let d = new Date(y, m + 1, 0).getDate(); d >= 1; d--) {
                 const dS = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
                 const dObj = new Date(y, m, d);
                 const data = workData[dS] || {};
                 const hName = activeHolidays[dS];
-                
-                // Status bestimmen
+
                 const st = hName ? "holiday" : (data.status || ([0,6].includes(dObj.getDay()) ? "free" : "na"));
                 const isInactive = ["holiday", "free", "vacation"].includes(st);
                 const isEdit = !!editModeDays[dS];
 
-                let dur = "--:--", durMob = "—", cls = "";
+                let dur = "--:--", durMob = "", cls = "";
                 if (typeof data.net === "number") {
-                    const mNet = Math.round(data.net * 60), mTg = Math.round(cfg.wp.hours * 60); 
-                    dur = `${Math.floor(mNet / 60)}:${String(mNet % 60).padStart(2, "0")}`; 
-                    durMob = dur;
-                    if (mNet >= mTg) { 
-                        cls = "overtime"; 
-                        dur += ` (+${Math.floor((mNet - mTg) / 60)}:${String((mNet - mTg) % 60).padStart(2, "0")})`; 
-                    } else { 
-                        cls = "undertime"; 
-                        dur += ` (-${Math.floor((mTg - mNet) / 60)}:${String((mTg - mNet) % 60).padStart(2, "0")})`; 
+                    const mNet = Math.round(data.net * 60), mTg = Math.round(cfg.wp.hours * 60);
+                    durMob = dur = Math.floor(mNet / 60) + ":" + String(mNet % 60).padStart(2, "0");
+                    if (mNet > mTg) {
+                        cls = "overtime";
+                        dur = "+" + Math.floor((mNet - mTg) / 60) + ":" + String((mNet - mTg) % 60).padStart(2, "0");
+                    } else if (mNet < mTg) {
+                        cls = "undertime";
+                        dur = "-" + Math.floor((mTg - mNet) / 60) + ":" + String((mTg - mNet) % 60).padStart(2, "0");
                     }
                 }
 
-                const tHtml = !isEdit ? 
-                    `<div class="time-row">
-                        <span>Kommen</span>
-                        <div class="time-wrapper">
-                            <div class="time-display">${fmtTime(data.arr)}</div>
-                        </div>
-                     </div>
-                     <div class="time-row">
-                        <span>Gehen</span>
-                        <div class="time-wrapper">
-                            <div class="time-display">${fmtTime(data.dep)}</div>
-                            <div class="mobile-subline leave-worktime">${durMob}</div>
-                        </div>
-                     </div>` :
-                    `<div class="time-row">
-                        <span>Kommen</span>
-                        <div class="time-wrapper">
-                            <input type="time" id="in_${dS}" value="${timeToInput(data.arr)}" class="time-input" />
-                        </div>
-                     </div>
-                     <div class="time-row">
-                        <span>Gehen</span>
-                        <div class="time-wrapper">
-                            <input type="time" id="out_${dS}" value="${timeToInput(data.dep)}" class="time-input" />
-                            <div class="mobile-subline leave-worktime">${durMob}</div>
-                        </div>
-                     </div>`;
+                const tHtml = !isEdit ? `
+                    <div class="time-row"><span>Kommen</span><div class="time-wrapper"><div class="time-display">${fmtTime(data.arr)}</div></div></div>
+                    <div class="time-row"><span>Gehen</span><div class="time-wrapper"><div class="time-display">${fmtTime(data.dep)}</div><div class="mobile-subline leave-worktime">${durMob}</div></div></div>
+                ` : `
+                    <div class="time-row"><span>Kommen</span><div class="time-wrapper"><input type="time" id="in${dS}" value="${timeToInput(data.arr)}" class="time-input"></div></div>
+                    <div class="time-row"><span>Gehen</span><div class="time-wrapper"><input type="time" id="out${dS}" value="${timeToInput(data.dep)}" class="time-input"><div class="mobile-subline leave-worktime">${durMob}</div></div></div>
+                `;
 
                 let cTxt = "";
                 if (data.commute && (data.commute.toW?.k > 0 || data.commute.toH?.k > 0)) {
-                    if (data.commute.toW?.k > 0) cTxt += `<div>🚲 Hin: ${data.commute.toW.k.toFixed(1)} km (${Math.round(data.commute.toW.m)} min)</div>`;
-                    if (data.commute.toH?.k > 0) cTxt += `<div>🚲 Rück: ${data.commute.toH.k.toFixed(1)} km (${Math.round(data.commute.toH.m)} min)</div>`;
-                } else if (data.totalKm) cTxt = `<div>📍 Gesamt: ${data.totalKm.toFixed(1)} km</div>`;
+                    if (data.commute.toW?.k > 0) cTxt += `<div>Hin ${data.commute.toW.k.toFixed(1)} km / ${Math.round(data.commute.toW.m)} min</div>`;
+                    if (data.commute.toH?.k > 0) cTxt += `<div>Rück ${data.commute.toH.k.toFixed(1)} km / ${Math.round(data.commute.toH.m)} min</div>`;
+                } else if (data.totalKm) {
+                    cTxt = `<div>Gesamt ${data.totalKm.toFixed(1)} km</div>`;
+                }
 
                 const w = document.createElement("div");
                 w.innerHTML = `
                     <div class="workday-entry ${isInactive ? 'inactive' : ''}">
                         <div class="col-date">
-                            <div class="date-main">${dObj.toLocaleDateString("de-DE", { weekday: "short" })}, ${d}.${m + 1}.</div>
+                            <div class="date-main">${dObj.toLocaleDateString("de-DE", { weekday: "short" })}<br>${d}.${m + 1}.</div>
                             <div class="mobile-subline date-status">${hName || getStLabel(st)}</div>
-                            ${jsonAssignments[dS] ? `<div class="help-text">${jsonAssignments[dS]}</div>` : ""}
+                            ${jsonAssignments[dS] ? `<div class="help-text">${jsonAssignments[dS]}</div>` : ''}
                         </div>
                         <div class="col-status"><span class="status-badge ${getStatusClass(st)}">${hName || getStLabel(st)}</span></div>
                         <div class="col-times">${tHtml}</div>
                         <div class="col-duration"><span class="duration-header">Arbeitszeit</span><div class="work-duration ${cls}">${dur}</div></div>
-                        <div class="col-commute">${cTxt || "—"}</div>
+                        <div class="col-commute">${cTxt}</div>
                         <div class="col-controls">
                             <select class="status-select" onchange="setStatus('${dS}', this.value)">
-                                <option value="work" ${st === "work" ? "selected" : ""}>Büro</option>
-                                <option value="homeoffice" ${st === "homeoffice" ? "selected" : ""}>Home</option>
-                                <option value="vacation" ${st === "vacation" ? "selected" : ""}>Urlaub</option>
-                                <option value="free" ${st === "free" ? "selected" : ""}>Frei</option>
-                                <option value="holiday" ${st === "holiday" ? "selected" : ""}>Feiertag</option>
-                                <option value="na" ${st === "na" ? "selected" : ""}>N.A.</option>
+                                <option value="work" ${st === 'work' ? 'selected' : ''}>Büro</option>
+                                <option value="homeoffice" ${st === 'homeoffice' ? 'selected' : ''}>Home</option>
+                                <option value="vacation" ${st === 'vacation' ? 'selected' : ''}>Urlaub</option>
+                                <option value="free" ${st === 'free' ? 'selected' : ''}>Frei</option>
+                                <option value="holiday" ${st === 'holiday' ? 'selected' : ''}>Feiertag</option>
+                                <option value="na" ${st === 'na' ? 'selected' : ''}>N.A.</option>
                             </select>
                             <div class="btn-row">
-                                ${hasTrace(dS) ? `<button class="action-btn btn-trace" onclick="showTrace('${dS}')" title="Route">🗺️</button>` : ""}
-                                ${(!isInactive && data.visits && data.visits.length > 1) ? `<button class="action-btn btn-info" onclick="toggleDet('${dS}')" title="Info">ℹ️</button>` : ""}
-                                ${!isInactive ? (!isEdit ? `<button class="action-btn btn-edit" onclick="toggleEdit('${dS}')" title="Bearbeiten">✏️</button>` : `<button class="action-btn btn-save" onclick="saveDay('${dS}')" title="Speichern">💾</button>`) : ""}
+                                ${hasTrace(dS) ? `<button class="action-btn btn-trace" onclick="showTrace('${dS}')" title="Route">🗺️</button>` : ''}
+                                ${!isInactive && data.visits && data.visits.length > 1 ? `<button class="action-btn btn-info" onclick="toggleDet('${dS}')" title="Info">ℹ️</button>` : ''}
+                                ${!isInactive ? (!isEdit ? `<button class="action-btn btn-edit" onclick="toggleEdit('${dS}')" title="Bearbeiten">✏️</button>` : `<button class="action-btn btn-save" onclick="saveDay('${dS}')" title="Speichern">💾</button>`) : ''}
                             </div>
                         </div>
                     </div>
-                    ${hName ? `<div class="holiday-indicator">🎉 ${hName}</div>` : ""}
-                    ${data.visits && data.visits.length > 1 ? `<div id="det-${dS}" class="details-panel">Mehrfache Besuche erfasst.<br/><strong>Pause: ${Math.floor(data.breakMin / 60)}:${String(data.breakMin % 60).padStart(2, "0")}h</strong></div>` : ""}
+                    ${hName ? `<div class="holiday-indicator">${hName}</div>` : ''}
+                    ${!isInactive && data.visits && data.visits.length > 1 ? `<div id="det-${dS}" class="details-panel">Mehrfache Besuche erfasst.<br><strong>Pause:</strong> ${Math.floor(data.breakMin/60)}:${String(data.breakMin%60).padStart(2,'0')} h</div>` : ''}
                 `;
                 list.appendChild(w);
             }
