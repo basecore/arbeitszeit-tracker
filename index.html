@@ -245,6 +245,59 @@
             font-weight: 600;
         }
 
+        .toggle-switch-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 42px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: #ccc;
+            border-radius: 999px;
+            transition: background 0.2s;
+        }
+
+        .toggle-slider::before {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--green-dark);
+        }
+
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(18px);
+        }
+
         .simple-view-active #calendarList {
             border: 2px solid #dfe7df;
             border-radius: 12px;
@@ -540,6 +593,7 @@
                     </div>
                     <div class="config-actions">
                         <button class="btn" onclick="searchAddress('wp')">🔎 Adresse aus Text suchen</button>
+                        <button class="btn btn-secondary" onclick="useGPS('wp')">📍 GPS-Position verwenden</button>
                         <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
                     </div>
                     <div class="map-container"><div id="mapWp" class="map"></div></div>
@@ -575,6 +629,7 @@
                     </div>
                     <div class="config-actions">
                         <button class="btn" onclick="searchAddress('home')">🔎 Adresse aus Text suchen</button>
+                        <button class="btn btn-secondary" onclick="useGPS('home')">📍 GPS-Position verwenden</button>
                         <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
                     </div>
                     <div class="map-container"><div id="mapHome" class="map"></div></div>
@@ -605,6 +660,16 @@
                                 <option value="auto">Auto</option>
                                 <option value="manual">Manuell</option>
                             </select>
+                        </div>
+                        <div class="config-group">
+                            <label>¼h-Rundung der Zeiten</label>
+                            <label class="toggle-switch-wrap">
+                                <span class="toggle-switch">
+                                    <input type="checkbox" id="roundQuarter" checked onchange="renderCal()">
+                                    <span class="toggle-slider"></span>
+                                </span>
+                                Kommen &amp; Gehen auf Viertelstunde runden
+                            </label>
                         </div>
                     </div>
                     <div class="config-group" style="margin-top: 15px;">
@@ -747,6 +812,17 @@
             return !ts ? "--:--" : new Date(ts).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }); 
         }
         
+        function roundToQuarter(ts) {
+            if (!ts) return ts;
+            const ms = 15 * 60 * 1000;
+            return Math.round(ts / ms) * ms;
+        }
+
+        function getRoundedTime(ts) {
+            const doRound = document.getElementById("roundQuarter")?.checked ?? true;
+            return doRound ? roundToQuarter(ts) : ts;
+        }
+
         function timeToInput(ts) { 
             if (!ts) return ""; 
             const d = new Date(ts); 
@@ -833,6 +909,37 @@
         
         function closeHolidayEditor() { 
             document.getElementById("holidayModal").style.display = "none"; 
+        }
+
+        function useGPS(t) {
+            if (!navigator.geolocation) {
+                alert("GPS wird von diesem Browser nicht unterstützt.");
+                return;
+            }
+            const btn = event.target;
+            btn.textContent = "⏳ Orten...";
+            btn.disabled = true;
+            navigator.geolocation.getCurrentPosition(
+                async pos => {
+                    const lat = pos.coords.latitude.toFixed(6);
+                    const lon = pos.coords.longitude.toFixed(6);
+                    document.getElementById(t === "wp" ? "wpLat" : "homeLat").value = lat;
+                    document.getElementById(t === "wp" ? "wpLon" : "homeLon").value = lon;
+                    autoSave(t);
+                    await reverseLookup(t);
+                    btn.textContent = "📍 GPS-Position verwenden";
+                    btn.disabled = false;
+                    showToast("GPS-Position gesetzt ✓");
+                },
+                err => {
+                    btn.textContent = "📍 GPS-Position verwenden";
+                    btn.disabled = false;
+                    if (err.code === 1) alert("GPS-Zugriff verweigert.\nBitte Standortfreigabe im Browser erlauben.");
+                    else if (err.code === 2) alert("GPS-Position konnte nicht ermittelt werden.");
+                    else alert("GPS-Zeitüberschreitung. Bitte erneut versuchen.");
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
         }
 
         function setUIFromCfg() {
@@ -1225,8 +1332,8 @@
                     const dS = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
                     const dObj = new Date(y, m, d);
                     const data = workData[dS] || {};
-                    const arr = fmtTime(data.arr);
-                    const dep = fmtTime(data.dep);
+                    const arr = fmtTime(getRoundedTime(data.arr));
+                    const dep = fmtTime(getRoundedTime(data.dep));
 
                     rows += `
                         <tr>
