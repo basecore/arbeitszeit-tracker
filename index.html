@@ -392,8 +392,14 @@
             .mobile-subline { display: block; }
             .details-panel, .holiday-indicator { padding-left: 12px; }
             .trace-legend { flex-direction: column; gap: 8px; align-items: flex-start; }
+
+            #checkMap { height: 280px !important; margin-bottom: 10px !important; }
+            #locationModal .modal-body { padding: 12px 14px 15px !important; }
+            #locationModal .config-actions { margin-top: 8px; }
+            #checkResult { padding: 10px !important; font-size: 13px !important; margin-bottom: 10px !important; }
         }
     </style>
+
 </head>
 <body>
     <div class="toast-save" id="toastSave">Gespeichert</div>
@@ -744,23 +750,23 @@
                 if (checkLayerGroup) checkMap.removeLayer(checkLayerGroup);
                 checkLayerGroup = L.layerGroup().addTo(checkMap);
 
-                let resHtml = "<b>Analyse abgeschlossen!</b><br><br>";
+                let resHtml = "<b>Analyse abgeschlossen!</b><br>";
 
                 if (foundHome) {
                     const addr = await getAddress(foundHome.lat, foundHome.lon);
                     L.circle([foundHome.lat, foundHome.lon], { radius: cfg.home.rad, color: "#ff00ff", fillColor: "#ff88ff", fillOpacity: 0.5 }).addTo(checkLayerGroup).bindPopup("NEUES Zuhause");
                     L.marker([foundHome.lat, foundHome.lon]).addTo(checkLayerGroup);
-                    resHtml += `&#x1F3E0; <b>Zuhause gefunden bei:</b><br>${addr}<br><span style="color:#777; font-size:0.9em;">(${foundHome.lat.toFixed(5)}, ${foundHome.lon.toFixed(5)})</span><br><br>`;
+                    resHtml += `<div style="margin-bottom: 6px;">&#x1F3E0; <b>Zuhause:</b> ${addr} <span style="color:#777; font-size:0.85em;">(${foundHome.lat.toFixed(5)}, ${foundHome.lon.toFixed(5)})</span></div>`;
                     foundHome.addr = addr;
-                } else { resHtml += `&#x1F3E0; Nicht genug Daten f&uuml;r Zuhause (Nachts).<br><br>`; }
+                } else { resHtml += `<div style="margin-bottom: 6px;">&#x1F3E0; Nicht genug Daten f&uuml;r Zuhause (Nachts).</div>`; }
 
                 if (foundWp) {
                     const addr = await getAddress(foundWp.lat, foundWp.lon);
                     L.circle([foundWp.lat, foundWp.lon], { radius: cfg.wp.rad, color: "#ffff00", fillColor: "#ffff88", fillOpacity: 0.5 }).addTo(checkLayerGroup).bindPopup("NEUER Arbeitsplatz");
                     L.marker([foundWp.lat, foundWp.lon]).addTo(checkLayerGroup);
-                    resHtml += `&#x1F3E2; <b>Arbeitsplatz gefunden bei:</b><br>${addr}<br><span style="color:#777; font-size:0.9em;">(${foundWp.lat.toFixed(5)}, ${foundWp.lon.toFixed(5)})</span><br>`;
+                    resHtml += `<div>&#x1F3E2; <b>Arbeitsplatz:</b> ${addr} <span style="color:#777; font-size:0.85em;">(${foundWp.lat.toFixed(5)}, ${foundWp.lon.toFixed(5)})</span></div>`;
                     foundWp.addr = addr;
-                } else { resHtml += `&#x1F3E2; Nicht genug Daten f&uuml;r Arbeitsplatz (Mo-Fr, tags&uuml;ber).<br>`; }
+                } else { resHtml += `<div>&#x1F3E2; Nicht genug Daten f&uuml;r Arbeitsplatz (Mo-Fr, tags&uuml;ber).</div>`; }
 
                 L.circle([cfg.wp.lat, cfg.wp.lon], { radius: cfg.wp.rad, color: "#006400", fillColor: "none", fillOpacity: 0, weight: 2, dashArray: "5,5" }).addTo(checkLayerGroup);
                 L.circle([cfg.home.lat, cfg.home.lon], { radius: cfg.home.rad, color: "#003c7d", fillColor: "none", fillOpacity: 0, weight: 2, dashArray: "5,5" }).addTo(checkLayerGroup);
