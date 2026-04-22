@@ -538,22 +538,22 @@
 
     <div class="container">
         <div class="header">
-            <h1>🏢 GPS Arbeitszeit-Tracker</h1>
+            <h1>ðŸ¢ GPS Arbeitszeit-Tracker</h1>
             <p>Kompakte Analyse mit Fahrtweg & Zeiterfassung aus GPX-, KML- und CSV-Dateien</p>
         </div>
 
         <div class="upload-section">
             <div class="file-input-wrapper">
                 <input type="file" id="trackFile" class="file-input" accept=".gpx,.kml,.csv" multiple>
-                <label for="trackFile" class="file-input-label">📍 Strecke laden (GPX/KML/CSV)</label>
+                <label for="trackFile" class="file-input-label">ðŸ“ Strecke laden (GPX/KML/CSV)</label>
             </div>
             
             <div class="file-input-wrapper">
                 <input type="file" id="importFile" class="file-input" accept=".json" />
-                <label for="importFile" class="file-input-label btn-secondary">📂 Import</label>
+                <label for="importFile" class="file-input-label btn-secondary">ðŸ“‚ Import</label>
             </div>
-            <button class="btn btn-secondary" onclick="exportData()">💾 Export</button>
-            <button class="btn btn-danger" onclick="resetAll()">🗑️ Reset</button>
+            <button class="btn btn-secondary" onclick="exportData()">ðŸ’¾ Export</button>
+            <button class="btn btn-danger" onclick="resetAll()">ðŸ—‘ï¸ Reset</button>
 
             <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         </div>
@@ -561,8 +561,8 @@
         <div class="config-container">
             <div class="config-section" id="sec-wp">
                 <div class="config-header" onclick="toggleSection('sec-wp')">
-                    <h3>🏢 Arbeitsplatz Konfiguration</h3>
-                    <span class="toggle-icon">▼</span>
+                    <h3>ðŸ¢ Arbeitsplatz Konfiguration</h3>
+                    <span class="toggle-icon">â–¼</span>
                 </div>
                 <div class="config-content">
                     <div class="config-grid">
@@ -575,7 +575,7 @@
                             <input type="number" id="wpLat" step="0.000001" onchange="autoSave('wp')" />
                         </div>
                         <div class="config-group">
-                            <label>Längengrad</label>
+                            <label>LÃ¤ngengrad</label>
                             <input type="number" id="wpLon" step="0.000001" onchange="autoSave('wp')" />
                         </div>
                         <div class="config-group">
@@ -592,8 +592,8 @@
                         </div>
                     </div>
                     <div class="config-actions">
-                        <button class="btn" onclick="searchAddress('wp')">🔎 Adresse aus Text suchen</button>
-                        <button class="btn btn-secondary" onclick="useGPS('wp')">📍 GPS-Position verwenden</button>
+                        <button class="btn" onclick="searchAddress('wp')">ðŸ”Ž Adresse aus Text suchen</button>
+                        <button class="btn btn-secondary" onclick="useGPS('wp')">ðŸ“ GPS-Position verwenden</button>
                         <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
                     </div>
                     <div class="map-container"><div id="mapWp" class="map"></div></div>
@@ -605,21 +605,21 @@
 
             <div class="config-section home" id="sec-home">
                 <div class="config-header" onclick="toggleSection('sec-home')">
-                    <h3>🏠 Zuhause Konfiguration</h3>
-                    <span class="toggle-icon">▼</span>
+                    <h3>ðŸ  Zuhause Konfiguration</h3>
+                    <span class="toggle-icon">â–¼</span>
                 </div>
                 <div class="config-content">
                     <div class="config-grid">
                         <div class="config-group">
                             <label>Adresse / Name</label>
-                            <input type="text" id="homeAddr" placeholder="z. B. Rathaus München" />
+                            <input type="text" id="homeAddr" placeholder="z. B. Rathaus MÃ¼nchen" />
                         </div>
                         <div class="config-group">
                             <label>Breitengrad</label>
                             <input type="number" id="homeLat" step="0.000001" onchange="autoSave('home')" />
                         </div>
                         <div class="config-group">
-                            <label>Längengrad</label>
+                            <label>LÃ¤ngengrad</label>
                             <input type="number" id="homeLon" step="0.000001" onchange="autoSave('home')" />
                         </div>
                         <div class="config-group">
@@ -628,8 +628,8 @@
                         </div>
                     </div>
                     <div class="config-actions">
-                        <button class="btn" onclick="searchAddress('home')">🔎 Adresse aus Text suchen</button>
-                        <button class="btn btn-secondary" onclick="useGPS('home')">📍 GPS-Position verwenden</button>
+                        <button class="btn" onclick="searchAddress('home')">ðŸ”Ž Adresse aus Text suchen</button>
+                        <button class="btn btn-secondary" onclick="useGPS('home')">ðŸ“ GPS-Position verwenden</button>
                         <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
                     </div>
                     <div class="map-container"><div id="mapHome" class="map"></div></div>
@@ -641,8 +641,8 @@
 
             <div class="config-section misc" id="sec-misc">
                 <div class="config-header" onclick="toggleSection('sec-misc')">
-                    <h3>⚙️ Allgemeine Einstellungen & Feiertage</h3>
-                    <span class="toggle-icon">▼</span>
+                    <h3>âš™ï¸ Allgemeine Einstellungen & Feiertage</h3>
+                    <span class="toggle-icon">â–¼</span>
                 </div>
                 <div class="config-content">
                     <div class="config-grid">
@@ -662,7 +662,7 @@
                             </select>
                         </div>
                         <div class="config-group">
-                            <label>¼h-Rundung der Zeiten</label>
+                            <label>Â¼h-Rundung der Zeiten</label>
                             <label class="toggle-switch-wrap">
                                 <span class="toggle-switch">
                                     <input type="checkbox" id="roundQuarter" checked onchange="renderCal()">
@@ -674,11 +674,11 @@
                     </div>
                     <div class="config-group" style="margin-top: 15px;">
                         <label>JSON-Namenskonfiguration (optional, Format: {"YYYY-MM-DD":"Name"})</label>
-                        <textarea id="jsonConfig" style="height: 80px;" placeholder='{ "2026-04-09": "Sebastian Rößer" }'></textarea>
+                        <textarea id="jsonConfig" style="height: 80px;" placeholder='{ "2026-04-09": "Sebastian RÃ¶ÃŸer" }'></textarea>
                     </div>
                     <div class="config-actions">
                         <button class="btn" onclick="applyTimezoneSettings()">Einstellungen anwenden</button>
-                        <button class="btn btn-warning" onclick="openHolidayEditor()">🎉 Feiertage bearbeiten</button>
+                        <button class="btn btn-warning" onclick="openHolidayEditor()">ðŸŽ‰ Feiertage bearbeiten</button>
                     </div>
                 </div>
             </div>
@@ -700,9 +700,9 @@
                 <div class="calendar-title"><h2 id="monthLabel">Monat</h2></div>
                 <div class="calendar-controls">
                     <button class="btn btn-secondary" onclick="toggleSimpleView()" id="simpleViewBtn">Einfache Ansicht</button>
-                    <button class="btn btn-secondary" onclick="changeMonth(-1)">◀ Vorheriger</button>
+                    <button class="btn btn-secondary" onclick="changeMonth(-1)">â—€ Vorheriger</button>
                     <button class="btn btn-secondary" onclick="changeMonth(0)">Heute</button>
-                    <button class="btn btn-secondary" onclick="changeMonth(1)">Nächster ▶</button>
+                    <button class="btn btn-secondary" onclick="changeMonth(1)">NÃ¤chster â–¶</button>
                 </div>
             </div>
             <div class="calendar-list" id="calendarList"></div>
@@ -711,7 +711,7 @@
         <div class="footer">
             <div class="footer-info">
                 <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.7</a></p>
-                <p>Entwickelt von <b>Sebastian Rößer</b></p>
+                <p>Entwickelt von <b>Sebastian RÃ¶ÃŸer</b></p>
                 <p>
                     <a href="https://github.com/basecore/arbeitszeit-tracker" target="_blank">GitHub Projekt</a> |
                     <a href="https://github.com/basecore/arbeitszeit-tracker/issues" target="_blank">Hilfe / Issues</a>
@@ -730,7 +730,7 @@
                 <div id="traceMap"></div>
                 <div class="trace-legend">
                     <span><div class="box" style="background: var(--route-hin);"></div> Hinweg</span>
-                    <span><div class="box" style="background: var(--route-rueck);"></div> Rückweg</span>
+                    <span><div class="box" style="background: var(--route-rueck);"></div> RÃ¼ckweg</span>
                     <span><div class="box" style="background: var(--route-pause);"></div> Pause/Verlassen</span>
                     <span><div class="box" style="background: var(--route-arbeit);"></div> Am Arbeitsplatz</span>
                     <span><div class="box" style="background: var(--route-sonst);"></div> Sonstige Strecke</span>
@@ -750,7 +750,7 @@
                 <textarea id="holidayEditor"></textarea>
                 <div class="config-actions" style="margin-top:12px;">
                     <button class="btn" onclick="saveHolidays()">Speichern</button>
-                    <button class="btn btn-secondary" onclick="closeHolidayEditor()">Schließen</button>
+                    <button class="btn btn-secondary" onclick="closeHolidayEditor()">SchlieÃŸen</button>
                 </div>
             </div>
         </div>
@@ -760,12 +760,12 @@
     <script>
         const DEFAULT_CFG = { 
             wp: { lat: 48.26134, lon: 11.67175, rad: 100, hours: 7, break: 30, addr: "Forschungszentrum Garching" }, 
-            home: { lat: 48.13743, lon: 11.57549, rad: 100, addr: "Rathaus München" }, 
+            home: { lat: 48.13743, lon: 11.57549, rad: 100, addr: "Rathaus MÃ¼nchen" }, 
             tz: { dayOff: 0, hourOff: 0, mode: "auto" } 
         };
         const defaultHolidays = {
-            "2026-01-01": "Neujahr", "2026-01-06": "Hl. 3 Könige", "2026-04-03": "Karfreitag", "2026-04-06": "Ostermontag", "2026-05-01": "Tag der Arbeit", "2026-05-14": "Himmelfahrt",
-            "2026-05-25": "Pfingstmontag", "2026-06-04": "Fronleichnam", "2026-08-15": "Mariä Himmelfahrt", "2026-10-03": "Tag der Dt. Einheit", "2026-11-01": "Allerheiligen", "2026-12-25": "1. Weihnachtstag", "2026-12-26": "2. Weihnachtstag"
+            "2026-01-01": "Neujahr", "2026-01-06": "Hl. 3 KÃ¶nige", "2026-04-03": "Karfreitag", "2026-04-06": "Ostermontag", "2026-05-01": "Tag der Arbeit", "2026-05-14": "Himmelfahrt",
+            "2026-05-25": "Pfingstmontag", "2026-06-04": "Fronleichnam", "2026-08-15": "MariÃ¤ Himmelfahrt", "2026-10-03": "Tag der Dt. Einheit", "2026-11-01": "Allerheiligen", "2026-12-25": "1. Weihnachtstag", "2026-12-26": "2. Weihnachtstag"
         };
 
         let cfg = structuredClone(DEFAULT_CFG), 
@@ -877,7 +877,7 @@
         }
 
         function getStLabel(st) { 
-            const m = { "work":"Büro", "homeoffice":"Home", "vacation":"Urlaub", "free":"Frei", "holiday":"Feiertag", "na":"N.A." }; 
+            const m = { "work":"BÃ¼ro", "homeoffice":"Home", "vacation":"Urlaub", "free":"Frei", "holiday":"Feiertag", "na":"N.A." }; 
             return m[st] || "N.A."; 
         }
         
@@ -913,11 +913,11 @@
 
         function useGPS(t) {
             if (!navigator.geolocation) {
-                alert("GPS wird von diesem Browser nicht unterstützt.");
+                alert("GPS wird von diesem Browser nicht unterstÃ¼tzt.");
                 return;
             }
             const btn = event.target;
-            btn.textContent = "⏳ Orten...";
+            btn.textContent = "â³ Orten...";
             btn.disabled = true;
             navigator.geolocation.getCurrentPosition(
                 async pos => {
@@ -927,16 +927,16 @@
                     document.getElementById(t === "wp" ? "wpLon" : "homeLon").value = lon;
                     autoSave(t);
                     await reverseLookup(t);
-                    btn.textContent = "📍 GPS-Position verwenden";
+                    btn.textContent = "ðŸ“ GPS-Position verwenden";
                     btn.disabled = false;
-                    showToast("GPS-Position gesetzt ✓");
+                    showToast("GPS-Position gesetzt âœ“");
                 },
                 err => {
-                    btn.textContent = "📍 GPS-Position verwenden";
+                    btn.textContent = "ðŸ“ GPS-Position verwenden";
                     btn.disabled = false;
                     if (err.code === 1) alert("GPS-Zugriff verweigert.\nBitte Standortfreigabe im Browser erlauben.");
                     else if (err.code === 2) alert("GPS-Position konnte nicht ermittelt werden.");
-                    else alert("GPS-Zeitüberschreitung. Bitte erneut versuchen.");
+                    else alert("GPS-ZeitÃ¼berschreitung. Bitte erneut versuchen.");
                 },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
@@ -1009,14 +1009,14 @@
             try { 
                 jsonAssignments = document.getElementById("jsonConfig").value.trim() ? JSON.parse(document.getElementById("jsonConfig").value.trim()) : {}; 
                 localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments)); 
-            } catch { alert("Ungültiges JSON."); }
+            } catch { alert("UngÃ¼ltiges JSON."); }
             localStorage.setItem("my_cfg", JSON.stringify(cfg)); 
             renderCal(); 
             showToast("Einstellungen gespeichert");
         }
 
         function resetAll() { 
-            if (confirm("Wirklich alle lokalen Daten löschen?")) { 
+            if (confirm("Wirklich alle lokalen Daten lÃ¶schen?")) { 
                 localStorage.clear(); 
                 location.reload(); 
             } 
@@ -1130,7 +1130,7 @@
                     }
                 }
             } else {
-                // Fallback für einfache Placemarks mit <Point>
+                // Fallback fÃ¼r einfache Placemarks mit <Point>
                 const placemarks = xml.getElementsByTagName("Placemark");
                 for (let i = 0; i < placemarks.length; i++) {
                     const when = placemarks[i].getElementsByTagName("when")[0];
@@ -1240,15 +1240,15 @@
                     const old = workData[dS] || {};
                     let newStatus = old.status;
                     
-                    // Zwingend den Status auf Büro setzen, wenn wir auf Arbeit waren
-                    // (Überschreibt auch "N.A." falls das in der Vergangenheit gespeichert wurde)
+                    // Zwingend den Status auf BÃ¼ro setzen, wenn wir auf Arbeit waren
+                    // (Ãœberschreibt auch "N.A." falls das in der Vergangenheit gespeichert wurde)
                     if (a.visits && a.visits.length > 0) {
                         if (!newStatus || newStatus === "na" || newStatus === "free" || newStatus === "holiday") {
                             newStatus = "work";
                         }
                     }
                     
-                    // Fallback Logik für Tage ohne Besuche
+                    // Fallback Logik fÃ¼r Tage ohne Besuche
                     if (!newStatus || newStatus === "na") {
                         if (activeHolidays[dS]) newStatus = "holiday";
                         else if ([0,6].includes(new Date(dS+"T12:00").getDay())) newStatus = "free";
@@ -1280,23 +1280,23 @@
                     try {
                         localStorage.setItem('trackData', JSON.stringify(trackData));
                     } catch (e) {
-                        console.warn("Speicherlimit für Routen erreicht.", e);
-                        // Wenn der Speicher voll ist, werfen wir die ältesten Routen weg, um Platz zu machen
-                        const days = Object.keys(trackData).sort(); // Älteste Tage zuerst
+                        console.warn("Speicherlimit fÃ¼r Routen erreicht.", e);
+                        // Wenn der Speicher voll ist, werfen wir die Ã¤ltesten Routen weg, um Platz zu machen
+                        const days = Object.keys(trackData).sort(); // Ã„lteste Tage zuerst
                         while (days.length > 0) {
                             const oldestDay = days.shift();
-                            if (oldestDay !== dS) { // Den aktuell importierten Tag nicht löschen
+                            if (oldestDay !== dS) { // Den aktuell importierten Tag nicht lÃ¶schen
                                 delete trackData[oldestDay];
                                 try {
                                     localStorage.setItem('trackData', JSON.stringify(trackData));
                                     break; // Wenn das Speichern jetzt klappt, Schleife abbrechen
                                 } catch (err) {
-                                    // Immer noch zu groß -> nächsten alten Tag löschen
+                                    // Immer noch zu groÃŸ -> nÃ¤chsten alten Tag lÃ¶schen
                                 }
                             }
                         }
-                        // Hinweis für den Nutzer (optional, kann auch weggelassen werden)
-                        showToast("Speicher voll: Älteste Routen wurden gelöscht.");
+                        // Hinweis fÃ¼r den Nutzer (optional, kann auch weggelassen werden)
+                        showToast("Speicher voll: Ã„lteste Routen wurden gelÃ¶scht.");
                     }
                 }
             }
@@ -1395,7 +1395,7 @@
                 let cTxt = "";
                 if (data.commute && (data.commute.toW?.k > 0 || data.commute.toH?.k > 0)) {
                     if (data.commute.toW?.k > 0) cTxt += `<div>Hin ${data.commute.toW.k.toFixed(1)} km / ${Math.round(data.commute.toW.m)} min</div>`;
-                    if (data.commute.toH?.k > 0) cTxt += `<div>Rück ${data.commute.toH.k.toFixed(1)} km / ${Math.round(data.commute.toH.m)} min</div>`;
+                    if (data.commute.toH?.k > 0) cTxt += `<div>RÃ¼ck ${data.commute.toH.k.toFixed(1)} km / ${Math.round(data.commute.toH.m)} min</div>`;
                 } else if (data.totalKm) {
                     cTxt = `<div>Gesamt ${data.totalKm.toFixed(1)} km</div>`;
                 }
@@ -1414,7 +1414,7 @@
                         <div class="col-commute">${cTxt}</div>
                         <div class="col-controls">
                             <select class="status-select" onchange="setStatus('${dS}', this.value)">
-                                <option value="work" ${st === 'work' ? 'selected' : ''}>Büro</option>
+                                <option value="work" ${st === 'work' ? 'selected' : ''}>BÃ¼ro</option>
                                 <option value="homeoffice" ${st === 'homeoffice' ? 'selected' : ''}>Home</option>
                                 <option value="vacation" ${st === 'vacation' ? 'selected' : ''}>Urlaub</option>
                                 <option value="free" ${st === 'free' ? 'selected' : ''}>Frei</option>
@@ -1422,9 +1422,9 @@
                                 <option value="na" ${st === 'na' ? 'selected' : ''}>N.A.</option>
                             </select>
                             <div class="btn-row">
-                                ${hasTrace(dS) ? `<button class="action-btn btn-trace" onclick="showTrace('${dS}')" title="Route">🗺️</button>` : ''}
-                                ${!isInactive && data.visits && data.visits.length > 1 ? `<button class="action-btn btn-info" onclick="toggleDet('${dS}')" title="Info">ℹ️</button>` : ''}
-                                ${!isInactive ? (!isEdit ? `<button class="action-btn btn-edit" onclick="toggleEdit('${dS}')" title="Bearbeiten">✏️</button>` : `<button class="action-btn btn-save" onclick="saveDay('${dS}')" title="Speichern">💾</button>`) : ''}
+                                ${hasTrace(dS) ? `<button class="action-btn btn-trace" onclick="showTrace('${dS}')" title="Route">ðŸ—ºï¸</button>` : ''}
+                                ${!isInactive && data.visits && data.visits.length > 1 ? `<button class="action-btn btn-info" onclick="toggleDet('${dS}')" title="Info">â„¹ï¸</button>` : ''}
+                                ${!isInactive ? (!isEdit ? `<button class="action-btn btn-edit" onclick="toggleEdit('${dS}')" title="Bearbeiten">âœï¸</button>` : `<button class="action-btn btn-save" onclick="saveDay('${dS}')" title="Speichern">ðŸ’¾</button>`) : ''}
                             </div>
                         </div>
                     </div>
@@ -1579,7 +1579,7 @@
                     renderCal(); 
                     calcStats(); 
                     showToast("Backup erfolgreich importiert");
-                } catch { alert("Ungültige Export-Datei."); }
+                } catch { alert("UngÃ¼ltige Export-Datei."); }
             };
             reader.readAsText(file);
         }
@@ -1598,7 +1598,7 @@
                     try {
                         let allParsedData = {};
             
-                        // Alle ausgewählten Dateien durchlaufen
+                        // Alle ausgewÃ¤hlten Dateien durchlaufen
                         for (let i = 0; i < files.length; i++) {
                             const file = files[i];
                             const text = await file.text();
@@ -1609,11 +1609,11 @@
                             else if (name.endsWith('.kml')) parsedData = parseKML(text);
                             else if (name.endsWith('.csv')) parsedData = parseCSV(text);
                             else {
-                                console.warn(`Überspringe ${file.name}: Unbekanntes Dateiformat.`);
-                                continue; // Unbekannte Dateien überspringen
+                                console.warn(`Ãœberspringe ${file.name}: Unbekanntes Dateiformat.`);
+                                continue; // Unbekannte Dateien Ã¼berspringen
                             }
             
-                            // Daten aller Dateien in ein gemeinsames Objekt zusammenführen
+                            // Daten aller Dateien in ein gemeinsames Objekt zusammenfÃ¼hren
                             if (parsedData) {
                                 for (const [dS, pts] of Object.entries(parsedData)) {
                                     if (!allParsedData[dS]) {
@@ -1629,12 +1629,12 @@
                             allParsedData[dS].sort((a, b) => a.time - b.time);
                         }
             
-                        // finishLoad ermittelt automatisch den aktuellsten Tag aus allen übergebenen Daten
+                        // finishLoad ermittelt automatisch den aktuellsten Tag aus allen Ã¼bergebenen Daten
                         if (Object.keys(allParsedData).length > 0) {
                             finishLoad(allParsedData);
                         } else {
                             finishProgress();
-                            alert('Keine gültigen GPS-Daten gefunden.');
+                            alert('Keine gÃ¼ltigen GPS-Daten gefunden.');
                         }
             
                     } catch (err) {
