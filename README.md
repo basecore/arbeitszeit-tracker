@@ -11,6 +11,7 @@ Eine webbasierte Progressive Web App (PWA) zur lokalen Auswertung von Arbeitszei
 - **Lokale Auswertung im Browser:** Tracking-Dateien werden direkt lokal verarbeitet. Es findet kein Upload deiner GPX-, KML- oder CSV-Dateien auf fremde Server statt.
 - **Mehrfachimport:** Mehrere GPX-, KML- oder CSV-Dateien können in einem Schritt importiert und gemeinsam ausgewertet werden.
 - **Automatische Monatsauswahl:** Nach dem Import wird automatisch der aktuellste Monat aller importierten Dateien angezeigt.
+- **Intelligente Standort-Ermittlung (Neu in v1.8):** Wenn du deine genauen Koordinaten für Zuhause oder die Arbeit nicht weißt, kann die App sie automatisch aus deinen hochgeladenen GPS-Routen lernen und die passenden Adressen via Reverse-Geocoding (Nominatim) vorschlagen.
 - **PWA-Support:** Die App kann auf Smartphone, Tablet oder Desktop wie eine native App installiert werden und ist für die lokale Nutzung optimiert.
 - **Arbeitsplatz- und Zuhause-Zonen:** Radius, Position und Adresse können frei definiert werden, um Arbeitszeiten und Pendelwege automatisch zu erkennen.
 - **Arbeitszeitberechnung:** Erkennung von Kommen, Gehen, Aufenthaltsdauer, Pausenzeit, Sollzeit und Differenz.
@@ -44,6 +45,9 @@ Beim ersten Start sind Beispielpositionen hinterlegt:
 3. Passe den Radius für Zuhause und Arbeitsplatz an.
 4. Hinterlege deine Sollstunden pro Tag und die Standardpause.
 5. Speichere die Konfiguration.
+
+**Standorte automatisch finden lassen:**
+Weißt du deine Koordinaten nicht genau? Lade einfach deine GPS-Dateien hoch und klicke auf "Standorte prüfen & automatisch finden". Die App analysiert deine Aufenthaltsorte (Nachts = Zuhause; Werktags tagsüber = Arbeit) und trägt die Koordinaten und Straßennamen auf Wunsch automatisch für dich ein!
 
 Alle Werte werden lokal im Browser gespeichert und beim nächsten Aufruf automatisch wieder geladen.
 
@@ -111,7 +115,7 @@ Die App ermittelt je nach Datenlage unter anderem:
 
 ## 💾 Datenspeicherung & Datenschutz
 - **Lokaler Speicher:** Einstellungen, Tagesdaten, Feiertage und importierte Auswertungen werden ausschließlich lokal in deinem Browser (Cache/LocalStorage) verarbeitet und gespeichert.
-- **Keine Cloud-Pflicht:** Das Tool ist für eine einfache lokale Nutzung ohne eigenes Backend oder Datenbank konzipiert. Es werden **keine** Positionsdaten ins Internet gesendet.
+- **Keine Cloud-Pflicht:** Das Tool ist für eine einfache lokale Nutzung ohne eigenes Backend oder Datenbank konzipiert. Es werden **keine** Positionsdaten ins Internet gesendet (Ausnahme: Adress-Abfrage bei Nominatim/OSM bei aktiver Nutzung der Karten/Suchfunktion).
 - **Backups empfohlen:** Nutze regelmäßig den JSON-Export, da beim Löschen der Browserdaten auch deine Tracking-Auswertungen gelöscht werden.
 
 ## 🛠️ Technischer Überblick
@@ -124,4 +128,4 @@ Die App ermittelt je nach Datenlage unter anderem:
 
 ---
 
-🤖 *Dieses Projekt, die Code-Architektur und die Dokumentation wurden mit KI-Unterstützung (Gemini 3.1 Pro) erstellt, erweitert und optimiert.*
+🤖 *Dieses Projekt, die Code-Architektur und die Dokumentation wurden mit KI-Unterstützung erstellt, erweitert und optimiert.*
