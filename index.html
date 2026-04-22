@@ -540,8 +540,8 @@
             <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         </div>
 
-        <div class="assistant-section">
-            <p><strong>Standorte unbekannt oder keine Zeiten gefunden nach dem Laden?</strong> Lass den Tracker deine echten Standorte anhand der Route ermitteln:</p>
+        <div class="assistant-section" id="assistantBox" style="display: none;">
+            <p id="assistantText"><strong>Standorte unbekannt oder keine Zeiten gefunden nach dem Laden?</strong> Lass den Tracker deine echten Standorte anhand der Route ermitteln:</p>
             <button class="btn btn-warning" onclick="checkLocations()" style="width: 100%; max-width: 400px;">&#x1F50D; Standorte pr&uuml;fen &amp; automatisch finden</button>
         </div>
 
@@ -574,6 +574,10 @@
             <div class="footer-info">
                 <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.8</a></p>
                 <p>Entwickelt von <b>Sebastian R&ouml;&szlig;er</b></p>
+                <p>
+                    <a href="https://github.com/basecore/arbeitszeit-tracker" target="_blank">GitHub Projekt</a> &nbsp;|&nbsp;
+                    <a href="https://github.com/basecore/arbeitszeit-tracker/issues" target="_blank">Hilfe / Issues</a>
+                </p>
             </div>
         </div>
     </div>
@@ -638,13 +642,13 @@
     <script>
         const DEFAULT_CFG = { 
             wp: { lat: 48.26134, lon: 11.67175, rad: 100, hours: 7, break: 30, addr: "Forschungszentrum Garching" }, 
-            home: { lat: 48.13743, lon: 11.57549, rad: 100, addr: "Rathaus M\\u00FCnchen" }, 
+            home: { lat: 48.13743, lon: 11.57549, rad: 100, addr: "Rathaus M\u00FCnchen" }, 
             tz: { dayOff: 0, hourOff: 0, mode: "auto" } 
         };
         const defaultHolidays = {
-            "2026-01-01": "Neujahr", "2026-01-06": "Hl. 3 K\\u00F6nige", "2026-04-03": "Karfreitag",
+            "2026-01-01": "Neujahr", "2026-01-06": "Hl. 3 K\u00F6nige", "2026-04-03": "Karfreitag",
             "2026-04-06": "Ostermontag", "2026-05-01": "Tag der Arbeit", "2026-05-14": "Himmelfahrt",
-            "2026-05-25": "Pfingstmontag", "2026-06-04": "Fronleichnam", "2026-08-15": "Mari\\u00E4 Himmelfahrt",
+            "2026-05-25": "Pfingstmontag", "2026-06-04": "Fronleichnam", "2026-08-15": "Mari\u00E4 Himmelfahrt",
             "2026-10-03": "Tag der Dt. Einheit", "2026-11-01": "Allerheiligen",
             "2026-12-25": "1. Weihnachtstag", "2026-12-26": "2. Weihnachtstag"
         };
@@ -779,7 +783,7 @@
                 document.getElementById("homeAddr").value = foundHome.addr;
             }
             saveCfg(); closeModal('locationModal');
-            if (confirm("Standorte aktualisiert! M\\u00F6chtest du die Arbeitszeiten anhand der neuen Standorte jetzt komplett neu berechnen?")) {
+            if (confirm("Standorte aktualisiert! M\u00F6chtest du die Arbeitszeiten anhand der neuen Standorte jetzt komplett neu berechnen?")) {
                 startProgress(); let allData = {}; for (const dS in trackData) allData[dS] = trackData[dS];
                 setTimeout(() => { finishLoad(allData); showToast("Zeiten neu berechnet!"); }, 500);
             }
@@ -835,7 +839,7 @@
         }
         function finishProgress() { clearInterval(progressTimer); document.getElementById("progressFill").style.width = "100%"; setTimeout(() => document.getElementById("progressFill").style.width = "0%", 500); }
 
-        function getStLabel(st) { const m = { "work":"B\\u00FCro", "homeoffice":"Home", "vacation":"Urlaub", "free":"Frei", "holiday":"Feiertag", "na":"N.A." }; return m[st] || "N.A."; }
+        function getStLabel(st) { const m = { "work":"B\u00FCro", "homeoffice":"Home", "vacation":"Urlaub", "free":"Frei", "holiday":"Feiertag", "na":"N.A." }; return m[st] || "N.A."; }
         function getStatusClass(st) { return "status-" + (st || "na"); }
         function hasTrace(d) { return Array.isArray(trackData[d]) && trackData[d].length > 1; }
 
@@ -845,16 +849,16 @@
         function closeHolidayEditor() { document.getElementById("holidayModal").style.display = "none"; }
 
         function useGPS(t) {
-            if (!navigator.geolocation) { alert("GPS wird nicht unterst\\u00FCtzt."); return; }
-            const btn = event.target; btn.textContent = "\\u23F3 Orten..."; btn.disabled = true;
+            if (!navigator.geolocation) { alert("GPS wird nicht unterst\u00FCtzt."); return; }
+            const btn = event.target; btn.textContent = "\u23F3 Orten..."; btn.disabled = true;
             navigator.geolocation.getCurrentPosition(
                 async pos => {
                     document.getElementById(t === "wp" ? "wpLat" : "homeLat").value = pos.coords.latitude.toFixed(6);
                     document.getElementById(t === "wp" ? "wpLon" : "homeLon").value = pos.coords.longitude.toFixed(6);
                     autoSave(t); await reverseLookup(t);
-                    btn.textContent = "\\uD83D\\uDCCD GPS-Position verwenden"; btn.disabled = false; showToast("Position gesetzt \\u2713");
+                    btn.textContent = "\uD83D\uDCCD GPS-Position verwenden"; btn.disabled = false; showToast("Position gesetzt \u2713");
                 },
-                err => { btn.textContent = "\\uD83D\\uDCCD GPS-Position verwenden"; btn.disabled = false; alert("GPS-Fehler. Bitte Standortfreigabe prüfen."); },
+                err => { btn.textContent = "\uD83D\uDCCD GPS-Position verwenden"; btn.disabled = false; alert("GPS-Fehler. Bitte Standortfreigabe prüfen."); },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         }
@@ -961,7 +965,7 @@
             const whens = xml.getElementsByTagName("when"), coords = xml.getElementsByTagName("gx:coord");
             if (whens.length > 0 && coords.length > 0 && whens.length === coords.length) {
                 for (let i = 0; i < whens.length; i++) {
-                    const ts = normalizeTimestamp(whens[i].textContent.trim()), parts = coords[i].textContent.trim().split(/\\s+/);
+                    const ts = normalizeTimestamp(whens[i].textContent.trim()), parts = coords[i].textContent.trim().split(/\s+/);
                     if (ts && parts.length >= 2) { const lon = parseFloat(parts[0]), lat = parseFloat(parts[1]); if (Number.isFinite(lat) && Number.isFinite(lon)) pts.push({ lat, lon, time: ts }); }
                 }
             } else {
@@ -984,7 +988,7 @@
         }
 
         function parseCSV(txt) {
-            const rows = txt.split(/\\r?\\n/).filter(l => l.trim().length > 0); if (rows.length < 2) return {};
+            const rows = txt.split(/\r?\n/).filter(l => l.trim().length > 0); if (rows.length < 2) return {};
             const delim = (rows[0].indexOf(';') > -1 && rows[0].indexOf(',') === -1) ? ';' : ',';
             const headers = parseCSVLine(rows[0], delim).map(h => h.replace(/["']/g, '').toLowerCase());
             const pts = [];
@@ -1085,12 +1089,12 @@
 
             collapseConfigs(); renderCal(); calcStats(); finishProgress(); showToast("Datei analysiert");
 
-            // Intelligente Validierung: Zeige Warnung, wenn kaum/keine gültigen Arbeitszeiten gefunden wurden
             if (totalDays > 0 && validDays === 0) {
                 const mStr = Array.from(monthsSet).join(", ");
-                setTimeout(() => {
-                    alert(`HINWEIS:\n\nEs wurden ${totalPts} GPS-Koordinaten für ${mStr} geladen, aber es konnten keine validen Kommen/Gehen-Zeiten berechnet werden.\n\nGrund:\nDeine konfigurierten Standorte (Arbeit/Zuhause) liegen nicht auf der geladenen Route, oder du hast dich dort nur sehr kurz (< 5 Minuten) aufgehalten.\n\nEmpfehlung:\nKlicke unten auf "Standorte prüfen & automatisch finden", um deine echten Standorte direkt aus der Route ermitteln zu lassen.`);
-                }, 300);
+                document.getElementById('assistantBox').style.display = 'flex';
+                document.getElementById('assistantText').innerHTML = `<strong>Achtung: Keine Arbeitszeiten gefunden!</strong><br>Es wurden ${totalPts} GPS-Punkte f&uuml;r ${mStr} geladen, aber dein eingestellter Arbeitsplatz/Zuhause liegt nicht auf der Route. Lass den Tracker deine echten Standorte jetzt automatisch ermitteln:`;
+            } else {
+                document.getElementById('assistantBox').style.display = 'none';
             }
         }
 
@@ -1135,7 +1139,7 @@
                 let cTxt = "";
                 if (data.commute && (data.commute.toW?.k > 0 || data.commute.toH?.k > 0)) {
                     if (data.commute.toW?.k > 0) cTxt += `<div>Hin ${data.commute.toW.k.toFixed(1)} km / ${Math.round(data.commute.toW.m)} min</div>`;
-                    if (data.commute.toH?.k > 0) cTxt += `<div>R\\u00FCck ${data.commute.toH.k.toFixed(1)} km / ${Math.round(data.commute.toH.m)} min</div>`;
+                    if (data.commute.toH?.k > 0) cTxt += `<div>R\u00FCck ${data.commute.toH.k.toFixed(1)} km / ${Math.round(data.commute.toH.m)} min</div>`;
                 } else if (data.totalKm) { cTxt = `<div>Gesamt ${data.totalKm.toFixed(1)} km</div>`; }
 
                 const w = document.createElement("div");
@@ -1147,7 +1151,7 @@
                         <div class="col-commute">${cTxt}</div>
                         <div class="col-controls">
                             <select class="status-select" onchange="setStatus('${dS}', this.value)">
-                                <option value="work" ${st === 'work' ? 'selected' : ''}>B\\u00FCro</option><option value="homeoffice" ${st === 'homeoffice' ? 'selected' : ''}>Home</option>
+                                <option value="work" ${st === 'work' ? 'selected' : ''}>B\u00FCro</option><option value="homeoffice" ${st === 'homeoffice' ? 'selected' : ''}>Home</option>
                                 <option value="vacation" ${st === 'vacation' ? 'selected' : ''}>Urlaub</option><option value="free" ${st === 'free' ? 'selected' : ''}>Frei</option>
                                 <option value="holiday" ${st === 'holiday' ? 'selected' : ''}>Feiertag</option><option value="na" ${st === 'na' ? 'selected' : ''}>N.A.</option>
                             </select>
@@ -1236,7 +1240,7 @@
                     localStorage.setItem("my_cfg", JSON.stringify(cfg)); localStorage.setItem("my_holidays", JSON.stringify(activeHolidays)); 
                     localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments)); localStorage.setItem("workData", JSON.stringify(workData)); localStorage.setItem("trackData", JSON.stringify(trackData));
                     setUIFromCfg(); initMaps(); renderCal(); calcStats(); showToast("Backup erfolgreich importiert");
-                } catch { alert("Ung\\u00FCltige Export-Datei."); }
+                } catch { alert("Ung\u00FCltige Export-Datei."); }
             }; reader.readAsText(file);
         }
 
@@ -1252,12 +1256,12 @@
                             const file = files[i], text = await file.text(), name = file.name.toLowerCase();
                             let parsedData = null;
                             if (name.endsWith('.gpx')) parsedData = parseGPX(text); else if (name.endsWith('.kml')) parsedData = parseKML(text); else if (name.endsWith('.csv')) parsedData = parseCSV(text);
-                            else { console.warn(`\\u00DCberspringe ${file.name}: Unbekanntes Dateiformat.`); continue; }
+                            else { console.warn(`\u00DCberspringe ${file.name}: Unbekanntes Dateiformat.`); continue; }
                             if (parsedData) { for (const [dS, pts] of Object.entries(parsedData)) { if (!allParsedData[dS]) allParsedData[dS] = []; allParsedData[dS].push(...pts); } }
                         }
                         for (const dS of Object.keys(allParsedData)) allParsedData[dS].sort((a, b) => a.time - b.time);
                         if (Object.keys(allParsedData).length > 0) finishLoad(allParsedData);
-                        else { finishProgress(); alert('Keine g\\u00FCltigen GPS-Daten gefunden.'); }
+                        else { finishProgress(); alert('Keine g\u00FCltigen GPS-Daten gefunden.'); }
                     } catch (err) { finishProgress(); alert('Fehler beim Laden: ' + err.message); }
                     e.target.value = '';
                 }
