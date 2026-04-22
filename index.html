@@ -478,10 +478,11 @@
                         </div>
                     </div>
                     <div class="config-actions">
-                        <button class="btn" onclick="searchAddress('home')">&#x1F50E; Adresse aus Text suchen</button>
-                        <button class="btn btn-secondary" onclick="useGPS('home')">&#x1F4CD; GPS-Position verwenden</button>
-                        <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
+                      <button class="btn" onclick="searchAddress('wp')">🔍 Adresse aus Text suchen</button>
+                      <button class="btn btn-secondary" onclick="useGPS('wp')">📍 GPS-Position verwenden</button>
+                      <button class="btn btn-secondary" onclick="saveCfg">Speichern</button>
                     </div>
+                    <p class="help-text">💡 Koordinaten unbekannt? Nach dem GPS-Import kann der Standort mit <strong>🔍 Standorte prüfen &amp; automatisch finden</strong> ermittelt werden.</p>
                     <div class="map-container"><div id="mapHome" class="map"></div></div>
                 </div>
             </div>
@@ -883,7 +884,16 @@
             try { workData = JSON.parse(localStorage.getItem("workData")) || {}; } catch { workData = {}; }
             try { trackData = JSON.parse(localStorage.getItem("trackData")) || {}; } catch { trackData = {}; }
             try { jsonAssignments = JSON.parse(localStorage.getItem("jsonAssignments")) || {}; } catch {}
-            setUIFromCfg();
+            // NACHHER – am Ende von loadSettings:
+            setUIFromCfg()
+            // Sektionen nur zuklappen, wenn bereits vom Default abweichende Werte gespeichert sind
+            const wpConfigured = cfg.wp.lat !== DEFAULTCFG.wp.lat || cfg.wp.lon !== DEFAULTCFG.wp.lon || cfg.wp.addr !== DEFAULTCFG.wp.addr;
+            const homeConfigured = cfg.home.lat !== DEFAULTCFG.home.lat || cfg.home.lon !== DEFAULTCFG.home.lon || cfg.home.addr !== DEFAULTCFG.home.addr;
+            const miscConfigured = cfg.tz.dayOff !== 0 || cfg.tz.hourOff !== 0 || Object.keys(jsonAssignments).length > 0;
+            
+            if (wpConfigured)   document.getElementById('sec-wp').classList.add('collapsed');
+            if (homeConfigured) document.getElementById('sec-home').classList.add('collapsed');
+            if (miscConfigured) document.getElementById('sec-misc').classList.add('collapsed');
         }
 
         function saveCfg() {
@@ -1093,7 +1103,7 @@
                 curMonth = new Date(parseInt(p[0]), parseInt(p[1]) - 1, 1);
             }
 
-            collapseConfigs(); renderCal(); calcStats(); finishProgress(); showToast("Datei analysiert");
+            renderCal(); calcStats(); finishProgress(); showToast("Datei analysiert");
 
             if (totalDays > 0 && validDays === 0) {
                 const mStr = Array.from(monthsSet).join(", ");
