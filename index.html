@@ -447,6 +447,7 @@
                         <button class="btn btn-secondary" onclick="useGPS('wp')">&#x1F4CD; GPS-Position verwenden</button>
                         <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
                     </div>
+                    <div class="small-note">Hinweis: Sp&auml;ter kann dies auch automatisch analysiert und definiert werden mit "&#x1F50D; Standorte pr&uuml;fen &amp; automatisch finden".</div>
                     <div class="map-container"><div id="mapWp" class="map"></div></div>
                 </div>
             </div>
@@ -480,6 +481,7 @@
                         <button class="btn btn-secondary" onclick="useGPS('home')">&#x1F4CD; GPS-Position verwenden</button>
                         <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
                     </div>
+                    <div class="small-note">Hinweis: Sp&auml;ter kann dies auch automatisch analysiert und definiert werden mit "&#x1F50D; Standorte pr&uuml;fen &amp; automatisch finden".</div>
                     <div class="map-container"><div id="mapHome" class="map"></div></div>
                 </div>
             </div>
@@ -804,9 +806,33 @@
         }
 
         function collapseConfigs() { 
-            document.getElementById('sec-wp').classList.add('collapsed'); 
-            document.getElementById('sec-home').classList.add('collapsed'); 
-            document.getElementById('sec-misc').classList.add('collapsed'); 
+            const wpAddr = (document.getElementById('wpAddr')?.value || '').trim();
+            const wpLat = (document.getElementById('wpLat')?.value || '').trim();
+            const wpLon = (document.getElementById('wpLon')?.value || '').trim();
+            const wpRad = (document.getElementById('wpRad')?.value || '').trim();
+            const wpHours = (document.getElementById('wpHours')?.value || '').trim();
+            const wpBreak = (document.getElementById('wpBreak')?.value || '').trim();
+
+            const homeAddr = (document.getElementById('homeAddr')?.value || '').trim();
+            const homeLat = (document.getElementById('homeLat')?.value || '').trim();
+            const homeLon = (document.getElementById('homeLon')?.value || '').trim();
+            const homeRad = (document.getElementById('homeRad')?.value || '').trim();
+
+            const dayOffset = (document.getElementById('dayOffset')?.value || '').trim();
+            const hourOffset = (document.getElementById('hourOffset')?.value || '').trim();
+            const tzMode = (document.getElementById('tzMode')?.value || '').trim();
+            const roundQuarter = document.getElementById('roundQuarter')?.checked ?? true;
+            const holidayRows = document.querySelectorAll('#holidayList .holiday-item').length;
+
+            const wpConfigured = !!(wpAddr || wpLat || wpLon || (wpRad && wpRad !== '100') || (wpHours && wpHours !== '8') || (wpBreak && wpBreak !== '30'));
+            const homeConfigured = !!(homeAddr || homeLat || homeLon || (homeRad && homeRad !== '100'));
+            const miscConfigured = !!((dayOffset && dayOffset !== '0') || (hourOffset && hourOffset !== '0') || (tzMode && tzMode !== 'auto') || roundQuarter === false || holidayRows > 0);
+
+            if (!wpConfigured && !homeConfigured && !miscConfigured) return;
+
+            if (wpConfigured) document.getElementById('sec-wp')?.classList.add('collapsed');
+            if (homeConfigured) document.getElementById('sec-home')?.classList.add('collapsed');
+            if (miscConfigured) document.getElementById('sec-misc')?.classList.add('collapsed');
         }
 
         function toggleSimpleView() {
