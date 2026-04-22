@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GPS Arbeitszeit-Tracker v1.7</title>
+    <title>GPS Arbeitszeit-Tracker v1.8</title>
 
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#006400" />
@@ -63,15 +63,40 @@
         .header h1 { margin: 0; font-size: 2rem; font-weight: 300; }
         .header p { margin: 8px 0 0; opacity: 0.95; }
 
+        .step-header {
+            background: #f0f8ff;
+            color: var(--green-dark);
+            padding: 12px 20px;
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: 700;
+            border-bottom: 1px solid #dce8f5;
+            border-top: 1px solid #dce8f5;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .step-header:first-of-type { border-top: none; }
+
         .upload-section { 
             padding: 18px 20px; 
-            border-bottom: 1px solid #eee; 
-            background: #f8f9fa; 
+            background: #fcfcfc; 
             display: flex; 
             flex-wrap: wrap; 
             align-items: center; 
             gap: 12px; 
         }
+
+        .assistant-section {
+            padding: 16px 20px;
+            background: #fff9e6;
+            border-top: 1px solid #f1e2b3;
+            border-bottom: 1px solid #f1e2b3;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .assistant-section p { margin: 0; font-size: 14px; color: #555; }
 
         .file-input-wrapper { position: relative; display: inline-block; }
         .file-input { display: none; }
@@ -121,14 +146,15 @@
             transition: width 0.25s ease; 
         }
 
-        .config-container { padding: 0 20px 20px; }
+        .config-container { padding: 20px; background: #fff; }
         .config-section { 
             background: var(--green-bg); 
             border: 1px solid #b3d7b3; 
             border-radius: 10px; 
-            margin: 16px 0; 
+            margin-bottom: 16px; 
             overflow: hidden; 
         }
+        .config-section:last-child { margin-bottom: 0; }
         .config-section.home { background: var(--blue-light); border-color: #b3d1e6; }
         .config-section.misc { background: #f7f7f7; border-color: #ddd; }
         .config-header { 
@@ -165,7 +191,7 @@
         .map-container { margin-top: 15px; border: 1px solid #ccc; border-radius: 8px; overflow: hidden; }
         .map { height: 300px; width: 100%; }
 
-        .stats-wrap { padding: 0 20px 10px; }
+        .stats-wrap { padding: 15px 20px 10px; background: #fff; }
         .stats-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
@@ -184,7 +210,7 @@
         .val-positive { color: #28a745; }
         .val-negative { color: var(--danger); }
 
-        .calendar-wrap { padding: 0 20px 20px; }
+        .calendar-wrap { padding: 0 20px 20px; background: #fff;}
         .calendar-header { 
             display: flex; 
             align-items: center; 
@@ -238,48 +264,23 @@
             cursor: pointer;
             user-select: none;
         }
-        .toggle-switch {
-            position: relative;
-            width: 42px;
-            height: 24px;
-            flex-shrink: 0;
-        }
+        .toggle-switch { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .toggle-slider {
-            position: absolute;
-            inset: 0;
-            background: #ccc;
-            border-radius: 999px;
-            transition: background 0.2s;
+            position: absolute; inset: 0; background: #ccc; border-radius: 999px; transition: background 0.2s;
         }
         .toggle-slider::before {
-            content: "";
-            position: absolute;
-            width: 18px;
-            height: 18px;
-            left: 3px;
-            bottom: 3px;
-            background: #fff;
-            border-radius: 50%;
-            transition: transform 0.2s;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            content: ""; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px;
+            background: #fff; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
         .toggle-switch input:checked + .toggle-slider { background: var(--green-dark); }
         .toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
 
-        .simple-view-active #calendarList {
-            border: 2px solid #dfe7df;
-            border-radius: 12px;
-            overflow: hidden;
-        }
+        .simple-view-active #calendarList { border: 2px solid #dfe7df; border-radius: 12px; overflow: hidden; }
 
         .workday-entry { 
-            display: flex; 
-            align-items: flex-start; 
-            gap: 12px; 
-            padding: 14px 14px; 
-            border-bottom: 1px solid #eee; 
-            font-size: 14.5px; 
+            display: flex; align-items: flex-start; gap: 12px; padding: 14px; 
+            border-bottom: 1px solid #eee; font-size: 14.5px; 
         }
         .workday-entry:last-child { border-bottom: none; }
 
@@ -291,24 +292,13 @@
         .col-controls { width: 150px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; margin-left: auto; }
 
         .date-main { font-weight: 700; }
-        .mobile-subline { 
-            display: none; 
-            font-size: 12px; 
-            color: var(--muted); 
-            margin-top: 2px; 
-            line-height: 1.2; 
-            text-align: center; 
-        }
+        .mobile-subline { display: none; font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.2; text-align: center; }
         .date-status { color: #444; }
         .leave-worktime { color: var(--green-dark); font-weight: 600; }
 
         .status-badge { 
-            display: inline-block; 
-            border-radius: 999px; 
-            font-size: 12px; 
-            padding: 4px 8px; 
-            font-weight: 700; 
-            white-space: nowrap; 
+            display: inline-block; border-radius: 999px; font-size: 12px; 
+            padding: 4px 8px; font-weight: 700; white-space: nowrap; 
         }
         .status-work { background: #d4edda; color: #155724; } 
         .status-homeoffice { background: #d1ecf1; color: #0c5460; }
@@ -317,112 +307,48 @@
         .status-na { background: #e9ecef; color: #495057; } 
         .status-holiday { background: #fde2e1; color: #9b1c1c; }
 
-        .time-row { 
-            display: flex; 
-            align-items: flex-start; 
-            justify-content: space-between; 
-            gap: 8px; 
-        }
+        .time-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
         .time-row span { color: var(--muted); margin-top: 4px; }
 
         .time-wrapper { display: flex; flex-direction: column; align-items: center; width: 66px; }
         .time-display { 
-            background: #f8f9fa; 
-            border: 1px solid #e6e6e6; 
-            border-radius: 6px; 
-            padding: 4px 0; 
-            width: 100%; 
-            text-align: center; 
-            cursor: pointer; 
-            user-select: none; 
+            background: #f8f9fa; border: 1px solid #e6e6e6; border-radius: 6px; 
+            padding: 4px 0; width: 100%; text-align: center; cursor: pointer; user-select: none; 
         }
         .time-display:hover { background: #eef7ee; }
-        .time-input { 
-            width: 100%; 
-            padding: 4px 0; 
-            text-align: center; 
-            border: 1px solid #ccc; 
-            border-radius: 6px; 
-            font-size: 14px; 
-        }
+        .time-input { width: 100%; padding: 4px 0; text-align: center; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
 
         .duration-header { display: block; color: var(--muted); font-size: 11px; margin-bottom: 4px; text-transform: uppercase; }
         .work-duration { font-weight: 700; font-size: 15px; } 
         .overtime { color: #28a745; } 
         .undertime { color: var(--danger); }
 
-        .status-select { 
-            width: 100%; 
-            padding: 5px 6px; 
-            font-size: 13px; 
-            border: 1px solid #ddd; 
-            border-radius: 6px; 
-            background: #fff; 
-        }
+        .status-select { width: 100%; padding: 5px 6px; font-size: 13px; border: 1px solid #ddd; border-radius: 6px; background: #fff; }
         .btn-row { display: flex; gap: 4px; justify-content: flex-end; }
-        .action-btn { 
-            border: none; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            padding: 5px 7px; 
-            min-width: 32px; 
-            font-size: 13px; 
-            color: #fff; 
-        }
+        .action-btn { border: none; border-radius: 6px; cursor: pointer; padding: 5px 7px; min-width: 32px; font-size: 13px; color: #fff; }
         .btn-trace { background: #6c757d; } 
         .btn-info { background: var(--info); } 
         .btn-edit { background: var(--warning); color: #333; } 
         .btn-save { background: #28a745; }
 
-        .details-panel { 
-            display: none; 
-            background: #f0f8ff; 
-            border-top: 1px solid #dee2e6; 
-            padding: 8px 14px 10px 124px; 
-            font-size: 13px; 
-            color: #333; 
-        }
+        .details-panel { display: none; background: #f0f8ff; border-top: 1px solid #dee2e6; padding: 8px 14px 10px 124px; font-size: 13px; color: #333; }
         .details-panel.show { display: block; }
-        .holiday-indicator { 
-            background: #fff3cd; 
-            color: #856404; 
-            font-size: 13px; 
-            padding: 6px 14px 8px 124px; 
-            border-top: 1px solid #f1df9d; 
-        }
+        .holiday-indicator { background: #fff3cd; color: #856404; font-size: 13px; padding: 6px 14px 8px 124px; border-top: 1px solid #f1df9d; }
 
         .workday-entry.inactive { background-color: #fafafa; }
         .workday-entry.inactive .date-main, .workday-entry.inactive .date-status { color: #888; }
-        .workday-entry.inactive .col-times, 
-        .workday-entry.inactive .col-duration, 
-        .workday-entry.inactive .col-commute { 
-            opacity: 0.35; 
-            filter: grayscale(100%); 
-            pointer-events: none; 
+        .workday-entry.inactive .col-times, .workday-entry.inactive .col-duration, .workday-entry.inactive .col-commute { 
+            opacity: 0.35; filter: grayscale(100%); pointer-events: none; 
         }
 
         .toast-save { 
-            position: fixed; 
-            bottom: 20px; 
-            right: 20px; 
-            background: #333; 
-            color: white; 
-            padding: 10px 16px; 
-            border-radius: 999px; 
-            font-size: 13px; 
-            opacity: 0; 
-            transition: opacity 0.25s ease; 
-            pointer-events: none; 
-            z-index: 3000; 
+            position: fixed; bottom: 20px; right: 20px; background: #333; color: white; 
+            padding: 10px 16px; border-radius: 999px; font-size: 13px; opacity: 0; 
+            transition: opacity 0.25s ease; pointer-events: none; z-index: 3000; 
         }
         .toast-save.show { opacity: 0.92; }
 
-        .footer { 
-            margin-top: 30px; 
-            padding: 22px 20px; 
-            border-top: 1px solid #eee; 
-            background: #fafafa; 
-        }
+        .footer { margin-top: 30px; padding: 22px 20px; border-top: 1px solid #eee; background: #fafafa; }
         .footer-info { text-align: center; line-height: 1.6; color: #555; font-size: 14px; }
         .footer-info p { margin: 6px 0; }
         .footer-info a { color: var(--green-dark); text-decoration: none; font-weight: 600; }
@@ -430,54 +356,24 @@
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 5000; }
         .modal-content { 
-            background: #fff; 
-            width: min(96vw, 900px); 
-            max-height: 92vh; 
-            overflow: auto; 
-            margin: 4vh auto; 
-            border-radius: 12px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2); 
+            background: #fff; width: min(96vw, 1000px); max-height: 92vh; 
+            overflow: auto; margin: 4vh auto; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); 
         }
-        .modal-header { 
-            padding: 14px 18px; 
-            border-bottom: 1px solid #eee; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
+        .modal-header { padding: 14px 18px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
         .modal-header h3 { margin: 0; }
         .modal-close { font-size: 24px; cursor: pointer; color: #666; line-height: 1; }
         .modal-body { padding: 16px 18px 20px; }
 
         #traceMap { height: 460px; border-radius: 10px; overflow: hidden; }
-        .trace-legend { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 15px; 
-            margin-top: 12px; 
-            justify-content: center; 
-            font-size: 13px; 
-            background: #f8f9fa; 
-            padding: 8px; 
-            border-radius: 8px; 
-            border: 1px solid #eee; 
-        }
+        .trace-legend { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 12px; justify-content: center; font-size: 13px; background: #f8f9fa; padding: 8px; border-radius: 8px; border: 1px solid #eee; }
         .trace-legend span { display: inline-flex; align-items: center; gap: 4px; font-weight: 500; }
         .trace-legend .box { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
 
-        textarea#holidayEditor { 
-            width: 100%; 
-            min-height: 280px; 
-            border: 1px solid #ccc; 
-            border-radius: 8px; 
-            padding: 10px; 
-            font-family: monospace; 
-            font-size: 13px; 
-            resize: vertical; 
-        }
+        textarea#holidayEditor { width: 100%; min-height: 280px; border: 1px solid #ccc; border-radius: 8px; padding: 10px; font-family: monospace; font-size: 13px; resize: vertical; }
 
         @media (max-width: 768px) {
             body { padding: 10px; }
+            .step-header { font-size: 1.05rem; padding: 10px 15px; }
             .upload-section { padding: 14px 12px; }
             .config-container, .stats-wrap, .calendar-wrap { padding-left: 8px; padding-right: 8px; }
             .simple-table th, .simple-table td { padding: 14px 10px; }
@@ -508,21 +404,7 @@
             <p>Kompakte Analyse mit Fahrtweg &amp; Zeiterfassung aus GPX-, KML- und CSV-Dateien</p>
         </div>
 
-        <div class="upload-section">
-            <button class="btn btn-warning" onclick="checkLocations()" style="width: 100%; margin-bottom: 10px;">&#x1F50D; Standorte pr&uuml;fen &amp; automatisch finden</button>
-            <div class="file-input-wrapper">
-                <input type="file" id="trackFile" class="file-input" accept=".gpx,.kml,.csv" multiple>
-                <label for="trackFile" class="file-input-label">&#x1F4CD; Strecke laden (GPX/KML/CSV)</label>
-            </div>
-            <div class="file-input-wrapper">
-                <input type="file" id="importFile" class="file-input" accept=".json" />
-                <label for="importFile" class="file-input-label btn-secondary">&#x1F4C2; Import</label>
-            </div>
-            <button class="btn btn-secondary" onclick="exportData()">&#x1F4BE; Export</button>
-            <button class="btn btn-danger" onclick="resetAll()">&#x1F5D1;&#xFE0F; Reset</button>
-            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-        </div>
-
+        <h2 class="step-header">1. Standorte &amp; Einstellungen definieren</h2>
         <div class="config-container">
             <div class="config-section" id="sec-wp">
                 <div class="config-header" onclick="toggleSection('sec-wp')">
@@ -562,9 +444,6 @@
                         <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
                     </div>
                     <div class="map-container"><div id="mapWp" class="map"></div></div>
-                    <div class="help-text" style="text-align: center; margin-top: 6px;">
-                        Tipp: <b>Klicke auf die Karte</b>, um den Arbeitsplatz dort zu setzen.
-                    </div>
                 </div>
             </div>
 
@@ -598,9 +477,6 @@
                         <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
                     </div>
                     <div class="map-container"><div id="mapHome" class="map"></div></div>
-                    <div class="help-text" style="text-align: center; margin-top: 6px;">
-                        Tipp: <b>Klicke auf die Karte</b>, um das Zuhause dort zu setzen.
-                    </div>
                 </div>
             </div>
 
@@ -633,13 +509,13 @@
                                     <input type="checkbox" id="roundQuarter" checked onchange="renderCal()">
                                     <span class="toggle-slider"></span>
                                 </span>
-                                Kommen &amp; Gehen auf Viertelstunde runden
+                                Kommen &amp; Gehen runden
                             </label>
                         </div>
                     </div>
                     <div class="config-group" style="margin-top: 15px;">
                         <label>JSON-Namenskonfiguration (optional, Format: {"YYYY-MM-DD":"Name"})</label>
-                        <textarea id="jsonConfig" style="height: 80px;" placeholder='{ "2026-04-09": "Sebastian R&ouml;&szlig;er" }'></textarea>
+                        <textarea id="jsonConfig" style="height: 80px;" placeholder='{ "2026-04-09": "Max Mustermann" }'></textarea>
                     </div>
                     <div class="config-actions">
                         <button class="btn" onclick="applyTimezoneSettings()">Einstellungen anwenden</button>
@@ -649,6 +525,27 @@
             </div>
         </div>
 
+        <h2 class="step-header">2. GPS-Strecke laden</h2>
+        <div class="upload-section">
+            <div class="file-input-wrapper">
+                <input type="file" id="trackFile" class="file-input" accept=".gpx,.kml,.csv" multiple>
+                <label for="trackFile" class="file-input-label">&#x1F4CD; Strecke laden (GPX/KML/CSV)</label>
+            </div>
+            <div class="file-input-wrapper">
+                <input type="file" id="importFile" class="file-input" accept=".json" />
+                <label for="importFile" class="file-input-label btn-secondary">&#x1F4C2; Backup Import</label>
+            </div>
+            <button class="btn btn-secondary" onclick="exportData()">&#x1F4BE; Export</button>
+            <button class="btn btn-danger" onclick="resetAll()">&#x1F5D1;&#xFE0F; Reset</button>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+
+        <div class="assistant-section">
+            <p><strong>Standorte unbekannt oder keine Zeiten gefunden nach dem Laden?</strong> Lass den Tracker deine echten Standorte anhand der Route ermitteln:</p>
+            <button class="btn btn-warning" onclick="checkLocations()" style="width: 100%; max-width: 400px;">&#x1F50D; Standorte pr&uuml;fen &amp; automatisch finden</button>
+        </div>
+
+        <h2 class="step-header">3. Auswertung &amp; Zeiten</h2>
         <div class="stats-wrap">
             <div class="stats-grid">
                 <div class="stat-card"><div class="stat-val" id="statDays">0</div><div class="stat-lbl">Tage</div></div>
@@ -675,12 +572,28 @@
 
         <div class="footer">
             <div class="footer-info">
-                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.7</a></p>
+                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.8</a></p>
                 <p>Entwickelt von <b>Sebastian R&ouml;&szlig;er</b></p>
-                <p>
-                    <a href="https://github.com/basecore/arbeitszeit-tracker" target="_blank">GitHub Projekt</a> |
-                    <a href="https://github.com/basecore/arbeitszeit-tracker/issues" target="_blank">Hilfe / Issues</a>
-                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="locationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Standorte pr&uuml;fen &amp; ermitteln</h3>
+                <span class="modal-close" onclick="closeModal('locationModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="checkMap" style="height: 400px; border-radius: 10px; overflow: hidden; margin-bottom: 15px;"></div>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">
+                    <div id="checkResult">Klicke auf "Standorte automatisch finden", um Adressen und Koordinaten basierend auf deinen hochgeladenen GPS-Routen zu ermitteln.</div>
+                </div>
+                <div class="config-actions">
+                    <button class="btn btn-warning" onclick="autoFindLocations()">&#x1F4CD; Standorte automatisch finden</button>
+                    <button class="btn btn-save" onclick="applyFoundLocations()" id="btnApplyLocs" style="display:none;">&#x1F4BE; Gefundene Standorte &uuml;bernehmen</button>
+                </div>
             </div>
         </div>
     </div>
@@ -699,25 +612,6 @@
                     <span><div class="box" style="background: var(--route-pause);"></div> Pause/Verlassen</span>
                     <span><div class="box" style="background: var(--route-arbeit);"></div> Am Arbeitsplatz</span>
                     <span><div class="box" style="background: var(--route-sonst);"></div> Sonstige Strecke</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="locationModal">
-        <div class="modal-content" style="width: min(96vw, 900px);">
-            <div class="modal-header">
-                <h3>Standorte pr&uuml;fen &amp; ermitteln</h3>
-                <span class="modal-close" onclick="closeModal('locationModal')">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div id="checkMap" style="height: 400px; border-radius: 10px; overflow: hidden; margin-bottom: 15px;"></div>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 13px;">
-                    <div id="checkResult">Klicke auf "Standorte automatisch finden", um die besten Koordinaten basierend auf deinen hochgeladenen GPS-Routen zu ermitteln.</div>
-                </div>
-                <div class="config-actions">
-                    <button class="btn" onclick="autoFindLocations()">&#x1F4CD; Standorte automatisch finden</button>
-                    <button class="btn btn-save" onclick="applyFoundLocations()" id="btnApplyLocs" style="display:none;">&#x1F4BE; Gefundene Standorte &uuml;bernehmen</button>
                 </div>
             </div>
         </div>
@@ -744,31 +638,36 @@
     <script>
         const DEFAULT_CFG = { 
             wp: { lat: 48.26134, lon: 11.67175, rad: 100, hours: 7, break: 30, addr: "Forschungszentrum Garching" }, 
-            home: { lat: 48.13743, lon: 11.57549, rad: 100, addr: "Rathaus M\u00FCnchen" }, 
+            home: { lat: 48.13743, lon: 11.57549, rad: 100, addr: "Rathaus M\\u00FCnchen" }, 
             tz: { dayOff: 0, hourOff: 0, mode: "auto" } 
         };
         const defaultHolidays = {
-            "2026-01-01": "Neujahr", "2026-01-06": "Hl. 3 K\u00F6nige", "2026-04-03": "Karfreitag",
+            "2026-01-01": "Neujahr", "2026-01-06": "Hl. 3 K\\u00F6nige", "2026-04-03": "Karfreitag",
             "2026-04-06": "Ostermontag", "2026-05-01": "Tag der Arbeit", "2026-05-14": "Himmelfahrt",
-            "2026-05-25": "Pfingstmontag", "2026-06-04": "Fronleichnam", "2026-08-15": "Mari\u00E4 Himmelfahrt",
+            "2026-05-25": "Pfingstmontag", "2026-06-04": "Fronleichnam", "2026-08-15": "Mari\\u00E4 Himmelfahrt",
             "2026-10-03": "Tag der Dt. Einheit", "2026-11-01": "Allerheiligen",
             "2026-12-25": "1. Weihnachtstag", "2026-12-26": "2. Weihnachtstag"
         };
 
-        let cfg = structuredClone(DEFAULT_CFG), 
-            activeHolidays = {}, 
-            workData = {}, 
-            trackData = {}, 
-            jsonAssignments = {}, 
-            curMonth = new Date(), 
-            editModeDays = {},
-            simpleView = false;
+        let cfg = structuredClone(DEFAULT_CFG), activeHolidays = {}, workData = {}, trackData = {}, 
+            jsonAssignments = {}, curMonth = new Date(), editModeDays = {}, simpleView = false;
 
         let mapWp, mapHome, wpMarker, homeMarker, wpCircle, homeCircle, traceMap, traceLayerGroup, progressTimer = null;
+        let checkMap = null, checkLayerGroup = null, foundWp = null, foundHome = null;
 
-        
-        let checkMap = null, checkLayerGroup = null;
-        let foundWp = null, foundHome = null;
+        async function getAddress(lat, lon) {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+                const data = await res.json();
+                if (data.address) {
+                    const street = data.address.road || "";
+                    const house = data.address.house_number || "";
+                    const city = data.address.city || data.address.town || data.address.village || "";
+                    if (street && city) return `${street} ${house}, ${city}`.trim();
+                }
+                return data.display_name || "Unbekannte Adresse";
+            } catch { return "Adresse konnte nicht ermittelt werden"; }
+        }
 
         function checkLocations() {
             document.getElementById("locationModal").style.display = "block";
@@ -779,7 +678,6 @@
                     checkMap = L.map("checkMap").setView([cfg.wp.lat, cfg.wp.lon], 11);
                     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:19}).addTo(checkMap);
                 }
-
                 if (checkLayerGroup) checkMap.removeLayer(checkLayerGroup);
                 checkLayerGroup = L.layerGroup().addTo(checkMap);
 
@@ -800,25 +698,23 @@
                     const minLat = Math.min(...allLats), maxLat = Math.max(...allLats);
                     const minLon = Math.min(...allLons), maxLon = Math.max(...allLons);
                     checkMap.fitBounds([[minLat, minLon], [maxLat, maxLon]], { padding: [20, 20] });
-                    document.getElementById("checkResult").innerHTML = `<b>${Object.keys(trackData).length} Tage mit Routen gefunden.</b><br>Die roten Punkte zeigen, wo du dich aufgehalten hast. Liegen die gr&uuml;nen (Arbeit) und blauen (Zuhause) Kreise richtig auf den roten Clustern?`;
+                    document.getElementById("checkResult").innerHTML = `<b>${Object.keys(trackData).length} Tage mit GPS-Routen im Speicher.</b><br>Die roten Punkte zeigen, wo du warst. Liegen die gr&uuml;nen (Arbeit) und blauen (Zuhause) Kreise genau auf den intensivsten roten Clustern?`;
                 } else {
-                    document.getElementById("checkResult").innerHTML = "<b>Keine GPS-Daten im Speicher gefunden.</b> Bitte lade zuerst Dateien hoch.";
+                    document.getElementById("checkResult").innerHTML = "<b>Keine GPS-Daten im Speicher gefunden.</b> Bitte lade zuerst GPX/KML/CSV-Dateien hoch.";
                 }
-
                 checkMap.invalidateSize();
             }, 100);
         }
 
-        function autoFindLocations() {
-            document.getElementById("checkResult").innerHTML = "<i>Analysiere Daten... Bitte warten.</i>";
+        async function autoFindLocations() {
+            document.getElementById("checkResult").innerHTML = "<i>Analysiere Daten und frage Adressen ab... Bitte warten.</i>";
 
-            setTimeout(() => {
+            setTimeout(async () => {
                 let homePoints = [], workPoints = [];
                 for (const [dS, pts] of Object.entries(trackData)) {
                     if (!pts || !pts.length) continue;
                     const d = new Date(dS + "T12:00");
                     const isWeekend = [0,6].includes(d.getDay());
-
                     for (const p of pts) {
                         const h = new Date(p.time).getHours();
                         if (h >= 22 || h <= 5) homePoints.push(p);
@@ -830,12 +726,9 @@
                     if (!pts.length) return null;
                     let maxNeighbors = -1, bestP = null;
                     const sample = pts.length > 300 ? pts.filter((_, i) => i % Math.ceil(pts.length/300) === 0) : pts;
-
                     for (const p of sample) {
                         let neighbors = 0;
-                        for (const p2 of sample) {
-                            if (getDist(p.lat, p.lon, p2.lat, p2.lon) < threshold) neighbors++;
-                        }
+                        for (const p2 of sample) { if (getDist(p.lat, p.lon, p2.lat, p2.lon) < threshold) neighbors++; }
                         if (neighbors > maxNeighbors) { maxNeighbors = neighbors; bestP = p; }
                     }
                     return bestP;
@@ -847,18 +740,22 @@
                 if (checkLayerGroup) checkMap.removeLayer(checkLayerGroup);
                 checkLayerGroup = L.layerGroup().addTo(checkMap);
 
-                let resHtml = "<b>Analyse abgeschlossen!</b><br>";
+                let resHtml = "<b>Analyse abgeschlossen!</b><br><br>";
 
                 if (foundHome) {
+                    const addr = await getAddress(foundHome.lat, foundHome.lon);
                     L.circle([foundHome.lat, foundHome.lon], { radius: cfg.home.rad, color: "#ff00ff", fillColor: "#ff88ff", fillOpacity: 0.5 }).addTo(checkLayerGroup).bindPopup("NEUES Zuhause");
                     L.marker([foundHome.lat, foundHome.lon]).addTo(checkLayerGroup);
-                    resHtml += `&#x1F3E0; Zuhause gefunden bei ${foundHome.lat.toFixed(5)}, ${foundHome.lon.toFixed(5)}<br>`;
-                } else { resHtml += `&#x1F3E0; Nicht genug Daten f&uuml;r Zuhause (Nachts).<br>`; }
+                    resHtml += `&#x1F3E0; <b>Zuhause gefunden bei:</b><br>${addr}<br><span style="color:#777; font-size:0.9em;">(${foundHome.lat.toFixed(5)}, ${foundHome.lon.toFixed(5)})</span><br><br>`;
+                    foundHome.addr = addr;
+                } else { resHtml += `&#x1F3E0; Nicht genug Daten f&uuml;r Zuhause (Nachts).<br><br>`; }
 
                 if (foundWp) {
+                    const addr = await getAddress(foundWp.lat, foundWp.lon);
                     L.circle([foundWp.lat, foundWp.lon], { radius: cfg.wp.rad, color: "#ffff00", fillColor: "#ffff88", fillOpacity: 0.5 }).addTo(checkLayerGroup).bindPopup("NEUER Arbeitsplatz");
                     L.marker([foundWp.lat, foundWp.lon]).addTo(checkLayerGroup);
-                    resHtml += `&#x1F3E2; Arbeitsplatz gefunden bei ${foundWp.lat.toFixed(5)}, ${foundWp.lon.toFixed(5)}<br>`;
+                    resHtml += `&#x1F3E2; <b>Arbeitsplatz gefunden bei:</b><br>${addr}<br><span style="color:#777; font-size:0.9em;">(${foundWp.lat.toFixed(5)}, ${foundWp.lon.toFixed(5)})</span><br>`;
+                    foundWp.addr = addr;
                 } else { resHtml += `&#x1F3E2; Nicht genug Daten f&uuml;r Arbeitsplatz (Mo-Fr, tags&uuml;ber).<br>`; }
 
                 L.circle([cfg.wp.lat, cfg.wp.lon], { radius: cfg.wp.rad, color: "#006400", fillColor: "none", fillOpacity: 0, weight: 2, dashArray: "5,5" }).addTo(checkLayerGroup);
@@ -870,30 +767,32 @@
             }, 100);
         }
 
-        async function applyFoundLocations() {
-            if (foundWp) { document.getElementById("wpLat").value = foundWp.lat.toFixed(6); document.getElementById("wpLon").value = foundWp.lon.toFixed(6); await reverseLookup("wp"); }
-            if (foundHome) { document.getElementById("homeLat").value = foundHome.lat.toFixed(6); document.getElementById("homeLon").value = foundHome.lon.toFixed(6); await reverseLookup("home"); }
+        function applyFoundLocations() {
+            if (foundWp) { 
+                document.getElementById("wpLat").value = foundWp.lat.toFixed(6); 
+                document.getElementById("wpLon").value = foundWp.lon.toFixed(6); 
+                document.getElementById("wpAddr").value = foundWp.addr;
+            }
+            if (foundHome) { 
+                document.getElementById("homeLat").value = foundHome.lat.toFixed(6); 
+                document.getElementById("homeLon").value = foundHome.lon.toFixed(6); 
+                document.getElementById("homeAddr").value = foundHome.addr;
+            }
             saveCfg(); closeModal('locationModal');
-            if (confirm("Standorte aktualisiert! M&ouml;chtest du die GPS-Zeiten jetzt mit den neuen Standorten komplett neu berechnen?")) {
+            if (confirm("Standorte aktualisiert! M\\u00F6chtest du die Arbeitszeiten anhand der neuen Standorte jetzt komplett neu berechnen?")) {
                 startProgress(); let allData = {}; for (const dS in trackData) allData[dS] = trackData[dS];
                 setTimeout(() => { finishLoad(allData); showToast("Zeiten neu berechnet!"); }, 500);
             }
         }
 
         function showToast(msg = "Gespeichert") { 
-            const el = document.getElementById("toastSave"); 
-            el.textContent = msg; 
-            el.classList.add("show"); 
-            clearTimeout(el._t); 
-            el._t = setTimeout(() => el.classList.remove("show"), 1500); 
+            const el = document.getElementById("toastSave"); el.textContent = msg; 
+            el.classList.add("show"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("show"), 2500); 
         }
 
         function toggleSection(id) { 
             document.getElementById(id).classList.toggle("collapsed"); 
-            setTimeout(() => { 
-                if (id === 'sec-wp' && mapWp) mapWp.invalidateSize(); 
-                if (id === 'sec-home' && mapHome) mapHome.invalidateSize(); 
-            }, 100); 
+            setTimeout(() => { if (id === 'sec-wp' && mapWp) mapWp.invalidateSize(); if (id === 'sec-home' && mapHome) mapHome.invalidateSize(); }, 100); 
         }
 
         function collapseConfigs() { 
@@ -903,169 +802,74 @@
         }
 
         function toggleSimpleView() {
-            simpleView = !simpleView;
-            document.body.classList.toggle('simple-view-active', simpleView);
-            document.getElementById('simpleViewBtn').textContent = simpleView ? 'Normale Ansicht' : 'Einfache Ansicht';
-            renderCal();
+            simpleView = !simpleView; document.body.classList.toggle('simple-view-active', simpleView);
+            document.getElementById('simpleViewBtn').textContent = simpleView ? 'Normale Ansicht' : 'Einfache Ansicht'; renderCal();
         }
 
-        function fmtTime(ts) { 
-            return !ts ? "--:--" : new Date(ts).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }); 
-        }
-
-        function roundToQuarter(ts) {
-            if (!ts) return ts;
-            const ms = 15 * 60 * 1000;
-            return Math.round(ts / ms) * ms;
-        }
-
-        function getRoundedTime(ts) {
-            const doRound = document.getElementById("roundQuarter")?.checked ?? true;
-            return doRound ? roundToQuarter(ts) : ts;
-        }
-
-        function timeToInput(ts) { 
-            if (!ts) return ""; 
-            const d = new Date(ts); 
-            return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"); 
-        }
-
+        function fmtTime(ts) { return !ts ? "--:--" : new Date(ts).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }); }
+        function roundToQuarter(ts) { if (!ts) return ts; const ms = 15 * 60 * 1000; return Math.round(ts / ms) * ms; }
+        function getRoundedTime(ts) { const doRound = document.getElementById("roundQuarter")?.checked ?? true; return doRound ? roundToQuarter(ts) : ts; }
+        function timeToInput(ts) { if (!ts) return ""; const d = new Date(ts); return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"); }
         function fmtDurationHours(h, showPlus = false) { 
             if (typeof h !== "number" || isNaN(h)) return "--:--"; 
-            const m = Math.round(h * 60), a = Math.abs(m); 
-            let sign = m < 0 ? "-" : "";
-            if (showPlus && m > 0) sign = "+";
+            const m = Math.round(h * 60), a = Math.abs(m); let sign = m < 0 ? "-" : ""; if (showPlus && m > 0) sign = "+";
             return sign + Math.floor(a/60) + ":" + String(a%60).padStart(2,"0"); 
         }
-
-        function getGermanDateString(d) { 
-            return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); 
-        }
+        function getGermanDateString(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
 
         function haversine(lat1, lon1, lat2, lon2) { 
             const R = 6371000, toRad = x => x * Math.PI / 180, dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1); 
             const a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)*Math.sin(dLon/2); 
             return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
         }
-
         function getDist(l1, ln1, l2, ln2) { return haversine(l1, ln1, l2, ln2); }
-
         function getPathLen(pts, s, e) { 
-            if (!pts || pts.length < 2) return 0; 
-            let len = 0, dir = s <= e ? 1 : -1; 
-            for (let i = s; i !== e; i += dir) { 
-                if (!pts[i] || !pts[i+dir]) break; 
-                len += getDist(pts[i].lat, pts[i].lon, pts[i+dir].lat, pts[i+dir].lon); 
-            } 
+            if (!pts || pts.length < 2) return 0; let len = 0, dir = s <= e ? 1 : -1; 
+            for (let i = s; i !== e; i += dir) { if (!pts[i] || !pts[i+dir]) break; len += getDist(pts[i].lat, pts[i].lon, pts[i+dir].lat, pts[i+dir].lon); } 
             return len / 1000; 
         }
 
         function startProgress() { 
-            const b = document.getElementById("progressFill"); 
-            let v = 10; 
-            b.style.width = v + "%"; 
-            clearInterval(progressTimer); 
-            progressTimer = setInterval(() => { 
-                v = Math.min(v + 7, 90); 
-                b.style.width = v + "%"; 
-            }, 120); 
+            const b = document.getElementById("progressFill"); let v = 10; b.style.width = v + "%"; 
+            clearInterval(progressTimer); progressTimer = setInterval(() => { v = Math.min(v + 7, 90); b.style.width = v + "%"; }, 120); 
         }
+        function finishProgress() { clearInterval(progressTimer); document.getElementById("progressFill").style.width = "100%"; setTimeout(() => document.getElementById("progressFill").style.width = "0%", 500); }
 
-        function finishProgress() { 
-            clearInterval(progressTimer); 
-            document.getElementById("progressFill").style.width = "100%"; 
-            setTimeout(() => document.getElementById("progressFill").style.width = "0%", 500); 
-        }
-
-        function getStLabel(st) { 
-            const m = { "work":"B\u00FCro", "homeoffice":"Home", "vacation":"Urlaub", "free":"Frei", "holiday":"Feiertag", "na":"N.A." }; 
-            return m[st] || "N.A."; 
-        }
-
+        function getStLabel(st) { const m = { "work":"B\\u00FCro", "homeoffice":"Home", "vacation":"Urlaub", "free":"Frei", "holiday":"Feiertag", "na":"N.A." }; return m[st] || "N.A."; }
         function getStatusClass(st) { return "status-" + (st || "na"); }
         function hasTrace(d) { return Array.isArray(trackData[d]) && trackData[d].length > 1; }
 
-        function loadHolidays() { 
-            const s = localStorage.getItem("my_holidays"); 
-            if (s) { 
-                try { activeHolidays = JSON.parse(s); return; } catch {} 
-            } 
-            activeHolidays = structuredClone(defaultHolidays); 
-        }
-
-        function saveHolidays() { 
-            try { 
-                activeHolidays = document.getElementById("holidayEditor").value.trim() 
-                    ? JSON.parse(document.getElementById("holidayEditor").value.trim()) : {}; 
-                localStorage.setItem("my_holidays", JSON.stringify(activeHolidays)); 
-                closeHolidayEditor(); 
-                renderCal(); 
-                showToast("Feiertage gespeichert"); 
-            } catch (e) { alert("Fehler im JSON-Format."); } 
-        }
-
-        function openHolidayEditor() { 
-            document.getElementById("holidayEditor").value = JSON.stringify(activeHolidays, null, 2); 
-            document.getElementById("holidayModal").style.display = "block"; 
-        }
-
-        function closeHolidayEditor() { 
-            document.getElementById("holidayModal").style.display = "none"; 
-        }
+        function loadHolidays() { const s = localStorage.getItem("my_holidays"); if (s) { try { activeHolidays = JSON.parse(s); return; } catch {} } activeHolidays = structuredClone(defaultHolidays); }
+        function saveHolidays() { try { activeHolidays = document.getElementById("holidayEditor").value.trim() ? JSON.parse(document.getElementById("holidayEditor").value.trim()) : {}; localStorage.setItem("my_holidays", JSON.stringify(activeHolidays)); closeHolidayEditor(); renderCal(); showToast("Feiertage gespeichert"); } catch (e) { alert("Fehler im JSON-Format."); } }
+        function openHolidayEditor() { document.getElementById("holidayEditor").value = JSON.stringify(activeHolidays, null, 2); document.getElementById("holidayModal").style.display = "block"; }
+        function closeHolidayEditor() { document.getElementById("holidayModal").style.display = "none"; }
 
         function useGPS(t) {
-            if (!navigator.geolocation) { alert("GPS wird von diesem Browser nicht unterst\u00FCtzt."); return; }
-            const btn = event.target;
-            btn.textContent = "\u23F3 Orten...";
-            btn.disabled = true;
+            if (!navigator.geolocation) { alert("GPS wird nicht unterst\\u00FCtzt."); return; }
+            const btn = event.target; btn.textContent = "\\u23F3 Orten..."; btn.disabled = true;
             navigator.geolocation.getCurrentPosition(
                 async pos => {
-                    const lat = pos.coords.latitude.toFixed(6);
-                    const lon = pos.coords.longitude.toFixed(6);
-                    document.getElementById(t === "wp" ? "wpLat" : "homeLat").value = lat;
-                    document.getElementById(t === "wp" ? "wpLon" : "homeLon").value = lon;
-                    autoSave(t);
-                    await reverseLookup(t);
-                    btn.textContent = "\uD83D\uDCCD GPS-Position verwenden";
-                    btn.disabled = false;
-                    showToast("GPS-Position gesetzt \u2713");
+                    document.getElementById(t === "wp" ? "wpLat" : "homeLat").value = pos.coords.latitude.toFixed(6);
+                    document.getElementById(t === "wp" ? "wpLon" : "homeLon").value = pos.coords.longitude.toFixed(6);
+                    autoSave(t); await reverseLookup(t);
+                    btn.textContent = "\\uD83D\\uDCCD GPS-Position verwenden"; btn.disabled = false; showToast("Position gesetzt \\u2713");
                 },
-                err => {
-                    btn.textContent = "\uD83D\uDCCD GPS-Position verwenden";
-                    btn.disabled = false;
-                    if (err.code === 1) alert("GPS-Zugriff verweigert.\nBitte Standortfreigabe im Browser erlauben.");
-                    else if (err.code === 2) alert("GPS-Position konnte nicht ermittelt werden.");
-                    else alert("GPS-Zeit\u00FCberschreitung. Bitte erneut versuchen.");
-                },
+                err => { btn.textContent = "\\uD83D\\uDCCD GPS-Position verwenden"; btn.disabled = false; alert("GPS-Fehler. Bitte Standortfreigabe prüfen."); },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         }
 
         function setUIFromCfg() {
-            document.getElementById("wpLat").value = cfg.wp.lat || '';
-            document.getElementById("wpLon").value = cfg.wp.lon || '';
-            document.getElementById("wpRad").value = cfg.wp.rad || '';
-            document.getElementById("wpHours").value = cfg.wp.hours || '';
-            document.getElementById("wpBreak").value = cfg.wp.break || '';
-            document.getElementById("wpAddr").value = cfg.wp.addr || '';
-            document.getElementById("homeLat").value = cfg.home.lat || '';
-            document.getElementById("homeLon").value = cfg.home.lon || '';
-            document.getElementById("homeRad").value = cfg.home.rad || '';
-            document.getElementById("homeAddr").value = cfg.home.addr || '';
-            document.getElementById("dayOffset").value = cfg.tz.dayOff || '';
-            document.getElementById("hourOffset").value = cfg.tz.hourOff || '';
-            document.getElementById("tzMode").value = cfg.tz.mode || 'auto';
-            document.getElementById("jsonConfig").value = JSON.stringify(jsonAssignments, null, 2);
+            document.getElementById("wpLat").value = cfg.wp.lat || ''; document.getElementById("wpLon").value = cfg.wp.lon || ''; document.getElementById("wpRad").value = cfg.wp.rad || '';
+            document.getElementById("wpHours").value = cfg.wp.hours || ''; document.getElementById("wpBreak").value = cfg.wp.break || ''; document.getElementById("wpAddr").value = cfg.wp.addr || '';
+            document.getElementById("homeLat").value = cfg.home.lat || ''; document.getElementById("homeLon").value = cfg.home.lon || ''; document.getElementById("homeRad").value = cfg.home.rad || '';
+            document.getElementById("homeAddr").value = cfg.home.addr || ''; document.getElementById("dayOffset").value = cfg.tz.dayOff || ''; document.getElementById("hourOffset").value = cfg.tz.hourOff || '';
+            document.getElementById("tzMode").value = cfg.tz.mode || 'auto'; document.getElementById("jsonConfig").value = JSON.stringify(jsonAssignments, null, 2);
         }
 
         function loadSettings() {
             const s = localStorage.getItem("my_cfg");
-            if (s) { 
-                try { 
-                    const st = JSON.parse(s); 
-                    cfg = { wp: {...DEFAULT_CFG.wp, ...(st.wp||{})}, home: {...DEFAULT_CFG.home, ...(st.home||{})}, tz: {...DEFAULT_CFG.tz, ...(st.tz||{})} }; 
-                } catch { cfg = structuredClone(DEFAULT_CFG); } 
-            }
+            if (s) { try { const st = JSON.parse(s); cfg = { wp: {...DEFAULT_CFG.wp, ...(st.wp||{})}, home: {...DEFAULT_CFG.home, ...(st.home||{})}, tz: {...DEFAULT_CFG.tz, ...(st.tz||{})} }; } catch { cfg = structuredClone(DEFAULT_CFG); } }
             try { workData = JSON.parse(localStorage.getItem("workData")) || {}; } catch { workData = {}; }
             try { trackData = JSON.parse(localStorage.getItem("trackData")) || {}; } catch { trackData = {}; }
             try { jsonAssignments = JSON.parse(localStorage.getItem("jsonAssignments")) || {}; } catch {}
@@ -1073,63 +877,30 @@
         }
 
         function saveCfg() {
-            cfg.wp.lat = parseFloat(document.getElementById("wpLat").value) || DEFAULT_CFG.wp.lat; 
-            cfg.wp.lon = parseFloat(document.getElementById("wpLon").value) || DEFAULT_CFG.wp.lon;
-            cfg.wp.rad = parseInt(document.getElementById("wpRad").value) || DEFAULT_CFG.wp.rad; 
-            cfg.wp.hours = parseFloat(document.getElementById("wpHours").value) || DEFAULT_CFG.wp.hours;
-            cfg.wp.break = parseInt(document.getElementById("wpBreak").value) || DEFAULT_CFG.wp.break; 
-            cfg.wp.addr = document.getElementById("wpAddr").value.trim();
-            cfg.home.lat = parseFloat(document.getElementById("homeLat").value) || DEFAULT_CFG.home.lat; 
-            cfg.home.lon = parseFloat(document.getElementById("homeLon").value) || DEFAULT_CFG.home.lon;
-            cfg.home.rad = parseInt(document.getElementById("homeRad").value) || DEFAULT_CFG.home.rad; 
-            cfg.home.addr = document.getElementById("homeAddr").value.trim();
-            localStorage.setItem("my_cfg", JSON.stringify(cfg)); 
-            drawZone("wp"); drawZone("home"); 
-            showToast("Konfiguration gespeichert");
+            cfg.wp.lat = parseFloat(document.getElementById("wpLat").value) || DEFAULT_CFG.wp.lat; cfg.wp.lon = parseFloat(document.getElementById("wpLon").value) || DEFAULT_CFG.wp.lon;
+            cfg.wp.rad = parseInt(document.getElementById("wpRad").value) || DEFAULT_CFG.wp.rad; cfg.wp.hours = parseFloat(document.getElementById("wpHours").value) || DEFAULT_CFG.wp.hours;
+            cfg.wp.break = parseInt(document.getElementById("wpBreak").value) || DEFAULT_CFG.wp.break; cfg.wp.addr = document.getElementById("wpAddr").value.trim();
+            cfg.home.lat = parseFloat(document.getElementById("homeLat").value) || DEFAULT_CFG.home.lat; cfg.home.lon = parseFloat(document.getElementById("homeLon").value) || DEFAULT_CFG.home.lon;
+            cfg.home.rad = parseInt(document.getElementById("homeRad").value) || DEFAULT_CFG.home.rad; cfg.home.addr = document.getElementById("homeAddr").value.trim();
+            localStorage.setItem("my_cfg", JSON.stringify(cfg)); drawZone("wp"); drawZone("home"); showToast("Konfiguration gespeichert");
         }
 
         function autoSave(t) {
-            if (t === "wp") { 
-                cfg.wp.lat = parseFloat(document.getElementById("wpLat").value)||cfg.wp.lat; 
-                cfg.wp.lon = parseFloat(document.getElementById("wpLon").value)||cfg.wp.lon; 
-                cfg.wp.rad = parseInt(document.getElementById("wpRad").value)||cfg.wp.rad; 
-                cfg.wp.addr = document.getElementById("wpAddr").value.trim(); 
-                drawZone("wp"); 
-            }
-            if (t === "home") { 
-                cfg.home.lat = parseFloat(document.getElementById("homeLat").value)||cfg.home.lat; 
-                cfg.home.lon = parseFloat(document.getElementById("homeLon").value)||cfg.home.lon; 
-                cfg.home.rad = parseInt(document.getElementById("homeRad").value)||cfg.home.rad; 
-                cfg.home.addr = document.getElementById("homeAddr").value.trim(); 
-                drawZone("home"); 
-            }
-            localStorage.setItem("my_cfg", JSON.stringify(cfg)); 
-            showToast("Position aktualisiert");
+            if (t === "wp") { cfg.wp.lat = parseFloat(document.getElementById("wpLat").value)||cfg.wp.lat; cfg.wp.lon = parseFloat(document.getElementById("wpLon").value)||cfg.wp.lon; cfg.wp.rad = parseInt(document.getElementById("wpRad").value)||cfg.wp.rad; cfg.wp.addr = document.getElementById("wpAddr").value.trim(); drawZone("wp"); }
+            if (t === "home") { cfg.home.lat = parseFloat(document.getElementById("homeLat").value)||cfg.home.lat; cfg.home.lon = parseFloat(document.getElementById("homeLon").value)||cfg.home.lon; cfg.home.rad = parseInt(document.getElementById("homeRad").value)||cfg.home.rad; cfg.home.addr = document.getElementById("homeAddr").value.trim(); drawZone("home"); }
+            localStorage.setItem("my_cfg", JSON.stringify(cfg)); showToast("Position aktualisiert");
         }
 
         function applyTimezoneSettings() {
-            cfg.tz.dayOff = parseInt(document.getElementById("dayOffset").value) || 0; 
-            cfg.tz.hourOff = parseInt(document.getElementById("hourOffset").value) || 0; 
-            cfg.tz.mode = document.getElementById("tzMode").value || "auto";
-            try { 
-                jsonAssignments = document.getElementById("jsonConfig").value.trim() 
-                    ? JSON.parse(document.getElementById("jsonConfig").value.trim()) : {}; 
-                localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments)); 
-            } catch { alert("Ung\u00FCltiges JSON."); }
-            localStorage.setItem("my_cfg", JSON.stringify(cfg)); 
-            renderCal(); 
-            showToast("Einstellungen gespeichert");
+            cfg.tz.dayOff = parseInt(document.getElementById("dayOffset").value) || 0; cfg.tz.hourOff = parseInt(document.getElementById("hourOffset").value) || 0; cfg.tz.mode = document.getElementById("tzMode").value || "auto";
+            try { jsonAssignments = document.getElementById("jsonConfig").value.trim() ? JSON.parse(document.getElementById("jsonConfig").value.trim()) : {}; localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments)); } catch { alert("Ungültiges JSON."); }
+            localStorage.setItem("my_cfg", JSON.stringify(cfg)); renderCal(); showToast("Einstellungen gespeichert");
         }
 
-        function resetAll() { 
-            if (confirm("Wirklich alle lokalen Daten l\u00F6schen?")) { 
-                localStorage.clear(); location.reload(); 
-            } 
-        }
+        function resetAll() { if (confirm("Wirklich alle lokalen Daten löschen?")) { localStorage.clear(); location.reload(); } }
 
         async function searchAddress(t) {
-            const q = document.getElementById(t === "wp" ? "wpAddr" : "homeAddr").value.trim(); 
-            if (!q) return alert("Bitte eine Adresse eingeben.");
+            const q = document.getElementById(t === "wp" ? "wpAddr" : "homeAddr").value.trim(); if (!q) return alert("Bitte eine Adresse eingeben.");
             try { 
                 const res = await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=" + encodeURIComponent(q)); 
                 const data = await res.json();
@@ -1146,29 +917,16 @@
             try { 
                 const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`); 
                 const data = await res.json();
-                if (data.display_name) { 
-                    document.getElementById(t === "wp" ? "wpAddr" : "homeAddr").value = data.display_name; 
-                    autoSave(t); 
-                }
+                if (data.display_name) { document.getElementById(t === "wp" ? "wpAddr" : "homeAddr").value = data.display_name; autoSave(t); }
             } catch {}
         }
 
         function initMaps() {
             if(mapWp) mapWp.remove(); if(mapHome) mapHome.remove();
-            mapWp = L.map("mapWp").setView([cfg.wp.lat, cfg.wp.lon], 14); 
-            mapHome = L.map("mapHome").setView([cfg.home.lat, cfg.home.lon], 14);
-            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(mapWp); 
-            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(mapHome);
-            mapWp.on('click', async e => { 
-                document.getElementById("wpLat").value = e.latlng.lat.toFixed(6); 
-                document.getElementById("wpLon").value = e.latlng.lng.toFixed(6); 
-                autoSave("wp"); await reverseLookup("wp"); 
-            });
-            mapHome.on('click', async e => { 
-                document.getElementById("homeLat").value = e.latlng.lat.toFixed(6); 
-                document.getElementById("homeLon").value = e.latlng.lng.toFixed(6); 
-                autoSave("home"); await reverseLookup("home"); 
-            });
+            mapWp = L.map("mapWp").setView([cfg.wp.lat, cfg.wp.lon], 14); mapHome = L.map("mapHome").setView([cfg.home.lat, cfg.home.lon], 14);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(mapWp); L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(mapHome);
+            mapWp.on('click', async e => { document.getElementById("wpLat").value = e.latlng.lat.toFixed(6); document.getElementById("wpLon").value = e.latlng.lng.toFixed(6); autoSave("wp"); await reverseLookup("wp"); });
+            mapHome.on('click', async e => { document.getElementById("homeLat").value = e.latlng.lat.toFixed(6); document.getElementById("homeLon").value = e.latlng.lng.toFixed(6); autoSave("home"); await reverseLookup("home"); });
             drawZone("wp"); drawZone("home");
         }
 
@@ -1187,54 +945,32 @@
             }
         }
 
-        function normalizeTimestamp(r) { 
-            if (!r) return null; 
-            const d = new Date(r); 
-            if (!isNaN(d)) return d.getTime(); 
-            const d2 = new Date(r.replace(" ", "T")); 
-            return !isNaN(d2) ? d2.getTime() : null; 
-        }
+        function normalizeTimestamp(r) { if (!r) return null; const d = new Date(r); if (!isNaN(d)) return d.getTime(); const d2 = new Date(r.replace(" ", "T")); return !isNaN(d2) ? d2.getTime() : null; }
 
         function parseGPX(txt) {
             const pts = [];
             new DOMParser().parseFromString(txt, "application/xml").querySelectorAll("trkpt").forEach(pt => {
-                const lat = parseFloat(pt.getAttribute("lat"));
-                const lon = parseFloat(pt.getAttribute("lon"));
-                const tNode = pt.querySelector("time");
-                if (Number.isFinite(lat) && Number.isFinite(lon) && tNode) { 
-                    const ts = normalizeTimestamp(tNode.textContent.trim()); 
-                    if (ts) pts.push({ lat, lon, time: ts }); 
-                }
+                const lat = parseFloat(pt.getAttribute("lat")), lon = parseFloat(pt.getAttribute("lon")), tNode = pt.querySelector("time");
+                if (Number.isFinite(lat) && Number.isFinite(lon) && tNode) { const ts = normalizeTimestamp(tNode.textContent.trim()); if (ts) pts.push({ lat, lon, time: ts }); }
             }); 
             return splitPointsByDay(pts.sort((a, b) => a.time - b.time));
         }
 
         function parseKML(txt) {
-            const pts = [];
-            const xml = new DOMParser().parseFromString(txt, "application/xml");
-            const whens = xml.getElementsByTagName("when");
-            const coords = xml.getElementsByTagName("gx:coord");
+            const pts = []; const xml = new DOMParser().parseFromString(txt, "application/xml");
+            const whens = xml.getElementsByTagName("when"), coords = xml.getElementsByTagName("gx:coord");
             if (whens.length > 0 && coords.length > 0 && whens.length === coords.length) {
                 for (let i = 0; i < whens.length; i++) {
-                    const ts = normalizeTimestamp(whens[i].textContent.trim());
-                    const parts = coords[i].textContent.trim().split(/\s+/);
-                    if (ts && parts.length >= 2) {
-                        const lon = parseFloat(parts[0]), lat = parseFloat(parts[1]);
-                        if (Number.isFinite(lat) && Number.isFinite(lon)) pts.push({ lat, lon, time: ts });
-                    }
+                    const ts = normalizeTimestamp(whens[i].textContent.trim()), parts = coords[i].textContent.trim().split(/\\s+/);
+                    if (ts && parts.length >= 2) { const lon = parseFloat(parts[0]), lat = parseFloat(parts[1]); if (Number.isFinite(lat) && Number.isFinite(lon)) pts.push({ lat, lon, time: ts }); }
                 }
             } else {
                 const placemarks = xml.getElementsByTagName("Placemark");
                 for (let i = 0; i < placemarks.length; i++) {
-                    const when = placemarks[i].getElementsByTagName("when")[0];
-                    const coord = placemarks[i].getElementsByTagName("coordinates")[0];
+                    const when = placemarks[i].getElementsByTagName("when")[0], coord = placemarks[i].getElementsByTagName("coordinates")[0];
                     if (when && coord) {
-                        const ts = normalizeTimestamp(when.textContent.trim());
-                        const parts = coord.textContent.trim().split(',');
-                        if (ts && parts.length >= 2) {
-                            const lon = parseFloat(parts[0]), lat = parseFloat(parts[1]);
-                            if (Number.isFinite(lat) && Number.isFinite(lon)) pts.push({ lat, lon, time: ts });
-                        }
+                        const ts = normalizeTimestamp(when.textContent.trim()), parts = coord.textContent.trim().split(',');
+                        if (ts && parts.length >= 2) { const lon = parseFloat(parts[0]), lat = parseFloat(parts[1]); if (Number.isFinite(lat) && Number.isFinite(lon)) pts.push({ lat, lon, time: ts }); }
                     }
                 }
             }
@@ -1243,31 +979,21 @@
 
         function parseCSVLine(line, delim=',') {
             const out = []; let cur = '', inQ = false;
-            for (let i=0; i<line.length; i++) { 
-                if (line[i] === '"') inQ = !inQ; 
-                else if (line[i] === delim && !inQ) { out.push(cur); cur = ''; } 
-                else cur += line[i]; 
-            }
-            out.push(cur); 
-            return out.map(s => s.trim());
+            for (let i=0; i<line.length; i++) { if (line[i] === '"') inQ = !inQ; else if (line[i] === delim && !inQ) { out.push(cur); cur = ''; } else cur += line[i]; }
+            out.push(cur); return out.map(s => s.trim());
         }
 
         function parseCSV(txt) {
-            const rows = txt.split(/\r?\n/).filter(l => l.trim().length > 0); 
-            if (rows.length < 2) return {};
+            const rows = txt.split(/\\r?\\n/).filter(l => l.trim().length > 0); if (rows.length < 2) return {};
             const delim = (rows[0].indexOf(';') > -1 && rows[0].indexOf(',') === -1) ? ';' : ',';
             const headers = parseCSVLine(rows[0], delim).map(h => h.replace(/["']/g, '').toLowerCase());
             const pts = [];
             for (let i=1; i<rows.length; i++) {
-                const cols = parseCSVLine(rows[i], delim).map(c => c.replace(/["']/g, '')); 
-                if (cols.length < headers.length - 2) continue;
+                const cols = parseCSVLine(rows[i], delim).map(c => c.replace(/["']/g, '')); if (cols.length < headers.length - 2) continue;
                 const r = {}; headers.forEach((h, idx) => r[h] = cols[idx] || '');
-                const lat = parseFloat(r['latitude']||r['lat']||r['latitude(deg)']);
-                const lon = parseFloat(r['longitude']||r['lon']||r['lng']||r['longitude(deg)']);
-                let tsStr = r['time']||r['date time']||r['datetime']||r['timestamp']; 
-                if (!tsStr && r['date']) tsStr = r['date'] + " " + (r['time']||''  );
-                const ts = normalizeTimestamp(tsStr); 
-                if (Number.isFinite(lat) && Number.isFinite(lon) && ts) pts.push({ lat, lon, time: ts });
+                const lat = parseFloat(r['latitude']||r['lat']||r['latitude(deg)']), lon = parseFloat(r['longitude']||r['lon']||r['lng']||r['longitude(deg)']);
+                let tsStr = r['time']||r['date time']||r['datetime']||r['timestamp']; if (!tsStr && r['date']) tsStr = r['date'] + " " + (r['time']||'');
+                const ts = normalizeTimestamp(tsStr); if (Number.isFinite(lat) && Number.isFinite(lon) && ts) pts.push({ lat, lon, time: ts });
             } 
             return splitPointsByDay(pts.sort((a, b) => a.time - b.time));
         }
@@ -1275,11 +1001,8 @@
         function splitPointsByDay(pts) {
             const g = {}; 
             pts.forEach(p => {
-                let d = new Date(p.time); 
-                if (cfg.tz.mode === "manual") d = new Date(d.getTime() + cfg.tz.hourOff * 3600000 + cfg.tz.dayOff * 86400000);
-                const ds = getGermanDateString(d); 
-                if (!g[ds]) g[ds] = []; 
-                g[ds].push(p);
+                let d = new Date(p.time); if (cfg.tz.mode === "manual") d = new Date(d.getTime() + cfg.tz.hourOff * 3600000 + cfg.tz.dayOff * 86400000);
+                const ds = getGermanDateString(d); if (!g[ds]) g[ds] = []; g[ds].push(p);
             }); 
             return g;
         }
@@ -1287,8 +1010,7 @@
         function analyze(pts) {
             if (!pts || !pts.length) return null; 
             pts = [...pts].sort((a, b) => a.time - b.time);
-            const visits = []; 
-            let inW = false, sV = null;
+            const visits = []; let inW = false, sV = null;
             for (const p of pts) {
                 const isInside = getDist(p.lat, p.lon, cfg.wp.lat, cfg.wp.lon) <= cfg.wp.rad;
                 if (isInside && !inW) { inW = true; sV = p.time; }
@@ -1306,122 +1028,96 @@
             const commute = { toW: { k: 0, m: 0 }, toH: { k: 0, m: 0 } };
             if (arr && dep && pts.length > 1) {
                 const iS = pts.findIndex(p => p.time >= arr), iE = pts.findIndex(p => p.time >= dep);
-                if (iS > 0) { 
-                    for (let i = iS; i >= 0; i--) 
-                        if (getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) { 
-                            commute.toW.k = getPathLen(pts, i, iS); commute.toW.m = (pts[iS].time - pts[i].time) / 60000; break; 
-                        } 
-                }
-                if (iE > -1 && iE < pts.length - 1) { 
-                    for (let i = iE; i < pts.length; i++) 
-                        if (getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) { 
-                            commute.toH.k = getPathLen(pts, iE, i); commute.toH.m = (pts[i].time - pts[iE].time) / 60000; break; 
-                        } 
-                }
+                if (iS > 0) { for (let i = iS; i >= 0; i--) if (getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) { commute.toW.k = getPathLen(pts, i, iS); commute.toW.m = (pts[iS].time - pts[i].time) / 60000; break; } }
+                if (iE > -1 && iE < pts.length - 1) { for (let i = iE; i < pts.length; i++) if (getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) { commute.toH.k = getPathLen(pts, iE, i); commute.toH.m = (pts[i].time - pts[iE].time) / 60000; break; } }
             }
-            return { 
-                arr, dep, visits, 
-                gross: visits.length ? grossMs / 3600000 : null, 
-                breakMin: Math.round(breakMs / 60000), 
-                net: visits.length ? grossMs / 3600000 : null, 
-                totalKm: getPathLen(pts, 0, pts.length - 1), 
-                commute 
-            };
+            return { arr, dep, visits, gross: visits.length ? grossMs / 3600000 : null, breakMin: Math.round(breakMs / 60000), net: visits.length ? grossMs / 3600000 : null, totalKm: getPathLen(pts, 0, pts.length - 1), commute };
         }
 
         function finishLoad(gData) {
             let latestDay = null;
+            let totalPts = 0;
+            let totalDays = 0;
+            let validDays = 0;
+            let monthsSet = new Set();
+
             for (const [dS, pts] of Object.entries(gData)) {
                 if (!latestDay || dS > latestDay) latestDay = dS;
+                totalDays++;
+                totalPts += pts.length;
+                const dateObj = new Date(dS);
+                monthsSet.add(dateObj.toLocaleDateString("de-DE", {month: "long", year: "numeric"}));
+
                 const a = analyze(pts);
                 if (a) {
+                    if (a.net && a.net > (5 / 60)) validDays++; // Mehr als 5 Minuten am Stück am Arbeitsplatz
+
                     const old = workData[dS] || {};
                     let newStatus = old.status;
-                    if (a.visits && a.visits.length > 0) {
-                        if (!newStatus || newStatus === "na" || newStatus === "free" || newStatus === "holiday") {
-                            newStatus = "work";
-                        }
-                    }
-                    if (!newStatus || newStatus === "na") {
-                        if (activeHolidays[dS]) newStatus = "holiday";
-                        else if ([0,6].includes(new Date(dS+"T12:00").getDay())) newStatus = "free";
-                        else newStatus = "na";
-                    }
-                    workData[dS] = { 
-                        ...old, day: dS, arr: a.arr, dep: a.dep, net: a.net, breakMin: a.breakMin, 
-                        visits: a.visits, commute: a.commute, totalKm: a.totalKm, status: newStatus 
-                    };
+                    if (a.visits && a.visits.length > 0) { if (!newStatus || newStatus === "na" || newStatus === "free" || newStatus === "holiday") newStatus = "work"; }
+                    if (!newStatus || newStatus === "na") { if (activeHolidays[dS]) newStatus = "holiday"; else if ([0,6].includes(new Date(dS+"T12:00").getDay())) newStatus = "free"; else newStatus = "na"; }
+
+                    workData[dS] = { ...old, day: dS, arr: a.arr, dep: a.dep, net: a.net, breakMin: a.breakMin, visits: a.visits, commute: a.commute, totalKm: a.totalKm, status: newStatus };
+
                     let lastP = null;
                     trackData[dS] = pts.filter(p => {
                         if (!lastP) { lastP = p; return true; }
-                        if (p.time - lastP.time > 30000 || getDist(lastP.lat, lastP.lon, p.lat, p.lon) > 20) {
-                            lastP = p; return true;
-                        }
+                        if (p.time - lastP.time > 30000 || getDist(lastP.lat, lastP.lon, p.lat, p.lon) > 20) { lastP = p; return true; }
                         return false;
                     }).map(p => ({ lat: p.lat, lon: p.lon, time: p.time }));
 
                     localStorage.setItem('workData', JSON.stringify(workData));
-                    try {
-                        localStorage.setItem('trackData', JSON.stringify(trackData));
-                    } catch (e) {
+                    try { localStorage.setItem('trackData', JSON.stringify(trackData)); } 
+                    catch (e) {
                         const days = Object.keys(trackData).sort();
-                        while (days.length > 0) {
-                            const oldestDay = days.shift();
-                            if (oldestDay !== dS) {
-                                delete trackData[oldestDay];
-                                try { localStorage.setItem('trackData', JSON.stringify(trackData)); break; } catch (err) {}
-                            }
-                        }
-                        showToast("Speicher voll: \u00C4lteste Routen wurden gel\u00F6scht.");
+                        while (days.length > 0) { const oldestDay = days.shift(); if (oldestDay !== dS) { delete trackData[oldestDay]; try { localStorage.setItem('trackData', JSON.stringify(trackData)); break; } catch (err) {} } }
                     }
                 }
             }
+
             localStorage.setItem("workData", JSON.stringify(workData)); 
             localStorage.setItem("trackData", JSON.stringify(trackData));
+
             if (latestDay) {
                 const p = latestDay.split("-");
                 curMonth = new Date(parseInt(p[0]), parseInt(p[1]) - 1, 1);
             }
+
             collapseConfigs(); renderCal(); calcStats(); finishProgress(); showToast("Datei analysiert");
+
+            // Intelligente Validierung: Zeige Warnung, wenn kaum/keine gültigen Arbeitszeiten gefunden wurden
+            if (totalDays > 0 && validDays === 0) {
+                const mStr = Array.from(monthsSet).join(", ");
+                setTimeout(() => {
+                    alert(`HINWEIS:\n\nEs wurden ${totalPts} GPS-Koordinaten für ${mStr} geladen, aber es konnten keine validen Kommen/Gehen-Zeiten berechnet werden.\n\nGrund:\nDeine konfigurierten Standorte (Arbeit/Zuhause) liegen nicht auf der geladenen Route, oder du hast dich dort nur sehr kurz (< 5 Minuten) aufgehalten.\n\nEmpfehlung:\nKlicke unten auf "Standorte prüfen & automatisch finden", um deine echten Standorte direkt aus der Route ermitteln zu lassen.`);
+                }, 300);
+            }
         }
 
         function renderCal() {
-            const list = document.getElementById("calendarList");
-            list.innerHTML = "";
+            const list = document.getElementById("calendarList"); list.innerHTML = "";
             const y = curMonth.getFullYear(), m = curMonth.getMonth();
             document.getElementById("monthLabel").textContent = curMonth.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
-            const simpleBtn = document.getElementById("simpleViewBtn");
-            if (simpleBtn) simpleBtn.textContent = simpleView ? "Normale Ansicht" : "Einfache Ansicht";
+            const simpleBtn = document.getElementById("simpleViewBtn"); if (simpleBtn) simpleBtn.textContent = simpleView ? "Normale Ansicht" : "Einfache Ansicht";
             document.body.classList.toggle("simple-view-active", simpleView);
 
             if (simpleView) {
                 let rows = "";
                 for (let d = new Date(y, m + 1, 0).getDate(); d >= 1; d--) {
-                    const dS = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-                    const dObj = new Date(y, m, d);
-                    const data = workData[dS] || {};
-                    const arr = fmtTime(getRoundedTime(data.arr));
-                    const dep = fmtTime(getRoundedTime(data.dep));
-                    rows += `<tr>
-                        <td class="col-date-simple">${dObj.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" })}</td>
+                    const dS = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`; const dObj = new Date(y, m, d); const data = workData[dS] || {};
+                    const arr = fmtTime(getRoundedTime(data.arr)), dep = fmtTime(getRoundedTime(data.dep));
+                    rows += `<tr><td class="col-date-simple">${dObj.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" })}</td>
                         <td class="col-time-simple">${arr !== "--:--" ? arr : '<span class="simple-empty">--:--</span>'}</td>
-                        <td class="col-time-simple">${dep !== "--:--" ? dep : '<span class="simple-empty">--:--</span>'}</td>
-                    </tr>`;
+                        <td class="col-time-simple">${dep !== "--:--" ? dep : '<span class="simple-empty">--:--</span>'}</td></tr>`;
                 }
-                list.innerHTML = `<div class="simple-table-wrap"><table class="simple-table">
-                    <thead><tr><th>Datum</th><th>Kommen</th><th>Gehen</th></tr></thead>
-                    <tbody>${rows}</tbody></table></div>`;
+                list.innerHTML = `<div class="simple-table-wrap"><table class="simple-table"><thead><tr><th>Datum</th><th>Kommen</th><th>Gehen</th></tr></thead><tbody>${rows}</tbody></table></div>`;
                 return;
             }
 
             for (let d = new Date(y, m + 1, 0).getDate(); d >= 1; d--) {
-                const dS = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-                const dObj = new Date(y, m, d);
-                const data = workData[dS] || {};
-                const hName = activeHolidays[dS];
-                const st = hName ? "holiday" : (data.status || ([0,6].includes(dObj.getDay()) ? "free" : "na"));
-                const isInactive = ["holiday", "free", "vacation"].includes(st);
-                const isEdit = !!editModeDays[dS];
+                const dS = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`; const dObj = new Date(y, m, d);
+                const data = workData[dS] || {}, hName = activeHolidays[dS], st = hName ? "holiday" : (data.status || ([0,6].includes(dObj.getDay()) ? "free" : "na"));
+                const isInactive = ["holiday", "free", "vacation"].includes(st), isEdit = !!editModeDays[dS];
 
                 let dur = "--:--", durMob = "", cls = "";
                 if (typeof data.net === "number") {
@@ -1431,42 +1127,29 @@
                     else if (mNet < mTg) { cls = "undertime"; dur = "-" + Math.floor((mTg - mNet) / 60) + ":" + String((mTg - mNet) % 60).padStart(2, "0"); }
                 }
 
-                const tHtml = !isEdit ? `
-                    <div class="time-row"><span>Kommen</span><div class="time-wrapper"><div class="time-display">${fmtTime(data.arr)}</div></div></div>
-                    <div class="time-row"><span>Gehen</span><div class="time-wrapper"><div class="time-display">${fmtTime(data.dep)}</div><div class="mobile-subline leave-worktime">${durMob}</div></div></div>
-                ` : `
-                    <div class="time-row"><span>Kommen</span><div class="time-wrapper"><input type="time" id="in_${dS}" value="${timeToInput(data.arr)}" class="time-input"></div></div>
-                    <div class="time-row"><span>Gehen</span><div class="time-wrapper"><input type="time" id="out_${dS}" value="${timeToInput(data.dep)}" class="time-input"><div class="mobile-subline leave-worktime">${durMob}</div></div></div>
-                `;
+                const tHtml = !isEdit ? `<div class="time-row"><span>Kommen</span><div class="time-wrapper"><div class="time-display">${fmtTime(data.arr)}</div></div></div>
+                    <div class="time-row"><span>Gehen</span><div class="time-wrapper"><div class="time-display">${fmtTime(data.dep)}</div><div class="mobile-subline leave-worktime">${durMob}</div></div></div>` 
+                : `<div class="time-row"><span>Kommen</span><div class="time-wrapper"><input type="time" id="in_${dS}" value="${timeToInput(data.arr)}" class="time-input"></div></div>
+                    <div class="time-row"><span>Gehen</span><div class="time-wrapper"><input type="time" id="out_${dS}" value="${timeToInput(data.dep)}" class="time-input"><div class="mobile-subline leave-worktime">${durMob}</div></div></div>`;
 
                 let cTxt = "";
                 if (data.commute && (data.commute.toW?.k > 0 || data.commute.toH?.k > 0)) {
                     if (data.commute.toW?.k > 0) cTxt += `<div>Hin ${data.commute.toW.k.toFixed(1)} km / ${Math.round(data.commute.toW.m)} min</div>`;
-                    if (data.commute.toH?.k > 0) cTxt += `<div>R\u00FCck ${data.commute.toH.k.toFixed(1)} km / ${Math.round(data.commute.toH.m)} min</div>`;
-                } else if (data.totalKm) {
-                    cTxt = `<div>Gesamt ${data.totalKm.toFixed(1)} km</div>`;
-                }
+                    if (data.commute.toH?.k > 0) cTxt += `<div>R\\u00FCck ${data.commute.toH.k.toFixed(1)} km / ${Math.round(data.commute.toH.m)} min</div>`;
+                } else if (data.totalKm) { cTxt = `<div>Gesamt ${data.totalKm.toFixed(1)} km</div>`; }
 
                 const w = document.createElement("div");
-                w.innerHTML = `
-                    <div class="workday-entry ${isInactive ? 'inactive' : ''}">
-                        <div class="col-date">
-                            <div class="date-main">${dObj.toLocaleDateString("de-DE", { weekday: "short" })}<br>${d}.${m + 1}.</div>
-                            <div class="mobile-subline date-status">${hName || getStLabel(st)}</div>
-                            ${jsonAssignments[dS] ? `<div class="help-text">${jsonAssignments[dS]}</div>` : ''}
-                        </div>
+                w.innerHTML = `<div class="workday-entry ${isInactive ? 'inactive' : ''}">
+                        <div class="col-date"><div class="date-main">${dObj.toLocaleDateString("de-DE", { weekday: "short" })}<br>${d}.${m + 1}.</div><div class="mobile-subline date-status">${hName || getStLabel(st)}</div>${jsonAssignments[dS] ? `<div class="help-text">${jsonAssignments[dS]}</div>` : ''}</div>
                         <div class="col-status"><span class="status-badge ${getStatusClass(st)}">${hName || getStLabel(st)}</span></div>
                         <div class="col-times">${tHtml}</div>
                         <div class="col-duration"><span class="duration-header">Arbeitszeit</span><div class="work-duration ${cls}">${dur}</div></div>
                         <div class="col-commute">${cTxt}</div>
                         <div class="col-controls">
                             <select class="status-select" onchange="setStatus('${dS}', this.value)">
-                                <option value="work" ${st === 'work' ? 'selected' : ''}>B\u00FCro</option>
-                                <option value="homeoffice" ${st === 'homeoffice' ? 'selected' : ''}>Home</option>
-                                <option value="vacation" ${st === 'vacation' ? 'selected' : ''}>Urlaub</option>
-                                <option value="free" ${st === 'free' ? 'selected' : ''}>Frei</option>
-                                <option value="holiday" ${st === 'holiday' ? 'selected' : ''}>Feiertag</option>
-                                <option value="na" ${st === 'na' ? 'selected' : ''}>N.A.</option>
+                                <option value="work" ${st === 'work' ? 'selected' : ''}>B\\u00FCro</option><option value="homeoffice" ${st === 'homeoffice' ? 'selected' : ''}>Home</option>
+                                <option value="vacation" ${st === 'vacation' ? 'selected' : ''}>Urlaub</option><option value="free" ${st === 'free' ? 'selected' : ''}>Frei</option>
+                                <option value="holiday" ${st === 'holiday' ? 'selected' : ''}>Feiertag</option><option value="na" ${st === 'na' ? 'selected' : ''}>N.A.</option>
                             </select>
                             <div class="btn-row">
                                 ${hasTrace(dS) ? `<button class="action-btn btn-trace" onclick="showTrace('${dS}')" title="Route">&#x1F5FA;&#xFE0F;</button>` : ''}
@@ -1476,43 +1159,24 @@
                         </div>
                     </div>
                     ${hName ? `<div class="holiday-indicator">${hName}</div>` : ''}
-                    ${!isInactive && data.visits && data.visits.length > 1 ? `<div id="det-${dS}" class="details-panel">Mehrfache Besuche erfasst.<br><strong>Pause:</strong> ${Math.floor(data.breakMin/60)}:${String(data.breakMin%60).padStart(2,'0')} h</div>` : ''}
-                `;
+                    ${!isInactive && data.visits && data.visits.length > 1 ? `<div id="det-${dS}" class="details-panel">Mehrfache Besuche erfasst.<br><strong>Pause:</strong> ${Math.floor(data.breakMin/60)}:${String(data.breakMin%60).padStart(2,'0')} h</div>` : ''}`;
                 list.appendChild(w);
             }
         }
 
         function toggleDet(d) { document.getElementById("det-" + d)?.classList.toggle("show"); }
-
-        function setStatus(d, v) { 
-            if (!workData[d]) workData[d] = { day: d }; 
-            workData[d].status = v; 
-            localStorage.setItem("workData", JSON.stringify(workData)); 
-            renderCal(); calcStats(); 
-        }
-
+        function setStatus(d, v) { if (!workData[d]) workData[d] = { day: d }; workData[d].status = v; localStorage.setItem("workData", JSON.stringify(workData)); renderCal(); calcStats(); }
         function toggleEdit(d) { editModeDays[d] = !editModeDays[d]; renderCal(); }
 
         function saveDay(d) {
             const iTs = document.getElementById("in_"+d)?.value ? new Date(d+"T"+document.getElementById("in_"+d).value+":00").getTime() : null;
             const oTs = document.getElementById("out_"+d)?.value ? new Date(d+"T"+document.getElementById("out_"+d).value+":00").getTime() : null;
-            if (!workData[d]) workData[d] = { day: d }; 
-            workData[d].arr = iTs; workData[d].dep = oTs;
-            if (iTs && oTs && oTs > iTs) { 
-                const g = (oTs - iTs) / 3600000; 
-                workData[d].gross = g; 
-                workData[d].net = Math.max(0, g - ((cfg.wp.break || 0) / 60)); 
-                workData[d].visits = [{ tStart: iTs, tEnd: oTs }]; 
-            }
-            editModeDays[d] = false; 
-            localStorage.setItem("workData", JSON.stringify(workData)); 
-            renderCal(); calcStats();
+            if (!workData[d]) workData[d] = { day: d }; workData[d].arr = iTs; workData[d].dep = oTs;
+            if (iTs && oTs && oTs > iTs) { const g = (oTs - iTs) / 3600000; workData[d].gross = g; workData[d].net = Math.max(0, g - ((cfg.wp.break || 0) / 60)); workData[d].visits = [{ tStart: iTs, tEnd: oTs }]; }
+            editModeDays[d] = false; localStorage.setItem("workData", JSON.stringify(workData)); renderCal(); calcStats();
         }
 
-        function changeMonth(o) { 
-            curMonth = o === 0 ? new Date() : new Date(curMonth.getFullYear(), curMonth.getMonth() + o, 1); 
-            renderCal(); calcStats(); 
-        }
+        function changeMonth(o) { curMonth = o === 0 ? new Date() : new Date(curMonth.getFullYear(), curMonth.getMonth() + o, 1); renderCal(); calcStats(); }
 
         function calcStats() {
             let days = 0, wH = 0, tH = 0, tKm = 0, cKm = 0;
@@ -1521,98 +1185,63 @@
                 if (dt.getFullYear() === curMonth.getFullYear() && dt.getMonth() === curMonth.getMonth()) {
                     const st = d.status || (activeHolidays[dS] ? "holiday" : ([0,6].includes(dt.getDay()) ? "free" : "na"));
                     if (["work", "homeoffice", "na"].includes(st) && typeof d.net === "number") { days++; wH += d.net; tH += cfg.wp.hours; }
-                    if (d.totalKm) tKm += d.totalKm; 
-                    if (d.commute) cKm += (d.commute.toW?.k || 0) + (d.commute.toH?.k || 0);
+                    if (d.totalKm) tKm += d.totalKm; if (d.commute) cKm += (d.commute.toW?.k || 0) + (d.commute.toH?.k || 0);
                 }
             }
-            document.getElementById("statDays").textContent = days; 
-            document.getElementById("statWork").textContent = fmtDurationHours(wH); 
+            document.getElementById("statDays").textContent = days; document.getElementById("statWork").textContent = fmtDurationHours(wH); 
             document.getElementById("statTarget").textContent = fmtDurationHours(tH);
-            const df = document.getElementById("statDiff"); 
-            df.textContent = fmtDurationHours(wH - tH, true); 
-            df.className = "stat-val " + ((wH - tH) >= 0 ? "val-positive" : "val-negative");
-            document.getElementById("statDistance").textContent = tKm.toFixed(1) + " km"; 
-            document.getElementById("statCommute").textContent = cKm.toFixed(1) + " km";
+            const df = document.getElementById("statDiff"); df.textContent = fmtDurationHours(wH - tH, true); df.className = "stat-val " + ((wH - tH) >= 0 ? "val-positive" : "val-negative");
+            document.getElementById("statDistance").textContent = tKm.toFixed(1) + " km"; document.getElementById("statCommute").textContent = cKm.toFixed(1) + " km";
         }
 
         function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
         function showTrace(d) {
-            const pts = trackData[d]; 
-            if (!pts || pts.length < 2) return;
-            document.getElementById("traceTitle").textContent = "Route " + d; 
-            document.getElementById("traceModal").style.display = "block";
-            const data = workData[d] || {};
-            let tHExit = null, tHEnter = null;
+            const pts = trackData[d]; if (!pts || pts.length < 2) return;
+            document.getElementById("traceTitle").textContent = "Route " + d; document.getElementById("traceModal").style.display = "block";
+            const data = workData[d] || {}; let tHExit = null, tHEnter = null;
             if (data.arr) { for (let i = pts.findIndex(p => p.time >= data.arr); i >= 0; i--) if (getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) { tHExit = pts[i].time; break; } }
             if (data.dep) { for (let i = pts.findIndex(p => p.time >= data.dep); i < pts.length; i++) if (getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) { tHEnter = pts[i].time; break; } }
 
             function getColor(t) {
                 if (data.arr && tHExit && t >= tHExit && t <= data.arr) return "var(--route-hin)";
                 if (data.dep && tHEnter && t >= data.dep && t <= tHEnter) return "var(--route-rueck)";
-                if (data.arr && data.dep && t >= data.arr && t <= data.dep) {
-                    if (data.visits && data.visits.length) return data.visits.some(v => t >= v.tStart && t <= v.tEnd) ? "var(--route-arbeit)" : "var(--route-pause)";
-                }
+                if (data.arr && data.dep && t >= data.arr && t <= data.dep) { if (data.visits && data.visits.length) return data.visits.some(v => t >= v.tStart && t <= v.tEnd) ? "var(--route-arbeit)" : "var(--route-pause)"; }
                 return "var(--route-sonst)";
             }
 
             setTimeout(() => {
-                if (!traceMap) {
-                    traceMap = L.map("traceMap").setView([0,0],13);
-                    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:19}).addTo(traceMap);
-                }
-                if (traceLayerGroup) traceMap.removeLayer(traceLayerGroup);
-                traceLayerGroup = L.layerGroup().addTo(traceMap);
-
+                if (!traceMap) { traceMap = L.map("traceMap").setView([0,0],13); L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:19}).addTo(traceMap); }
+                if (traceLayerGroup) traceMap.removeLayer(traceLayerGroup); traceLayerGroup = L.layerGroup().addTo(traceMap);
                 let cC = getColor(pts[0].time), cL = [[pts[0].lat, pts[0].lon]];
                 for (let i = 1; i < pts.length; i++) {
-                    const p = pts[i], nc = getColor(p.time); 
-                    cL.push([p.lat, p.lon]);
-                    if (nc !== cC || i === pts.length - 1) { 
-                        L.polyline(cL, { color: cC, weight: 5, opacity: 0.8 }).addTo(traceLayerGroup); 
-                        cL = [[p.lat, p.lon]]; cC = nc; 
-                    }
+                    const p = pts[i], nc = getColor(p.time); cL.push([p.lat, p.lon]);
+                    if (nc !== cC || i === pts.length - 1) { L.polyline(cL, { color: cC, weight: 5, opacity: 0.8 }).addTo(traceLayerGroup); cL = [[p.lat, p.lon]]; cC = nc; }
                 }
-                L.marker([pts[0].lat, pts[0].lon]).addTo(traceLayerGroup).bindPopup("Start");
-                L.marker([pts[pts.length - 1].lat, pts[pts.length - 1].lon]).addTo(traceLayerGroup).bindPopup("Ende");
+                L.marker([pts[0].lat, pts[0].lon]).addTo(traceLayerGroup).bindPopup("Start"); L.marker([pts[pts.length - 1].lat, pts[pts.length - 1].lon]).addTo(traceLayerGroup).bindPopup("Ende");
                 L.circle([cfg.wp.lat, cfg.wp.lon], { radius: cfg.wp.rad, color: "#006400", fillColor: "#32cd32", fillOpacity: 0.15 }).addTo(traceLayerGroup);
                 L.circle([cfg.home.lat, cfg.home.lon], { radius: cfg.home.rad, color: "#003c7d", fillColor: "#4ea3ff", fillOpacity: 0.15 }).addTo(traceLayerGroup);
-                const lls = pts.map(p => [p.lat, p.lon]); 
-                traceMap.fitBounds(L.latLngBounds(lls), { padding: [20, 20] }); 
-                traceMap.invalidateSize();
+                const lls = pts.map(p => [p.lat, p.lon]); traceMap.fitBounds(L.latLngBounds(lls), { padding: [20, 20] }); traceMap.invalidateSize();
             }, 100);
         }
 
-        function exportData() { 
-            const a = document.createElement("a"); 
-            a.href = URL.createObjectURL(new Blob([JSON.stringify({ cfg, holidays: activeHolidays, assignments: jsonAssignments, workData, trackData }, null, 2)], { type: "application/json" })); 
-            a.download = "arbeitszeit-export.json"; 
-            a.click(); 
-        }
-
+        function exportData() { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify({ cfg, holidays: activeHolidays, assignments: jsonAssignments, workData, trackData }, null, 2)], { type: "application/json" })); a.download = "arbeitszeit-export.json"; a.click(); }
         function handleImport(file) {
             const reader = new FileReader();
             reader.onload = e => {
                 try {
                     const d = JSON.parse(e.target.result);
-                    if (d.cfg) cfg = d.cfg; if (d.holidays) activeHolidays = d.holidays; 
-                    if (d.assignments) jsonAssignments = d.assignments;
+                    if (d.cfg) cfg = d.cfg; if (d.holidays) activeHolidays = d.holidays; if (d.assignments) jsonAssignments = d.assignments;
                     if (d.workData) workData = d.workData; if (d.trackData) trackData = d.trackData;
-                    localStorage.setItem("my_cfg", JSON.stringify(cfg)); 
-                    localStorage.setItem("my_holidays", JSON.stringify(activeHolidays)); 
-                    localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments));
-                    localStorage.setItem("workData", JSON.stringify(workData)); 
-                    localStorage.setItem("trackData", JSON.stringify(trackData));
-                    setUIFromCfg(); initMaps(); renderCal(); calcStats(); 
-                    showToast("Backup erfolgreich importiert");
-                } catch { alert("Ung\u00FCltige Export-Datei."); }
-            };
-            reader.readAsText(file);
+                    localStorage.setItem("my_cfg", JSON.stringify(cfg)); localStorage.setItem("my_holidays", JSON.stringify(activeHolidays)); 
+                    localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments)); localStorage.setItem("workData", JSON.stringify(workData)); localStorage.setItem("trackData", JSON.stringify(trackData));
+                    setUIFromCfg(); initMaps(); renderCal(); calcStats(); showToast("Backup erfolgreich importiert");
+                } catch { alert("Ung\\u00FCltige Export-Datei."); }
+            }; reader.readAsText(file);
         }
 
         document.addEventListener("DOMContentLoaded", () => {
             loadHolidays(); loadSettings(); initMaps(); renderCal(); calcStats();
-
             document.getElementById('trackFile').addEventListener('change', async (e) => {
                 const files = e.target.files;
                 if (files.length > 0) {
@@ -1620,35 +1249,20 @@
                     try {
                         let allParsedData = {};
                         for (let i = 0; i < files.length; i++) {
-                            const file = files[i];
-                            const text = await file.text();
-                            const name = file.name.toLowerCase();
+                            const file = files[i], text = await file.text(), name = file.name.toLowerCase();
                             let parsedData = null;
-                            if (name.endsWith('.gpx')) parsedData = parseGPX(text);
-                            else if (name.endsWith('.kml')) parsedData = parseKML(text);
-                            else if (name.endsWith('.csv')) parsedData = parseCSV(text);
-                            else { console.warn(`\u00DCberspringe ${file.name}: Unbekanntes Dateiformat.`); continue; }
-                            if (parsedData) {
-                                for (const [dS, pts] of Object.entries(parsedData)) {
-                                    if (!allParsedData[dS]) allParsedData[dS] = [];
-                                    allParsedData[dS].push(...pts);
-                                }
-                            }
+                            if (name.endsWith('.gpx')) parsedData = parseGPX(text); else if (name.endsWith('.kml')) parsedData = parseKML(text); else if (name.endsWith('.csv')) parsedData = parseCSV(text);
+                            else { console.warn(`\\u00DCberspringe ${file.name}: Unbekanntes Dateiformat.`); continue; }
+                            if (parsedData) { for (const [dS, pts] of Object.entries(parsedData)) { if (!allParsedData[dS]) allParsedData[dS] = []; allParsedData[dS].push(...pts); } }
                         }
-                        for (const dS of Object.keys(allParsedData)) {
-                            allParsedData[dS].sort((a, b) => a.time - b.time);
-                        }
-                        if (Object.keys(allParsedData).length > 0) { finishLoad(allParsedData); }
-                        else { finishProgress(); alert('Keine g\u00FCltigen GPS-Daten gefunden.'); }
+                        for (const dS of Object.keys(allParsedData)) allParsedData[dS].sort((a, b) => a.time - b.time);
+                        if (Object.keys(allParsedData).length > 0) finishLoad(allParsedData);
+                        else { finishProgress(); alert('Keine g\\u00FCltigen GPS-Daten gefunden.'); }
                     } catch (err) { finishProgress(); alert('Fehler beim Laden: ' + err.message); }
                     e.target.value = '';
                 }
             });
-
-            document.getElementById("importFile").addEventListener("change", e => { 
-                if (e.target.files[0]) { handleImport(e.target.files[0]); } 
-                e.target.value = ""; 
-            });
+            document.getElementById("importFile").addEventListener("change", e => { if (e.target.files[0]) handleImport(e.target.files[0]); e.target.value = ""; });
         });
     </script>
 </body>
