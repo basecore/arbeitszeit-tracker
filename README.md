@@ -11,7 +11,9 @@ Eine webbasierte Progressive Web App (PWA) zur lokalen Auswertung von Arbeitszei
 - **Lokale Auswertung im Browser:** Tracking-Dateien werden direkt lokal verarbeitet. Es findet kein Upload deiner GPX-, KML- oder CSV-Dateien auf fremde Server statt.
 - **Mehrfachimport:** Mehrere GPX-, KML- oder CSV-Dateien können in einem Schritt importiert und gemeinsam ausgewertet werden.
 - **Automatische Monatsauswahl:** Nach dem Import wird automatisch der aktuellste Monat aller importierten Dateien angezeigt.
-- **Intelligente Standort-Ermittlung (Neu in v1.8):** Wenn du deine genauen Koordinaten für Zuhause oder die Arbeit nicht weißt, kann die App sie automatisch aus deinen hochgeladenen GPS-Routen lernen und die passenden Adressen via Reverse-Geocoding (Nominatim) vorschlagen.
+- **Intelligente Standort-Ermittlung:** Wenn du deine genauen Koordinaten für Zuhause oder die Arbeit nicht weißt, kann die App sie automatisch aus deinen hochgeladenen GPS-Routen lernen und die passenden Adressen via Reverse-Geocoding vorschlagen.
+- **Automatische Feiertags-Erkennung (Neu in v1.10):** Die App erkennt das Bundesland anhand deiner hochgeladenen GPS-Routen und lädt automatisch die passenden Feiertage für die in den Daten enthaltenen Jahre über eine API herunter.
+- **Manuelles Feiertags-Management:** Bundesland und Jahr können im Feiertags-Dialog auch jederzeit manuell konfiguriert werden, falls die automatische Erkennung nicht gewünscht ist.
 - **PWA-Support:** Die App kann auf Smartphone, Tablet oder Desktop wie eine native App installiert werden und ist für die lokale Nutzung optimiert.
 - **Arbeitsplatz- und Zuhause-Zonen:** Radius, Position und Adresse können frei definiert werden, um Arbeitszeiten und Pendelwege automatisch zu erkennen.
 - **Arbeitszeitberechnung:** Erkennung von Kommen, Gehen, Aufenthaltsdauer, Pausenzeit, Sollzeit und Differenz.
@@ -19,7 +21,7 @@ Eine webbasierte Progressive Web App (PWA) zur lokalen Auswertung von Arbeitszei
 - **Interaktive Routenansicht:** Tagesrouten können auf einer Karte geöffnet und farblich nach Hinweg, Rückweg, Aufenthalt am Arbeitsplatz, Pause und sonstiger Strecke dargestellt werden.
 - **Status pro Tag:** Tage lassen sich als Büro, Homeoffice, Urlaub, Frei, Feiertag oder N.A. markieren.
 - **Manuelle Nachbearbeitung:** Kommen- und Gehen-Zeiten können direkt pro Tag bearbeitet und gespeichert werden.
-- **Feiertagseditor:** Feiertage lassen sich als JSON pflegen und lokal speichern.
+- **Intelligentes Speichermanagement:** Bei Erreichen des Browser-Speicherlimits (QuotaExceeded) werden alte GPS-Routen automatisch aufgeräumt, während die berechneten Arbeitszeiten sicher erhalten bleiben.
 - **Zeitzonen- und Offset-Einstellungen:** Tages- und Stunden-Offsets sowie ein automatischer oder manueller Zeitzonenmodus stehen zur Verfügung.
 - **JSON-Import/Export:** Konfiguration, Feiertage, Tagesdaten und Tracks können als JSON exportiert und später wieder importiert werden.
 - **Mobile Optimierung:** Kompakte Darstellung für kleine Displays mit Fokus auf Status, Zeiten und Schnellaktionen.
@@ -56,7 +58,7 @@ Alle Werte werden lokal im Browser gespeichert und beim nächsten Aufruf automat
 Der typische Ablauf sieht so aus:
 1. GPS-Tracking mit einer App (z.B. GPSLogger) oder über die Google Zeitachse aufzeichnen.
 2. Eine oder mehrere GPX-, KML- oder CSV-Dateien in den GPS Arbeitszeit-Tracker laden.
-3. Die App analysiert die Daten automatisch und springt direkt in den neuesten importierten Monat.
+3. Die App analysiert die Daten automatisch und springt direkt in den neuesten importierten Monat. **Neu:** Das Bundesland wird aus den GPS-Daten erkannt und die passenden Feiertage werden geladen.
 4. Tage prüfen, Status anpassen oder Zeiten bei Bedarf manuell korrigieren.
 5. Optional die Tagesroute auf der Karte öffnen.
 6. Regelmäßig per JSON-Export ein Backup sichern.
@@ -115,13 +117,13 @@ Die App ermittelt je nach Datenlage unter anderem:
 
 ## 💾 Datenspeicherung & Datenschutz
 - **Lokaler Speicher:** Einstellungen, Tagesdaten, Feiertage und importierte Auswertungen werden ausschließlich lokal in deinem Browser (Cache/LocalStorage) verarbeitet und gespeichert.
-- **Keine Cloud-Pflicht:** Das Tool ist für eine einfache lokale Nutzung ohne eigenes Backend oder Datenbank konzipiert. Es werden **keine** Positionsdaten ins Internet gesendet (Ausnahme: Adress-Abfrage bei Nominatim/OSM bei aktiver Nutzung der Karten/Suchfunktion).
+- **Keine Cloud-Pflicht:** Das Tool ist für eine einfache lokale Nutzung ohne eigenes Backend oder Datenbank konzipiert. Es werden **keine** Positionsdaten ins Internet gesendet (Ausnahme: Ein einzelner Punkt zur Erkennung des Bundeslandes/Feiertage via Reverse-Geocoding).
 - **Backups empfohlen:** Nutze regelmäßig den JSON-Export, da beim Löschen der Browserdaten auch deine Tracking-Auswertungen gelöscht werden.
 
 ## 🛠️ Technischer Überblick
 - Webbasierte Anwendung ohne Server-Backend
 - Verarbeitung der Tracking-Daten direkt im Browser (`Vanilla JavaScript`)
-- Speicherung über `localStorage`
+- Speicherung über `localStorage` mit intelligentem Quota-Management
 - Kartenansicht auf Basis von Leaflet/OpenStreetMap
 - Import von GPX, KML, CSV und JSON
 - Export kompletter Sicherungen als JSON
