@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GPS Arbeitszeit-Tracker v1.9</title>
+    <title>GPS Arbeitszeit-Tracker v1.9.1</title>
 
         <meta name="theme-color" content="#006400" />
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -547,6 +547,9 @@
             <button class="btn btn-secondary" onclick="downloadAsHTML()">&#x2B07;&#xFE0F; Download as HTML</button>
             <button class="btn btn-danger" onclick="resetAll()">&#x1F5D1;&#xFE0F; Reset</button>
             <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            <div id="importStatus" style="font-size:13px;color:#006400;font-weight:500;padding:4px 8px;background:#e6f5e6;border-radius:6px;margin-left:12px;min-width:280px;display:none;">
+                ✅ <strong>Feiertage von Bayern \(BY\) verwendet</strong> – erkannt für <span id="detectedYears"></span>
+            </div>
         </div>
 
         <div class="assistant-section" id="assistantBox" style="display: none;">
@@ -581,7 +584,7 @@
 
         <div class="footer">
             <div class="footer-info">
-                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.9</a></p>
+                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.9.1</a></p>
                 <p>Entwickelt von <b>Sebastian R&ouml;&szlig;er</b></p>
                 <p>
                     <a href="https://github.com/basecore/arbeitszeit-tracker" target="_blank">GitHub Projekt</a> &nbsp;|&nbsp;
@@ -1337,18 +1340,39 @@ function saveCfg() {
         };
 
         // Get Bundesland code from workplace GPS coordinates via Nominatim
+                // Get Bundesland code from workplace GPS coordinates via Nominatim (ENHANCED)
         async function getWorkplaceBundesland(lat, lon) {
             try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=5&addressdetails=1`);
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=5&addressdetails=1`, {
+                    headers: { "User-Agent": "GPS-Arbeitszeit-Tracker/1.9.1" }
+                });
+                if (!res.ok) throw new Error("API error");
                 const data = await res.json();
-                const state = data.address?.state;
-                if (state && BUNDESLAND_MAP[state]) return { code: BUNDESLAND_MAP[state], name: state };
-                // Try fuzzy match
+                const addr = data.address || {};
+
+                // Priority hierarchy
+                const candidates = [addr.state, addr.region, addr.county, addr["ISO3166-2-lvl4"], addr["administrative"]].filter(Boolean);
+
+                // Bayern-specific variants (common Nominatim responses)
+                const bayernVariants = ["Bayern", "Oberbayern", "Niederbayern", "Oberpfalz", "Oberfranken", "Unterfranken", "Mittelfranken", "Schwaben", "Landkreis München", "München"];
+                for (const cand of candidates) {
+                    if (bayernVariants.some(v => cand.includes(v))) return { code: "BY", name: "Bayern" };
+                    const key = BUNDESLAND_MAP[cand];
+                    if (key) return { code: key, name: cand };
+                }
+
+                // General fuzzy match
                 for (const [name, code] of Object.entries(BUNDESLAND_MAP)) {
-                    if (state && state.includes(name.split("-")[0])) return { code, name };
+                    if (candidates.some(c => c.includes(name.split(" ")[0]) || c.includes(name.split("-")[0]))) {
+                        return { code, name };
+                    }
                 }
                 return null;
-            } catch { return null; }
+            } catch (e) {
+                console.warn("Nominatim Bundesland detection failed:", e);
+                return null;
+            }
+        }catch { return null; }
         }
 
         // Fetch holidays from feiertage-api.de for given state code and year
@@ -1468,7 +1492,18 @@ Feiertage für Jahre: ${years.join(", ")} laden?`;
                 activeHolidays = merged;
                 localStorage.setItem("my_holidays", JSON.stringify(activeHolidays));
                 renderCal();
-                if (statusEl) { statusEl.textContent = `✅ ${Object.keys(merged).length} Feiertage für ${detected.name} (${years.join(", ")}) geladen`; setTimeout(() => { if(statusEl) statusEl.textContent = ""; }, 6000); }
+                if (statusEl) { 
+                    statusEl.textContent = `✅ ${Object.keys(merged).length} Feiertage für ${detected.name} (${years.join(", ")}) geladen`; 
+                    setTimeout(() => { if(statusEl) statusEl.textContent = ""; }, 6000); 
+                }
+                const importStatusEl = document.getElementById("importStatus");
+                if (importStatusEl && detected.code === "BY") {
+                    const yearText2 = years.length === 1 ? `das Jahr ${years[0]}` : `die Jahre ${years.join(", ")}`;
+                    importStatusEl.innerHTML = `✅ <strong>Feiertage von Bayern (BY) verwendet</strong> – erkannt für ${yearText2}`;
+                    document.getElementById("detectedYears").textContent = yearText2;
+                    importStatusEl.style.display = "inline-flex";
+                    setTimeout(() => { importStatusEl.style.display = "none"; }, 10000);
+                }
                 showToast(`Feiertage ${detected.name} geladen`);
             } else {
                 if (statusEl) { statusEl.textContent = "⚠️ Keine Feiertage von API erhalten"; setTimeout(() => { if(statusEl) statusEl.textContent = ""; }, 4000); }
@@ -1481,7 +1516,7 @@ Feiertage für Jahre: ${years.join(", ")} laden?`;
             const blob = new Blob([html], { type: 'text/html' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = 'gps-arbeitszeit-tracker-v1.9.html';
+            a.download = 'gps-arbeitszeit-tracker-v1.9.1.html';
             a.click();
         }
 
