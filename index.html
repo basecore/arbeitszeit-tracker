@@ -544,7 +544,6 @@
                 <label for="importFile" class="file-input-label btn-secondary">&#x1F4C2; Backup Import</label>
             </div>
             <button class="btn btn-secondary" onclick="exportData()">&#x1F4BE; Export</button>
-            <button class="btn btn-secondary" onclick="downloadAsHTML()">&#x2B07;&#xFE0F; Download as HTML</button>
             <button class="btn btn-danger" onclick="resetAll()">&#x1F5D1;&#xFE0F; Reset</button>
             <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
             <div id="importStatus" style="font-size:13px;color:#006400;font-weight:500;padding:4px 8px;background:#e6f5e6;border-radius:6px;margin-left:12px;min-width:280px;display:none;">
@@ -584,7 +583,7 @@
 
         <div class="footer">
             <div class="footer-info">
-                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.9.1</a></p>
+                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.9.6</a></p>
                 <p>Entwickelt von <b>Sebastian R&ouml;&szlig;er</b></p>
                 <p>
                     <a href="https://github.com/basecore/arbeitszeit-tracker" target="_blank">GitHub Projekt</a> &nbsp;|&nbsp;
@@ -640,7 +639,39 @@
                 <span class="modal-close" onclick="closeHolidayEditor()">&times;</span>
             </div>
             <div class="modal-body">
-                <p>Format: JSON mit <code>"YYYY-MM-DD": "Bezeichnung"</code></p>
+                <p>Feiertage manuell bearbeiten oder automatisch passend zum Bundesland und Jahr laden.</p>
+                <div class="config-grid" style="margin-bottom:12px;">
+                    <div class="config-group">
+                        <label>Bundesland</label>
+                        <select id="holidayStateManual">
+                            <option value="">Auto</option>
+                            <option value="BY">Bayern</option>
+                            <option value="BW">Baden-Württemberg</option>
+                            <option value="BE">Berlin</option>
+                            <option value="BB">Brandenburg</option>
+                            <option value="HB">Bremen</option>
+                            <option value="HH">Hamburg</option>
+                            <option value="HE">Hessen</option>
+                            <option value="MV">Mecklenburg-Vorpommern</option>
+                            <option value="NI">Niedersachsen</option>
+                            <option value="NW">Nordrhein-Westfalen</option>
+                            <option value="RP">Rheinland-Pfalz</option>
+                            <option value="SL">Saarland</option>
+                            <option value="SN">Sachsen</option>
+                            <option value="ST">Sachsen-Anhalt</option>
+                            <option value="SH">Schleswig-Holstein</option>
+                            <option value="TH">Thüringen</option>
+                        </select>
+                    </div>
+                    <div class="config-group">
+                        <label>Jahr</label>
+                        <input type="number" id="holidayYearManual" min="2000" max="2100" step="1" />
+                    </div>
+                </div>
+                <div class="config-actions" style="margin-bottom:12px;">
+                    <button class="btn btn-secondary" onclick="loadManualHolidays()">Feiertage laden</button>
+                </div>
+                <p>Oder JSON mit <code>"YYYY-MM-DD": "Bezeichnung"</code> bearbeiten:</p>
                 <textarea id="holidayEditor"></textarea>
                 <div class="config-actions" style="margin-top:12px;">
                     <button class="btn" onclick="saveHolidays()">Speichern</button>
@@ -682,7 +713,7 @@
                     if (street && city) return `${street} ${house}, ${city}`.trim();
                 }
                 return data.display_name || "Unbekannte Adresse";
-            } catch { return "Adresse konnte nicht ermittelt werden"; }
+            } catch (e) { return "Adresse konnte nicht ermittelt werden"; }
         }
 
         function checkLocations() {
@@ -879,8 +910,27 @@
         function getStatusClass(st) { return "status-" + (st || "na"); }
         function hasTrace(d) { return Array.isArray(trackData[d]) && trackData[d].length > 1; }
 
-        function loadHolidays() { const s = localStorage.getItem("my_holidays"); if (s) { try { activeHolidays = JSON.parse(s); return; } catch {} } activeHolidays = structuredClone(defaultHolidays); }
-        function saveHolidays() { try { activeHolidays = document.getElementById("holidayEditor").value.trim() ? JSON.parse(document.getElementById("holidayEditor").value.trim()) : {}; localStorage.setItem("my_holidays", JSON.stringify(activeHolidays)); closeHolidayEditor(); renderCal(); showToast("Feiertage gespeichert"); } catch (e) { alert("Fehler im JSON-Format."); } }
+        function loadHolidays() { const s = localStorage.getItem("my_holidays"); if (s) { try { activeHolidays = JSON.parse(s); return; } catch (e) {} } activeHolidays = structuredClone(defaultHolidays); }
+                async function loadManualHolidays() {
+            const state = document.getElementById("holidayStateManual").value || cfg.wp.bundesland || "BY";
+            const year = parseInt(document.getElementById("holidayYearManual").value || new Date().getFullYear(), 10);
+            const statusEl = document.getElementById("holidayEditor");
+            if (statusEl) statusEl.value = "";
+            const h = await fetchHolidaysForState(state, year);
+            if (!h) { alert("Feiertage konnten nicht geladen werden."); return; }
+            activeHolidays = h;
+            localStorage.setItem("my_holidays", JSON.stringify(activeHolidays));
+            renderCal();
+            const importStatusEl = document.getElementById("importStatus");
+            if (importStatusEl) {
+                importStatusEl.innerHTML = `✅ <strong>Feiertage von ${BUNDESLAND_NAMES[state] || state} (${state}) verwendet</strong> – erkannt für das Jahr ${year}`;
+                importStatusEl.style.display = "inline-flex";
+            }
+            closeHolidayEditor();
+            showToast("Feiertage geladen");
+        }
+
+function saveHolidays() { try { activeHolidays = document.getElementById("holidayEditor").value.trim() ? JSON.parse(document.getElementById("holidayEditor").value.trim()) : {}; localStorage.setItem("my_holidays", JSON.stringify(activeHolidays)); closeHolidayEditor(); renderCal(); showToast("Feiertage gespeichert"); } catch (e) { alert("Fehler im JSON-Format."); } }
         function openHolidayEditor() { document.getElementById("holidayEditor").value = JSON.stringify(activeHolidays, null, 2); document.getElementById("holidayModal").style.display = "block"; }
         function closeHolidayEditor() { document.getElementById("holidayModal").style.display = "none"; }
 
@@ -910,10 +960,10 @@
         
         function loadSettings() {
             const s = localStorage.getItem("my_cfg");
-            if (s) { try { const st = JSON.parse(s); cfg = { wp: {...DEFAULT_CFG.wp, ...(st.wp||{})}, home: {...DEFAULT_CFG.home, ...(st.home||{})}, tz: {...DEFAULT_CFG.tz, ...(st.tz||{})} }; } catch { cfg = structuredClone(DEFAULT_CFG); } }
-            try { workData = JSON.parse(localStorage.getItem("workData")) || {}; } catch { workData = {}; }
-            try { trackData = JSON.parse(localStorage.getItem("trackData")) || {}; } catch { trackData = {}; }
-            try { jsonAssignments = JSON.parse(localStorage.getItem("jsonAssignments")) || {}; } catch { jsonAssignments = {}; }
+            if (s) { try { const st = JSON.parse(s); cfg = { wp: {...DEFAULT_CFG.wp, ...(st.wp||{})}, home: {...DEFAULT_CFG.home, ...(st.home||{})}, tz: {...DEFAULT_CFG.tz, ...(st.tz||{})} }; } catch (e) { cfg = structuredClone(DEFAULT_CFG); } }
+            try { workData = JSON.parse(localStorage.getItem("workData")) || {}; } catch (e) { workData = {}; }
+            try { trackData = JSON.parse(localStorage.getItem("trackData")) || {}; } catch (e) { trackData = {}; }
+            try { jsonAssignments = JSON.parse(localStorage.getItem("jsonAssignments")) || {}; } catch (e) { jsonAssignments = {}; }
             setUIFromCfg();
 
             const wpConfigured = cfg.wp.lat !== DEFAULT_CFG.wp.lat || cfg.wp.lon !== DEFAULT_CFG.wp.lon || cfg.wp.addr !== DEFAULT_CFG.wp.addr;
@@ -941,7 +991,7 @@ function saveCfg() {
 
         function applyTimezoneSettings() {
             cfg.tz.dayOff = parseInt(document.getElementById("dayOffset").value) || 0; cfg.tz.hourOff = parseInt(document.getElementById("hourOffset").value) || 0; cfg.tz.mode = document.getElementById("tzMode").value || "auto";
-            try { jsonAssignments = document.getElementById("jsonConfig").value.trim() ? JSON.parse(document.getElementById("jsonConfig").value.trim()) : {}; localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments)); } catch { alert("Ungültiges JSON."); }
+            try { jsonAssignments = document.getElementById("jsonConfig").value.trim() ? JSON.parse(document.getElementById("jsonConfig").value.trim()) : {}; localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments)); } catch (e) { alert("Ungültiges JSON."); }
             localStorage.setItem("my_cfg", JSON.stringify(cfg)); renderCal(); showToast("Einstellungen gespeichert");
         }
 
@@ -956,7 +1006,7 @@ function saveCfg() {
                 document.getElementById(t === "wp" ? "wpLat" : "homeLat").value = parseFloat(data[0].lat).toFixed(6); 
                 document.getElementById(t === "wp" ? "wpLon" : "homeLon").value = parseFloat(data[0].lon).toFixed(6); 
                 autoSave(t);
-            } catch { alert("Fehler bei Adresssuche."); }
+            } catch (e) { alert("Fehler bei Adresssuche."); }
         }
 
         async function reverseLookup(t) {
@@ -966,7 +1016,7 @@ function saveCfg() {
                 const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`); 
                 const data = await res.json();
                 if (data.display_name) { document.getElementById(t === "wp" ? "wpAddr" : "homeAddr").value = data.display_name; autoSave(t); }
-            } catch {}
+            } catch (e) {}
         }
 
         function initMaps() {
@@ -1145,6 +1195,8 @@ function saveCfg() {
             const gpsYears = Array.from(new Set(Object.keys(gData).map(d => parseInt(d.split('-')[0])).filter(y => y > 2000 && y < 2100))).sort();
             if (gpsYears.length > 0) {
                 checkAndUpdateHolidaysForWorkplace(gpsYears);
+                setImportInfo(`✅ <strong>Import erkannt</strong> – Jahre: ${formatYears(gpsYears)} – Feiertage werden automatisch passend zum Bundesland geladen.`);
+                setTimeout(() => { const el = document.getElementById("importStatus"); if (el) el.style.display = "none"; }, 12000);
             }
         }
 
@@ -1293,7 +1345,7 @@ function saveCfg() {
                     // Check Bundesland after import
                     const importYears = Array.from(new Set(Object.keys(workData).map(d => parseInt(d.split('-')[0])).filter(y => y > 2000 && y < 2100))).sort();
                     if (importYears.length > 0) checkAndUpdateHolidaysForWorkplace(importYears);
-                } catch { alert("Ung\u00FCltige Export-Datei."); }
+                } catch (e) { alert("Ung\u00FCltige Export-Datei."); }
             }; reader.readAsText(file);
         }
 
@@ -1340,39 +1392,54 @@ function saveCfg() {
         };
 
         // Get Bundesland code from workplace GPS coordinates via Nominatim
-                // Get Bundesland code from workplace GPS coordinates via Nominatim (ENHANCED)
         async function getWorkplaceBundesland(lat, lon) {
             try {
                 const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=5&addressdetails=1`, {
-                    headers: { "User-Agent": "GPS-Arbeitszeit-Tracker/1.9.1" }
+                    headers: { "User-Agent": "GPS-Arbeitszeit-Tracker/1.9.4" }
                 });
-                if (!res.ok) throw new Error("API error");
                 const data = await res.json();
                 const addr = data.address || {};
+                const candidates = [
+                    addr.state, addr.region, addr.state_district, addr.county,
+                    addr.city, addr.town, addr.village, addr["ISO3166-2-lvl4"],
+                    data.display_name
+                ].filter(Boolean).map(s => String(s));
 
-                // Priority hierarchy
-                const candidates = [addr.state, addr.region, addr.county, addr["ISO3166-2-lvl4"], addr["administrative"]].filter(Boolean);
+                const matches = [
+                    ["BY", ["bayern", "oberbayern", "niederbayern", "oberpfalz", "oberfranken", "unterfranken", "mittelfranken", "schwaben", "landkreis münchen", "münchen"]],
+                    ["BW", ["baden-württemberg", "baden wuerttemberg", "baden württemberg"]],
+                    ["BE", ["berlin"]],
+                    ["BB", ["brandenburg"]],
+                    ["HB", ["bremen"]],
+                    ["HH", ["hamburg"]],
+                    ["HE", ["hessen"]],
+                    ["MV", ["mecklenburg-vorpommern", "mecklenburg vorpommern"]],
+                    ["NI", ["niedersachsen"]],
+                    ["NW", ["nordrhein-westfalen", "nordrhein westfalen"]],
+                    ["RP", ["rheinland-pfalz", "rheinland pfalz"]],
+                    ["SL", ["saarland"]],
+                    ["SN", ["sachsen"]],
+                    ["ST", ["sachsen-anhalt", "sachsen anhalt"]],
+                    ["SH", ["schleswig-holstein", "schleswig holstein"]],
+                    ["TH", ["thüringen", "thueringen"]]
+                ];
 
-                // Bayern-specific variants (common Nominatim responses)
-                const bayernVariants = ["Bayern", "Oberbayern", "Niederbayern", "Oberpfalz", "Oberfranken", "Unterfranken", "Mittelfranken", "Schwaben", "Landkreis München", "München"];
-                for (const cand of candidates) {
-                    if (bayernVariants.some(v => cand.includes(v))) return { code: "BY", name: "Bayern" };
-                    const key = BUNDESLAND_MAP[cand];
-                    if (key) return { code: key, name: cand };
+                const joined = candidates.join(' | ').toLowerCase();
+                for (const [code, keys] of matches) {
+                    if (keys.some(k => joined.includes(k))) return { code, name: code === "BY" ? "Bayern" : (BUNDESLAND_NAMES[code] || code) };
                 }
 
-                // General fuzzy match
                 for (const [name, code] of Object.entries(BUNDESLAND_MAP)) {
-                    if (candidates.some(c => c.includes(name.split(" ")[0]) || c.includes(name.split("-")[0]))) {
+                    if (candidates.some(c => c.toLowerCase().includes(name.toLowerCase()))) {
                         return { code, name };
                     }
                 }
+
                 return null;
             } catch (e) {
                 console.warn("Nominatim Bundesland detection failed:", e);
                 return null;
             }
-        }catch { return null; }
         }
 
         // Fetch holidays from feiertage-api.de for given state code and year
@@ -1385,7 +1452,7 @@ function saveCfg() {
                     if (info.datum) holidays[info.datum] = name;
                 }
                 return holidays;
-            } catch { return null; }
+            } catch (e) { return null; }
         }
 
         // Detect the year(s) from loaded GPS data
@@ -1409,7 +1476,14 @@ function saveCfg() {
 
             // Detect Bundesland from workplace GPS
             const detected = await getWorkplaceBundesland(lat, lon);
-            if (!detected) return;
+            if (!detected) {
+                const importStatusEl = document.getElementById("importStatus");
+                if (importStatusEl) {
+                    importStatusEl.innerHTML = `ℹ️ <strong>Bundesland konnte nicht automatisch erkannt werden.</strong> Feiertage können manuell geladen werden.`;
+                    importStatusEl.style.display = "inline-flex";
+                }
+                return;
+            }
 
             const years = yearsFromGPS || getGPSYears();
             if (years.length === 0) years.push(new Date().getFullYear());
@@ -1451,8 +1525,20 @@ Sollen die Feiertage auf ${detected.name} (${detected.code}) für ${years.join("
                 activeHolidays = merged;
                 localStorage.setItem("my_holidays", JSON.stringify(activeHolidays));
                 renderCal();
-                const msg = `✅ ${Object.keys(merged).length} Feiertage für ${detected.name} (${years.join(", ")}) geladen`;
+                const msg = `✅ ${Object.keys(merged).length} Feiertage für ${detected.name} geladen`;
                 if (statusEl) { statusEl.textContent = msg; setTimeout(() => { if(statusEl) statusEl.textContent = ""; }, 6000); }
+
+                const importStatusEl = document.getElementById("importStatus");
+                if (importStatusEl) {
+                    importStatusEl.innerHTML = `✅ <strong>Feiertage von ${detected.name} (${detected.code}) verwendet</strong> – erkannt für ${formatYears(years)}`;
+                    importStatusEl.style.display = "inline-flex";
+                    setTimeout(() => { importStatusEl.style.display = "none"; }, 10000);
+                }
+                const holidayStateManual = document.getElementById("holidayStateManual");
+                const holidayYearManual = document.getElementById("holidayYearManual");
+                if (holidayStateManual) holidayStateManual.value = detected.code;
+                if (holidayYearManual && years.length) holidayYearManual.value = years[0];
+
                 showToast(`Feiertage ${detected.name} geladen`);
             } else {
                 if (statusEl) { statusEl.textContent = "⚠️ Keine Feiertage von API erhalten"; setTimeout(() => { if(statusEl) statusEl.textContent = ""; }, 4000); }
@@ -1516,11 +1602,26 @@ Feiertage für Jahre: ${years.join(", ")} laden?`;
             const blob = new Blob([html], { type: 'text/html' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = 'gps-arbeitszeit-tracker-v1.9.1.html';
+            a.download = 'gps-arbeitszeit-tracker-v1.9.6.html';
             a.click();
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
+        
+        
+        function setImportInfo(html, showMs = 12000) {
+            const el = document.getElementById("importStatus");
+            if (!el) return;
+            el.innerHTML = html;
+            el.style.display = "inline-flex";
+            if (showMs) setTimeout(() => { el.style.display = "none"; }, showMs);
+        }
+
+function formatYears(years) {
+            if (years.length === 1) return `das Jahr ${years[0]}`;
+            if (years.length === 2) return `die Jahre ${years[0]}, ${years[1]}`;
+            return `die Jahre ${years.slice(0,3).join(", ")}${years.length > 3 ? " u.v.m." : ""}`;
+        }
+document.addEventListener("DOMContentLoaded", () => {
             loadHolidays(); loadSettings(); initMaps(); renderCal(); calcStats();
             document.getElementById('trackFile').addEventListener('change', async (e) => {
                 const files = e.target.files;
