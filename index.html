@@ -583,7 +583,7 @@
 
         <div class="footer">
             <div class="footer-info">
-                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.9.6</a></p>
+                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.9.7</a></p>
                 <p>Entwickelt von <b>Sebastian R&ouml;&szlig;er</b></p>
                 <p>
                     <a href="https://github.com/basecore/arbeitszeit-tracker" target="_blank">GitHub Projekt</a> &nbsp;|&nbsp;
@@ -704,7 +704,7 @@
 
         async function getAddress(lat, lon) {
             try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&email=gps-tracker@example.com`);
                 const data = await res.json();
                 if (data.address) {
                     const street = data.address.road || "";
@@ -1013,7 +1013,7 @@ function saveCfg() {
             const lat = document.getElementById(t === "wp" ? "wpLat" : "homeLat").value;
             const lon = document.getElementById(t === "wp" ? "wpLon" : "homeLon").value;
             try { 
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`); 
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&email=gps-tracker@example.com`); 
                 const data = await res.json();
                 if (data.display_name) { document.getElementById(t === "wp" ? "wpAddr" : "homeAddr").value = data.display_name; autoSave(t); }
             } catch (e) {}
@@ -1394,9 +1394,7 @@ function saveCfg() {
         // Get Bundesland code from workplace GPS coordinates via Nominatim
         async function getWorkplaceBundesland(lat, lon) {
             try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=5&addressdetails=1`, {
-                    headers: { "User-Agent": "GPS-Arbeitszeit-Tracker/1.9.4" }
-                });
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=5&addressdetails=1&email=gps-tracker@example.com`);
                 const data = await res.json();
                 const addr = data.address || {};
                 const candidates = [
@@ -1471,49 +1469,64 @@ function saveCfg() {
 
         // Main function: check workplace Bundesland from GPS, compare with stored, offer to update holidays
         async function checkAndUpdateHolidaysForWorkplace(yearsFromGPS) {
-            const lat = cfg.wp.lat, lon = cfg.wp.lon;
-            if (!lat || !lon) return;
+            let lat = cfg.wp.lat, lon = cfg.wp.lon;
+            let detected = null;
 
-            // Detect Bundesland from workplace GPS
-            const detected = await getWorkplaceBundesland(lat, lon);
+            // 1. Try Workplace
+            if (lat && lon && lat !== 0) {
+                detected = await getWorkplaceBundesland(lat, lon);
+            }
+
+            // 2. Try Home
+            if (!detected && cfg.home && cfg.home.lat && cfg.home.lat !== 0) {
+                detected = await getWorkplaceBundesland(cfg.home.lat, cfg.home.lon);
+            }
+
+            // 3. Try middle point from GPS Tracks
             if (!detected) {
-                const importStatusEl = document.getElementById("importStatus");
-                if (importStatusEl) {
-                    importStatusEl.innerHTML = `ℹ️ <strong>Bundesland konnte nicht automatisch erkannt werden.</strong> Feiertage können manuell geladen werden.`;
-                    importStatusEl.style.display = "inline-flex";
+                let trackPoints = [];
+                for (const dS in trackData) {
+                    if (trackData[dS] && trackData[dS].length > 0) {
+                        trackPoints.push(...trackData[dS]);
+                        if (trackPoints.length > 500) break; // don't need too many
+                    }
                 }
-                return;
+                if (trackPoints.length > 0) {
+                    const mid = trackPoints[Math.floor(trackPoints.length / 2)];
+                    detected = await getWorkplaceBundesland(mid.lat, mid.lon);
+                }
             }
 
             const years = yearsFromGPS || getGPSYears();
             if (years.length === 0) years.push(new Date().getFullYear());
 
-            const storedCode = cfg.wp.bundesland || null;
-            const primaryYear = years[0];
-
-            // If stored Bundesland differs from detected, ask user
-            if (storedCode && storedCode !== detected.code) {
-                const storedName = BUNDESLAND_NAMES[storedCode] || storedCode;
-                const msg = `⚠️ Bundesland-Abweichung erkannt!
-
-Erkanntes Bundesland des Arbeitsplatzes (GPS): ${detected.name} (${detected.code})
-Gespeichertes Bundesland: ${storedName} (${storedCode})
-
-Sollen die Feiertage auf ${detected.name} (${detected.code}) für ${years.join(", ")} aktualisiert werden?`;
-                if (!confirm(msg)) return;
-            } else if (!storedCode) {
-                // First time - auto-load without asking, but show status
-            } else {
-                // Same Bundesland - update silently for the GPS years
+            if (!detected) {
+                const manualState = cfg.wp.bundesland || document.getElementById("holidayStateManual")?.value || "BY";
+                const manualYear = (parseInt(document.getElementById("holidayYearManual")?.value || new Date().getFullYear(), 10));
+                const importStatusEl = document.getElementById("importStatus");
+                if (importStatusEl) {
+                    importStatusEl.innerHTML = `ℹ️ <strong>Bundesland konnte nicht aus GPS erkannt werden.</strong> Lade manuell eingestelltes: ${BUNDESLAND_NAMES[manualState] || manualState}, ${manualYear}.`;
+                    importStatusEl.style.display = "inline-flex";
+                    setTimeout(() => { importStatusEl.style.display = "none"; }, 10000);
+                }
+                const h = await fetchHolidaysForState(manualState, manualYear);
+                if (h) {
+                    activeHolidays = h;
+                    localStorage.setItem("my_holidays", JSON.stringify(activeHolidays));
+                    renderCal();
+                }
+                return;
             }
 
-            // Save detected Bundesland
+            const storedCode = cfg.wp.bundesland || null;
+            if (storedCode && storedCode !== detected.code) {
+                const storedName = BUNDESLAND_NAMES[storedCode] || storedCode;
+                const msg = `⚠️ Bundesland-Abweichung erkannt!\n\nErkanntes Bundesland (GPS): ${detected.name} (${detected.code})\nGespeichertes Bundesland: ${storedName} (${storedCode})\n\nSollen die Feiertage auf ${detected.name} (${detected.code}) aktualisiert werden?`;
+                if (!confirm(msg)) return;
+            }
+
             cfg.wp.bundesland = detected.code;
             localStorage.setItem("my_cfg", JSON.stringify(cfg));
-
-            // Fetch holidays for all GPS years
-            const statusEl = document.getElementById("holidayApiStatus");
-            if (statusEl) statusEl.textContent = `⏳ Lade Feiertage ${detected.name} ${years.join(", ")}...`;
 
             let merged = {};
             for (const year of years) {
@@ -1525,27 +1538,23 @@ Sollen die Feiertage auf ${detected.name} (${detected.code}) für ${years.join("
                 activeHolidays = merged;
                 localStorage.setItem("my_holidays", JSON.stringify(activeHolidays));
                 renderCal();
-                const msg = `✅ ${Object.keys(merged).length} Feiertage für ${detected.name} geladen`;
-                if (statusEl) { statusEl.textContent = msg; setTimeout(() => { if(statusEl) statusEl.textContent = ""; }, 6000); }
 
                 const importStatusEl = document.getElementById("importStatus");
                 if (importStatusEl) {
-                    importStatusEl.innerHTML = `✅ <strong>Feiertage von ${detected.name} (${detected.code}) verwendet</strong> – erkannt für ${formatYears(years)}`;
+                    importStatusEl.innerHTML = `✅ <strong>Feiertage von ${detected.name} (${detected.code})</strong> – automatisch geladen für ${formatYears(years)}`;
                     importStatusEl.style.display = "inline-flex";
-                    setTimeout(() => { importStatusEl.style.display = "none"; }, 10000);
+                    setTimeout(() => { importStatusEl.style.display = "none"; }, 12000);
                 }
+
                 const holidayStateManual = document.getElementById("holidayStateManual");
                 const holidayYearManual = document.getElementById("holidayYearManual");
                 if (holidayStateManual) holidayStateManual.value = detected.code;
                 if (holidayYearManual && years.length) holidayYearManual.value = years[0];
 
                 showToast(`Feiertage ${detected.name} geladen`);
-            } else {
-                if (statusEl) { statusEl.textContent = "⚠️ Keine Feiertage von API erhalten"; setTimeout(() => { if(statusEl) statusEl.textContent = ""; }, 4000); }
             }
         }
 
-        // Manual button: fetch holidays from API based on current workplace
         async function fetchHolidaysFromAPI() {
             const lat = cfg.wp.lat, lon = cfg.wp.lon;
             if (!lat || !lon) { alert("Bitte zuerst den Arbeitsplatz konfigurieren (Koordinaten eingeben)."); return; }
@@ -1602,7 +1611,7 @@ Feiertage für Jahre: ${years.join(", ")} laden?`;
             const blob = new Blob([html], { type: 'text/html' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = 'gps-arbeitszeit-tracker-v1.9.6.html';
+            a.download = 'gps-arbeitszeit-tracker-v1.9.7.html';
             a.click();
         }
 
