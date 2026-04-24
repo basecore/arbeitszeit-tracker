@@ -8,29 +8,18 @@ Eine webbasierte Progressive Web App (PWA) zur lokalen Auswertung von Arbeitszei
 
 ## 🖼️ Vorschau
 
-**Computer Ansicht der GUI einfach und übersichtlich gehalten:**
+**Desktop Ansicht** (Übersichtliche GUI & Detailansicht mit Map-Option):
 <p align="center">
-  <img src="images/arbeitszeit_tracker_pc_gui2.jpg" alt="Computer Ansicht der GUI einfach und übersichtlich gehalten" width="800">
+  <img src="images/arbeitszeit_tracker_pc_gui2.jpg" alt="Computer Ansicht der GUI" width="48%">
+  &nbsp;
+  <img src="images/arbeitszeit_tracker_pc_gui1.jpg" alt="Übersicht der Zeiten mit Map" width="48%">
 </p>
 
-**Übersicht der Zeiten mit zusätzlichen Informationen und Map option (button):**
+**Smartphone Ansicht** (Optimierte GUI, einfache Zeitenansicht & Konfiguration):
 <p align="center">
-  <img src="images/arbeitszeit_tracker_pc_gui1.jpg" alt="Übersicht der Zeiten mit zusätzlichen Informationen und Map option" width="800">
-</p>
-
-**Fürs Smartphone optimierte GUI:**
-<p align="center">
-  <img src="images/arbeitszeit_tracker_smartphone_gui1.jpg" alt="Fürs Smartphone optimierte GUI" width="300">
-</p>
-
-**Einfache Ansicht (optional) auf dem Smartphone der Zeiten übersichtlich:**
-<p align="center">
-  <img src="images/arbeitszeit_tracker_smartphone_gui2.jpg" alt="Einfache Ansicht auf dem Smartphone" width="300">
-</p>
-
-**Smartphone View für Arbeitsplatz configuration:**
-<p align="center">
-  <img src="images/arbeitszeit_tracker_smartphone_gui3.jpg" alt="Smartphone View für Arbeitsplatz configuration" width="300">
+  <img src="images/arbeitszeit_tracker_smartphone_gui1.jpg" alt="Optimierte GUI" width="32%">
+  <img src="images/arbeitszeit_tracker_smartphone_gui2.jpg" alt="Einfache Ansicht" width="32%">
+  <img src="images/arbeitszeit_tracker_smartphone_gui3.jpg" alt="Arbeitsplatz Konfiguration" width="32%">
 </p>
 
 ## 🚀 Neue Funktionen & Updates (v2.0.0)
@@ -132,6 +121,21 @@ Wenn du ohnehin deinen Standortverlauf über Google Maps aufzeichnest, kannst du
   <img src="https://raw.githubusercontent.com/basecore/arbeitszeit-tracker/main/images/takeout_google2.png" width="32%" alt="Schritt 2: KML Format auswählen">
   <img src="https://raw.githubusercontent.com/basecore/arbeitszeit-tracker/main/images/takeout_google3.png" width="32%" alt="Schritt 3: Export erstellen">
 </p>
+
+### Option C: Google Maps Timeline direkt vom Smartphone exportieren (JSON)
+Da Google die Web-Zeitachse eingestellt hat, befinden sich deine aktuellen Standortdaten nun direkt lokal auf deinem Smartphone. Du kannst diese Daten als JSON-Datei exportieren und hier auswerten.
+
+**Für Android & iOS:**
+1. Öffne die **Google Maps App** auf deinem Smartphone.
+2. Tippe oben rechts auf dein **Profilbild**.
+3. Wähle **"Deine Zeitachse"** (Your Timeline) aus.
+4. Tippe oben rechts auf das **Drei-Punkte-Menü** (oder Einstellungen-Icon) und wähle **"Standort- und Datenschutzeinstellungen"**.
+5. Scrolle nach unten zum Bereich *Standorteinstellungen* und tippe auf **"Zeitachsendaten exportieren"**.
+6. Bestätige den Export. Google Maps erstellt nun eine Sicherung deiner Zeitachse im **JSON-Format**.
+7. Speichere oder teile diese Datei (z. B. per E-Mail, Google Drive oder iCloud) auf deinen PC.
+8. Lade die `.json` Datei im GPS Arbeitszeit-Tracker Webtool hoch. 
+
+> 💡 *Hinweis zu JSON-Parsern:* Dieser Tracker nutzt einen vollständig lokalen JSON-Parser, der direkt im Browser läuft. Alle Daten bleiben auf deinem Gerät. Wenn du eine ganzheitliche Visualisierung deiner gesamten Lebens-Historie suchst (inkl. Server/Docker-Hosting), empfiehlt sich ergänzend das quelloffene Projekt **[Dawarich](https://github.com/Freika/dawarich)** ([dawarich.app](https://dawarich.app)), welches eine Privacy-First Google Timeline Visualisierung anbietet.
 
 ---
 
