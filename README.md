@@ -2,17 +2,52 @@
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge&logo=github)](https://basecore.github.io/arbeitszeit-tracker/)
 
-Eine webbasierte Progressive Web App (PWA) zur lokalen Auswertung von Arbeitszeiten, Aufenthalten am Arbeitsplatz und Fahrtwegen auf Basis von GPS-Tracking-Daten. Die App verarbeitet GPX-, KML- und CSV-Dateien direkt im Browser, erkennt Arbeitszeiten anhand definierter Zonen für Zuhause und Arbeitsplatz und visualisiert Tagesrouten auf einer interaktiven Karte.
+Eine webbasierte Progressive Web App (PWA) zur lokalen Auswertung von Arbeitszeiten, Aufenthalten am Arbeitsplatz und Fahrtwegen auf Basis von GPS-Tracking-Daten. Die App verarbeitet GPX-, KML-, CSV- und JSON-Dateien direkt im Browser, erkennt Arbeitszeiten anhand definierter Zonen für Zuhause und Arbeitsplatz und visualisiert Tagesrouten auf einer interaktiven Karte.
 
 🔗 **Zur Live-App:** [https://basecore.github.io/arbeitszeit-tracker/](https://basecore.github.io/arbeitszeit-tracker/)
 
-## 🚀 Funktionen
+## 🖼️ Vorschau
 
-- **Lokale Auswertung im Browser:** Tracking-Dateien werden direkt lokal verarbeitet. Es findet kein Upload deiner GPX-, KML- oder CSV-Dateien auf fremde Server statt.
-- **Mehrfachimport:** Mehrere GPX-, KML- oder CSV-Dateien können in einem Schritt importiert und gemeinsam ausgewertet werden.
+**Computer Ansicht der GUI einfach und übersichtlich gehalten:**
+<p align="center">
+  <img src="images/arbeitszeit_tracker_pc_gui2.jpg" alt="Computer Ansicht der GUI einfach und übersichtlich gehalten" width="800">
+</p>
+
+**Übersicht der Zeiten mit zusätzlichen Informationen und Map option (button):**
+<p align="center">
+  <img src="images/arbeitszeit_tracker_pc_gui1.jpg" alt="Übersicht der Zeiten mit zusätzlichen Informationen und Map option" width="800">
+</p>
+
+**Fürs Smartphone optimierte GUI:**
+<p align="center">
+  <img src="images/arbeitszeit_tracker_smartphone_gui1.jpg" alt="Fürs Smartphone optimierte GUI" width="300">
+</p>
+
+**Einfache Ansicht (optional) auf dem Smartphone der Zeiten übersichtlich:**
+<p align="center">
+  <img src="images/arbeitszeit_tracker_smartphone_gui2.jpg" alt="Einfache Ansicht auf dem Smartphone" width="300">
+</p>
+
+**Smartphone View für Arbeitsplatz configuration:**
+<p align="center">
+  <img src="images/arbeitszeit_tracker_smartphone_gui3.jpg" alt="Smartphone View für Arbeitsplatz configuration" width="300">
+</p>
+
+## 🚀 Neue Funktionen & Updates (v2.0.0)
+
+- **JSON Google Timeline Import:** Direkter Import von JSON-Dateien aus der Google Standortverlauf-Zeitachse.
+- **Kompakte UI:** Die Konfigurationsbereiche für Arbeitsplatz, Zuhause und Einstellungen sind nun standardmäßig eingeklappt, um den Fokus sofort auf die wesentlichen Aktionen (Strecke laden, Auswertung) zu lenken.
+- **Automatische Neuberechnung:** Änderungen an den Konfigurationen oder Standorten lösen nun eine Abfrage aus, ob bestehende, importierte Tracking-Daten sofort mit den neuen Parametern neu berechnet werden sollen.
+- **Optimierte Standorthinweise:** Auffälligere, kompaktere Hinweise ("🔍 Standorte prüfen & automatisch finden") direkt im Konfigurationsbereich.
+- **Verbesserte API-Feiertagsabfrage:** Feiertage können nun direkt über einen Button aus der API nachgeladen werden.
+
+## 🚀 Hauptfunktionen
+
+- **Lokale Auswertung im Browser:** Tracking-Dateien werden direkt lokal verarbeitet. Es findet kein Upload deiner GPX-, KML-, CSV- oder JSON-Dateien auf fremde Server statt.
+- **Mehrfachimport:** Mehrere Dateien können in einem Schritt importiert und gemeinsam ausgewertet werden.
 - **Automatische Monatsauswahl:** Nach dem Import wird automatisch der aktuellste Monat aller importierten Dateien angezeigt.
 - **Intelligente Standort-Ermittlung:** Wenn du deine genauen Koordinaten für Zuhause oder die Arbeit nicht weißt, kann die App sie automatisch aus deinen hochgeladenen GPS-Routen lernen und die passenden Adressen via Reverse-Geocoding vorschlagen.
-- **Automatische Feiertags-Erkennung (Neu in v1.10):** Die App erkennt das Bundesland anhand deiner hochgeladenen GPS-Routen und lädt automatisch die passenden Feiertage für die in den Daten enthaltenen Jahre über eine API herunter.
+- **Automatische Feiertags-Erkennung:** Die App erkennt das Bundesland anhand deiner hochgeladenen GPS-Routen und lädt automatisch die passenden Feiertage für die in den Daten enthaltenen Jahre über eine API herunter.
 - **Manuelles Feiertags-Management:** Bundesland und Jahr können im Feiertags-Dialog auch jederzeit manuell konfiguriert werden, falls die automatische Erkennung nicht gewünscht ist.
 - **PWA-Support:** Die App kann auf Smartphone, Tablet oder Desktop wie eine native App installiert werden und ist für die lokale Nutzung optimiert.
 - **Arbeitsplatz- und Zuhause-Zonen:** Radius, Position und Adresse können frei definiert werden, um Arbeitszeiten und Pendelwege automatisch zu erkennen.
@@ -32,6 +67,7 @@ Für den Streckenimport werden aktuell folgende Dateitypen unterstützt:
 - `.gpx`
 - `.kml` (z. B. aus Google Takeout)
 - `.csv`
+- `.json` (Google Timeline / Standortverlauf)
 
 Zusätzlich kann eine komplette Sicherung als `.json` importiert bzw. exportiert werden.
 
@@ -42,14 +78,15 @@ Beim ersten Start sind Beispielpositionen hinterlegt:
 - **Arbeitsplatz:** Forschungszentrum Garching
 
 **So passt du die App an:**
-1. Trage deine echte Adresse ein oder setze die Position direkt per Klick auf der Karte.
-2. Alternativ kannst du Breiten- und Längengrad manuell eintragen.
-3. Passe den Radius für Zuhause und Arbeitsplatz an.
-4. Hinterlege deine Sollstunden pro Tag und die Standardpause.
-5. Speichere die Konfiguration.
+1. Klappe die Bereiche "Arbeitsplatz Konfiguration" oder "Zuhause Konfiguration" auf.
+2. Trage deine echte Adresse ein oder setze die Position direkt per Klick auf der Karte.
+3. Alternativ kannst du Breiten- und Längengrad manuell eintragen.
+4. Passe den Radius für Zuhause und Arbeitsplatz an.
+5. Hinterlege deine Sollstunden pro Tag und die Standardpause.
+6. Speichere die Konfiguration (Bestehende Daten können auf Wunsch sofort neu berechnet werden).
 
 **Standorte automatisch finden lassen:**
-Weißt du deine Koordinaten nicht genau? Lade einfach deine GPS-Dateien hoch und klicke auf "Standorte prüfen & automatisch finden". Die App analysiert deine Aufenthaltsorte (Nachts = Zuhause; Werktags tagsüber = Arbeit) und trägt die Koordinaten und Straßennamen auf Wunsch automatisch für dich ein!
+Weißt du deine Koordinaten nicht genau? Lade einfach deine Dateien hoch und klicke in der aufpoppenden Box auf "🔍 Standorte prüfen & automatisch finden". Die App analysiert deine Aufenthaltsorte (Nachts = Zuhause; Werktags tagsüber = Arbeit) und trägt die Koordinaten und Straßennamen auf Wunsch automatisch für dich ein!
 
 Alle Werte werden lokal im Browser gespeichert und beim nächsten Aufruf automatisch wieder geladen.
 
@@ -57,8 +94,8 @@ Alle Werte werden lokal im Browser gespeichert und beim nächsten Aufruf automat
 
 Der typische Ablauf sieht so aus:
 1. GPS-Tracking mit einer App (z.B. GPSLogger) oder über die Google Zeitachse aufzeichnen.
-2. Eine oder mehrere GPX-, KML- oder CSV-Dateien in den GPS Arbeitszeit-Tracker laden.
-3. Die App analysiert die Daten automatisch und springt direkt in den neuesten importierten Monat. **Neu:** Das Bundesland wird aus den GPS-Daten erkannt und die passenden Feiertage werden geladen.
+2. Eine oder mehrere GPX-, KML-, CSV- oder JSON-Dateien in den GPS Arbeitszeit-Tracker laden.
+3. Die App analysiert die Daten automatisch und springt direkt in den neuesten importierten Monat. Das Bundesland wird aus den GPS-Daten erkannt und die passenden Feiertage werden geladen.
 4. Tage prüfen, Status anpassen oder Zeiten bei Bedarf manuell korrigieren.
 5. Optional die Tagesroute auf der Karte öffnen.
 6. Regelmäßig per JSON-Export ein Backup sichern.
@@ -72,29 +109,23 @@ Für die detaillierte Aufzeichnung der Bewegungsdaten eignet sich **GPSLogger** 
 🔗 **Website:** [https://gpslogger.app/](https://gpslogger.app/)
 
 **Empfohlene GPSLogger-Konfiguration:**
-Die folgenden Werte sind eine gute und in der Praxis bewährte Grundlage für die Nutzung mit diesem Projekt:
 - **Neue Datei erstellen:** Monatlich
 - **GPS/GNSS-Standorte aufzeichnen:** Aktiviert
 - **Aufzeichnungsintervall:** 60 Sekunden
 - **Aktualisierungsintervall für passive Standorte:** 1 Sekunde
 - **Genauigkeit:** 40 Meter
-- **Zeit bis die Genauigkeit erreicht ist:** 60 Sekunden
-- **Absolute Zeit bis zur GPS-Positionsbestimmung:** *(Bitte in deiner Installation prüfen, hier kann je nach Gerät ein Standardwert aktiv sein)*
-
-Ein Intervall von 60 Sekunden und die monatliche Dateierstellung sind ein hervorragender Kompromiss aus Akkulaufzeit, Datenmenge und Genauigkeit für den späteren Import.
 
 ### Option B: Daten aus der Google Maps Zeitachse exportieren (Google Takeout)
-Wenn du ohnehin deinen Standortverlauf über Google Maps aufzeichnest, kannst du diese Daten nutzen, um sie als KML in dieses Tool zu importieren.
+Wenn du ohnehin deinen Standortverlauf über Google Maps aufzeichnest, kannst du diese Daten nutzen, um sie in dieses Tool zu importieren.
 
 **So exportierst du die Daten:**
 1. Öffne **[Google Takeout](https://takeout.google.com/)**.
 2. Klicke ganz oben in der Liste auf **"Auswahl aufheben"** (um nicht alle Google-Daten zu exportieren).
 3. Scrolle nach unten zum Punkt **"Zeitachse"** *(Zeitachsendaten, z. B. Einstellungen und Orte)* und setze dort den Haken.
 4. Klicke bei diesem Punkt auf den Button **"Dateiformate bearbeiten"** (oder "Mehrere Formate").
-5. Stelle das Dropdown-Menü für Datensätze auf das Format **KML** um und bestätige mit OK.
+5. Stelle das Dropdown-Menü für Datensätze auf das Format **KML** oder **JSON** um und bestätige mit OK.
 6. Scrolle ganz nach unten und klicke auf **"Nächster Schritt"**, um den Export zu starten.
-7. Warte einen Moment. Sobald Google die Daten zusammengestellt hat, erhältst du eine E-Mail. 
-8. Lade die ZIP-Datei herunter, entpacke sie und lade die darin enthaltene **`.kml`-Datei** über den Upload-Button in das Arbeitszeit-Tracker-Webtool hoch.
+7. Lade die ZIP-Datei herunter, entpacke sie und lade die darin enthaltene **`.kml`** oder **`.json`-Datei** über den Upload-Button in das Arbeitszeit-Tracker-Webtool hoch.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/basecore/arbeitszeit-tracker/main/images/takeout_google1.png" width="32%" alt="Schritt 1: Google Takeout Auswahl">
@@ -125,7 +156,7 @@ Die App ermittelt je nach Datenlage unter anderem:
 - Verarbeitung der Tracking-Daten direkt im Browser (`Vanilla JavaScript`)
 - Speicherung über `localStorage` mit intelligentem Quota-Management
 - Kartenansicht auf Basis von Leaflet/OpenStreetMap
-- Import von GPX, KML, CSV und JSON
+- Import von GPX, KML, CSV und JSON (Google Timeline)
 - Export kompletter Sicherungen als JSON
 
 ---
