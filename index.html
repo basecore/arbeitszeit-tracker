@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GPS Arbeitszeit-Tracker v1.9.1</title>
+    <title>GPS Arbeitszeit-Tracker v2.0.0</title>
 
         <meta name="theme-color" content="#006400" />
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -186,6 +186,7 @@
         .config-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
         .help-text { font-size: 12px; color: var(--muted); margin-top: 4px; }
+        .small-note { margin-top: 10px; padding: 10px 12px; border-radius: 8px; background: #fff3cd; color: #7a4b00; font-size: 13px; font-weight: 700; border-left: 4px solid #ff9800; }
         .map-container { margin-top: 15px; border: 1px solid #ccc; border-radius: 8px; overflow: hidden; }
         .map { height: 300px; width: 100%; }
 
@@ -405,15 +406,15 @@
     <div class="container">
         <div class="header">
             <h1>&#x1F3E2; GPS Arbeitszeit-Tracker</h1>
-            <p>Kompakte Analyse mit Fahrtweg &amp; Zeiterfassung aus GPX-, KML- und CSV-Dateien</p>
+            <p>Kompakte Analyse mit Fahrtweg &amp; Zeiterfassung aus GPX-, KML-, CSV- und Google Timeline JSON-Dateien</p>
         </div>
 
         <h2 class="step-header">1. Standorte &amp; Einstellungen definieren</h2>
         <div class="config-container">
-            <div class="config-section" id="sec-wp">
+            <div class="config-section collapsed" id="sec-wp">
                 <div class="config-header" onclick="toggleSection('sec-wp')">
                     <h3>&#x1F3E2; Arbeitsplatz Konfiguration</h3>
-                    <span class="toggle-icon">&#x25BC;</span>
+                    <span class="toggle-icon">&#x25B6;</span>
                 </div>
                 <div class="config-content">
                     <div class="config-grid">
@@ -447,15 +448,15 @@
                         <button class="btn btn-secondary" onclick="useGPS('wp')">&#x1F4CD; GPS-Position verwenden</button>
                         <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
                     </div>
-                    <div class="small-note">Hinweis: Sp&auml;ter kann dies auch automatisch analysiert und definiert werden mit "&#x1F50D; Standorte pr&uuml;fen &amp; automatisch finden".</div>
+                    <div class="small-note">&#9888;&#65039; Tipp: Sp&auml;ter auch automatisch per "&#x1F50D; Standorte pr&uuml;fen &amp; automatisch finden".</div>
                     <div class="map-container"><div id="mapWp" class="map"></div></div>
                 </div>
             </div>
 
-            <div class="config-section home" id="sec-home">
+            <div class="config-section home collapsed" id="sec-home">
                 <div class="config-header" onclick="toggleSection('sec-home')">
                     <h3>&#x1F3E0; Zuhause Konfiguration</h3>
-                    <span class="toggle-icon">&#x25BC;</span>
+                    <span class="toggle-icon">&#x25B6;</span>
                 </div>
                 <div class="config-content">
                     <div class="config-grid">
@@ -481,15 +482,15 @@
                         <button class="btn btn-secondary" onclick="useGPS('home')">&#x1F4CD; GPS-Position verwenden</button>
                         <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
                     </div>
-                    <div class="small-note">Hinweis: Sp&auml;ter kann dies auch automatisch analysiert und definiert werden mit "&#x1F50D; Standorte pr&uuml;fen &amp; automatisch finden".</div>
+                    <div class="small-note">&#9888;&#65039; Tipp: Sp&auml;ter auch automatisch per "&#x1F50D; Standorte pr&uuml;fen &amp; automatisch finden".</div>
                     <div class="map-container"><div id="mapHome" class="map"></div></div>
                 </div>
             </div>
 
-            <div class="config-section misc" id="sec-misc">
+            <div class="config-section misc collapsed" id="sec-misc">
                 <div class="config-header" onclick="toggleSection('sec-misc')">
                     <h3>&#x2699;&#xFE0F; Allgemeine Einstellungen &amp; Feiertage</h3>
-                    <span class="toggle-icon">&#x25BC;</span>
+                    <span class="toggle-icon">&#x25B6;</span>
                 </div>
                 <div class="config-content">
                     <div class="config-grid">
@@ -536,8 +537,8 @@
         <h2 class="step-header">2. GPS-Strecke laden</h2>
         <div class="upload-section">
             <div class="file-input-wrapper">
-                <input type="file" id="trackFile" class="file-input" accept=".gpx,.kml,.csv" multiple>
-                <label for="trackFile" class="file-input-label">&#x1F4CD; Strecke laden (GPX/KML/CSV)</label>
+                <input type="file" id="trackFile" class="file-input" accept=".gpx,.kml,.csv,.json" multiple>
+                <label for="trackFile" class="file-input-label">&#x1F4CD; Strecke laden (GPX/KML/CSV/Timeline)</label>
             </div>
             <div class="file-input-wrapper">
                 <input type="file" id="importFile" class="file-input" accept=".json" />
@@ -583,7 +584,7 @@
 
         <div class="footer">
             <div class="footer-info">
-                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.10.0</a></p>
+                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v2.0.0</a></p>
                 <p>Entwickelt von <b>Sebastian R&ouml;&szlig;er</b></p>
                 <p>
                     <a href="https://github.com/basecore/arbeitszeit-tracker" target="_blank">GitHub Projekt</a> &nbsp;|&nbsp;
@@ -826,10 +827,6 @@
                 document.getElementById("homeAddr").value = foundHome.addr;
             }
             saveCfg(); closeModal('locationModal');
-            if (confirm("Standorte aktualisiert! M\u00F6chtest du die Arbeitszeiten anhand der neuen Standorte jetzt komplett neu berechnen?")) {
-                startProgress(); let allData = {}; for (const dS in trackData) allData[dS] = trackData[dS];
-                setTimeout(() => { finishLoad(allData); showToast("Zeiten neu berechnet!"); }, 500);
-            }
         }
 
         function showToast(msg = "Gespeichert") { 
@@ -838,8 +835,15 @@
         }
 
         function toggleSection(id) { 
-            document.getElementById(id).classList.toggle("collapsed"); 
-            setTimeout(() => { if (id === 'sec-wp' && mapWp) mapWp.invalidateSize(); if (id === 'sec-home' && mapHome) mapHome.invalidateSize(); }, 100); 
+            const sec = document.getElementById(id);
+            if (!sec) return;
+            sec.classList.toggle("collapsed");
+            const icon = sec.querySelector(".toggle-icon");
+            if (icon) icon.innerHTML = sec.classList.contains("collapsed") ? "&#x25B6;" : "&#x25BC;";
+            setTimeout(() => {
+                if (id === 'sec-wp' && mapWp) mapWp.invalidateSize();
+                if (id === 'sec-home' && mapHome) mapHome.invalidateSize();
+            }, 100);
         }
 
         function collapseConfigs() { 
@@ -981,6 +985,7 @@ function saveCfg() {
             cfg.home.lat = parseFloat(document.getElementById("homeLat").value) || DEFAULT_CFG.home.lat; cfg.home.lon = parseFloat(document.getElementById("homeLon").value) || DEFAULT_CFG.home.lon;
             cfg.home.rad = parseInt(document.getElementById("homeRad").value) || DEFAULT_CFG.home.rad; cfg.home.addr = document.getElementById("homeAddr").value.trim();
             localStorage.setItem("my_cfg", JSON.stringify(cfg)); drawZone("wp"); drawZone("home"); showToast("Konfiguration gespeichert");
+        if (Object.keys(trackData).length > 0 && confirm("Einstellungen gespeichert! Möchtest du die Arbeitszeiten anhand der neuen Einstellungen jetzt komplett neu berechnen?")) { startProgress(); let allData = {}; for (const dS in trackData) allData[dS] = trackData[dS]; setTimeout(() => { finishLoad(allData); showToast("Zeiten neu berechnet!"); }, 500); }
         }
 
         function autoSave(t) {
@@ -1044,6 +1049,175 @@ function saveCfg() {
         }
 
         function normalizeTimestamp(r) { if (!r) return null; const d = new Date(r); if (!isNaN(d)) return d.getTime(); const d2 = new Date(r.replace(" ", "T")); return !isNaN(d2) ? d2.getTime() : null; }
+
+
+        // ===================== GOOGLE TIMELINE JSON PARSER v2.0.0 =====================
+        // Supports all known Google Takeout Timeline JSON formats:
+        //   - Records.json (classic, locations[])
+        //   - Semantic Location History monthly files (timelineObjects[])
+        //   - New 2024+ format (semanticSegments[], rawSignals[])
+        // Based on: https://dawarich.app/blog/building-a-privacy-first-google-timeline-visualizer/
+        //       and: https://github.com/dawarich-app/site/blob/main/src/components/TimelineMap.js
+
+        function parseGoogleTimeline(txt) {
+            let data;
+            try { data = JSON.parse(txt); } catch(e) { console.error("Timeline JSON Parse Error:", e); return {}; }
+            const pts = [];
+
+            // Format 1: Classic Records.json { "locations": [ { latitudeE7, longitudeE7, timestamp } ] }
+            if (data.locations && Array.isArray(data.locations)) {
+                for (const loc of data.locations) {
+                    const lat = (loc.latitudeE7  !== undefined) ? loc.latitudeE7  / 1e7 : loc.latitude;
+                    const lon = (loc.longitudeE7 !== undefined) ? loc.longitudeE7 / 1e7 : loc.longitude;
+                    const tsRaw = loc.timestamp || loc.timestampMs;
+                    if (!tsRaw || !Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+                    let ts = (typeof tsRaw === 'string') ? new Date(tsRaw).getTime() : parseInt(tsRaw, 10);
+                    if (ts && ts < 1e12) ts *= 1000; // seconds -> ms
+                    if (ts && Number.isFinite(lat) && Number.isFinite(lon)) pts.push({ lat, lon, time: ts });
+                }
+                if (pts.length > 0) { pts.sort((a, b) => a.time - b.time); return splitPointsByDay(pts); }
+            }
+
+            // Format 2: Semantic Location History { "timelineObjects": [...] }
+            if (data.timelineObjects && Array.isArray(data.timelineObjects)) {
+                return parseSemanticTimeline(data.timelineObjects);
+            }
+
+            // Format 3: New 2024+ { "semanticSegments": [...] }
+            if (data.semanticSegments && Array.isArray(data.semanticSegments)) {
+                return parseSemanticSegments(data.semanticSegments, pts);
+            }
+
+            // Format 4: New 2024+ { "rawSignals": [...] }
+            if (data.rawSignals && Array.isArray(data.rawSignals)) {
+                return parseRawSignals(data.rawSignals, pts);
+            }
+
+            // Format 5: Direct array [{ latitudeE7, longitudeE7, timestamp }]
+            if (Array.isArray(data)) {
+                for (const item of data) {
+                    if (item.latitudeE7 !== undefined) {
+                        const lat = item.latitudeE7 / 1e7, lon = item.longitudeE7 / 1e7;
+                        let ts = item.timestamp ? new Date(item.timestamp).getTime() : parseInt(item.timestampMs||'0', 10);
+                        if (ts && ts < 1e12) ts *= 1000;
+                        if (Number.isFinite(lat) && Number.isFinite(lon) && ts) pts.push({ lat, lon, time: ts });
+                    }
+                }
+                if (pts.length > 0) { pts.sort((a, b) => a.time - b.time); return splitPointsByDay(pts); }
+            }
+
+            console.warn("Google Timeline JSON: Unbekanntes Format. Keys:", Object.keys(data).join(", "));
+            return {};
+        }
+
+        // Parse Semantic Location History (monatliche Takeout-Dateien)
+        function parseSemanticTimeline(objects) {
+            const pts = [];
+            for (const obj of objects) {
+                // placeVisit: Aufenthalt an einem Ort
+                if (obj.placeVisit) {
+                    const pv = obj.placeVisit, loc = pv.location;
+                    if (loc && loc.latitudeE7 !== undefined) {
+                        const lat = loc.latitudeE7 / 1e7, lon = loc.longitudeE7 / 1e7;
+                        const ts = pv.duration?.startTimestamp ? new Date(pv.duration.startTimestamp).getTime() : null;
+                        const te = pv.duration?.endTimestamp   ? new Date(pv.duration.endTimestamp).getTime()   : null;
+                        if (ts && Number.isFinite(lat) && Number.isFinite(lon)) {
+                            pts.push({ lat, lon, time: ts });
+                            if (te) pts.push({ lat, lon, time: te });
+                        }
+                    }
+                }
+                // activitySegment: Fahrt / Bewegung
+                if (obj.activitySegment) {
+                    const seg = obj.activitySegment;
+                    const sw = seg.startLocation, ew = seg.endLocation;
+                    const ts = seg.duration?.startTimestamp ? new Date(seg.duration.startTimestamp).getTime() : null;
+                    const te = seg.duration?.endTimestamp   ? new Date(seg.duration.endTimestamp).getTime()   : null;
+                    if (sw && sw.latitudeE7 !== undefined && ts)
+                        pts.push({ lat: sw.latitudeE7 / 1e7, lon: sw.longitudeE7 / 1e7, time: ts });
+                    // Wegpunkte entlang der Route (interpoliert)
+                    if (seg.waypointPath?.waypoints) {
+                        const wpts = seg.waypointPath.waypoints, dur = (ts && te) ? (te - ts) : 0;
+                        wpts.forEach((wp, i) => {
+                            const lat = wp.latE7 / 1e7, lon = wp.lngE7 / 1e7;
+                            const t = ts ? ts + (dur * i / Math.max(wpts.length - 1, 1)) : null;
+                            if (Number.isFinite(lat) && Number.isFinite(lon) && t) pts.push({ lat, lon, time: t });
+                        });
+                    }
+                    // Simplified raw path (Rohdaten entlang der Strecke)
+                    if (seg.simplifiedRawPath?.points) {
+                        for (const p of seg.simplifiedRawPath.points) {
+                            const lat = p.latE7 / 1e7, lon = p.lngE7 / 1e7;
+                            const t = p.timestamp ? new Date(p.timestamp).getTime() : null;
+                            if (Number.isFinite(lat) && Number.isFinite(lon) && t) pts.push({ lat, lon, time: t });
+                        }
+                    }
+                    if (ew && ew.latitudeE7 !== undefined && te)
+                        pts.push({ lat: ew.latitudeE7 / 1e7, lon: ew.longitudeE7 / 1e7, time: te });
+                }
+            }
+            pts.sort((a, b) => a.time - b.time);
+            return splitPointsByDay(pts);
+        }
+
+        // Parse neues 2024+ semanticSegments Format
+        function parseSemanticSegments(segments, pts) {
+            for (const seg of segments) {
+                if (seg.visit?.topCandidate?.placeLocation) {
+                    const raw = seg.visit.topCandidate.placeLocation;
+                    const coords = parseGeoUri(raw.latLng || raw);
+                    const ts = seg.startTime ? new Date(seg.startTime).getTime() : null;
+                    const te = seg.endTime   ? new Date(seg.endTime).getTime()   : null;
+                    if (coords && ts) {
+                        pts.push({ lat: coords.lat, lon: coords.lon, time: ts });
+                        if (te) pts.push({ lat: coords.lat, lon: coords.lon, time: te });
+                    }
+                }
+                if (seg.timelinePath && Array.isArray(seg.timelinePath)) {
+                    for (const p of seg.timelinePath) {
+                        const coords = parseGeoUri(p.point);
+                        const t = p.time ? new Date(p.time).getTime() : null;
+                        if (coords && t) pts.push({ lat: coords.lat, lon: coords.lon, time: t });
+                    }
+                }
+                if (seg.activity) {
+                    const ts = seg.startTime ? new Date(seg.startTime).getTime() : null;
+                    const te = seg.endTime   ? new Date(seg.endTime).getTime()   : null;
+                    if (seg.activity.start) { const c = parseGeoUri(seg.activity.start); if (c && ts) pts.push({ lat: c.lat, lon: c.lon, time: ts }); }
+                    if (seg.activity.end)   { const c = parseGeoUri(seg.activity.end);   if (c && te) pts.push({ lat: c.lat, lon: c.lon, time: te }); }
+                }
+            }
+            pts.sort((a, b) => a.time - b.time);
+            return splitPointsByDay(pts);
+        }
+
+        // Parse rawSignals GPS-Pings (2024+ Export)
+        function parseRawSignals(signals, pts) {
+            for (const sig of signals) {
+                if (sig.position) {
+                    const p = sig.position;
+                    const lat = (p.LatDeg !== undefined) ? p.LatDeg : (p.latitudeE7 !== undefined ? p.latitudeE7 / 1e7 : NaN);
+                    const lon = (p.LngDeg !== undefined) ? p.LngDeg : (p.longitudeE7 !== undefined ? p.longitudeE7 / 1e7 : NaN);
+                    const t = p.timestamp ? new Date(p.timestamp).getTime() : null;
+                    if (Number.isFinite(lat) && Number.isFinite(lon) && t) pts.push({ lat, lon, time: t });
+                }
+            }
+            pts.sort((a, b) => a.time - b.time);
+            return splitPointsByDay(pts);
+        }
+
+        // "geo:lat,lon" URI Parser (neues Google-Format 2024+)
+        function parseGeoUri(str) {
+            if (!str) return null;
+            if (typeof str === 'object' && str.latitudeE7 !== undefined)
+                return { lat: str.latitudeE7 / 1e7, lon: str.longitudeE7 / 1e7 };
+            const s = String(str);
+            const m = s.match(/geo:([+-]?[\d.]+),([+-]?[\d.]+)/i) || s.match(/^([+-]?[\d.]+),([+-]?[\d.]+)$/);
+            if (!m) return null;
+            const lat = parseFloat(m[1]), lon = parseFloat(m[2]);
+            return Number.isFinite(lat) && Number.isFinite(lon) ? { lat, lon } : null;
+        }
+        // ======================================================================
 
         function parseGPX(txt) {
             const pts = [];
@@ -1659,8 +1833,21 @@ document.addEventListener("DOMContentLoaded", () => {
                         for (let i = 0; i < files.length; i++) {
                             const file = files[i], text = await file.text(), name = file.name.toLowerCase();
                             let parsedData = null;
-                            if (name.endsWith('.gpx')) parsedData = parseGPX(text); else if (name.endsWith('.kml')) parsedData = parseKML(text); else if (name.endsWith('.csv')) parsedData = parseCSV(text);
-                            else { console.warn(`\u00DCberspringe ${file.name}: Unbekanntes Dateiformat.`); continue; }
+                            if (name.endsWith('.gpx')) parsedData = parseGPX(text);
+                            else if (name.endsWith('.kml')) parsedData = parseKML(text);
+                            else if (name.endsWith('.csv')) parsedData = parseCSV(text);
+                            else if (name.endsWith('.json')) {
+                                try {
+                                    const probe = JSON.parse(text);
+                                    if (probe.locations || probe.timelineObjects || probe.semanticSegments || probe.rawSignals || Array.isArray(probe)) {
+                                        parsedData = parseGoogleTimeline(text);
+                                    } else {
+                                        console.warn(`${file.name}: Kein Timeline-JSON (sieht wie Backup aus) – übersprungen.`);
+                                        continue;
+                                    }
+                                } catch(e) { console.warn('Ungültiges JSON:', file.name); continue; }
+                            }
+                            else { console.warn(`Überspringe ${file.name}: Unbekanntes Dateiformat.`); continue; }
                             if (parsedData) { for (const [dS, pts] of Object.entries(parsedData)) { if (!allParsedData[dS]) allParsedData[dS] = []; allParsedData[dS].push(...pts); } }
                         }
                         for (const dS of Object.keys(allParsedData)) allParsedData[dS].sort((a, b) => a.time - b.time);
