@@ -1,21 +1,31 @@
 {
   "name": "GPS Arbeitszeit-Tracker",
-  "short_name": "Arbeitszeit",
-  "description": "Lokale Auswertung von Arbeitszeiten und Fahrtwegen aus GPX- und CSV-Dateien.",
-  "start_url": "./",
+  "short_name": "Zeit-Tracker",
+  "description": "Kompakte Analyse mit Fahrtweg & Zeiterfassung aus GPX-, KML-, CSV- und Google Timeline Dateien",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f5f5f5",
   "theme_color": "#006400",
+  "orientation": "portrait-primary",
+  "lang": "de",
   "icons": [
     {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "./images/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "./images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./images/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
