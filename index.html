@@ -316,18 +316,18 @@
             background: #fff; border: 1px solid #e0e0e0; padding: 6px; border-radius: 8px; flex: 1;
             box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
-        .time-row span { color: #888; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; }
+        .time-row span { color: #555; font-size: 14px !important; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; }
         .time-wrapper { width: 100%; display: flex; justify-content: center; }
         .time-display { 
             background: transparent; border: none; border-radius: 0; padding: 0; 
-            width: 100%; text-align: center; cursor: pointer; user-select: none; font-weight: 600; font-size: 15.5px; color: #333;
+            width: 100%; text-align: center; cursor: pointer; user-select: none; font-weight: 700; font-size: 22px !important; color: #333;
         }
         .time-display:hover { color: var(--green-dark); }
         .time-input { width: 100%; padding: 2px; text-align: center; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; font-weight: 600; }
 
         .col-duration { width: 95px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; background: #f4f6f8; padding: 8px 6px; border-radius: 10px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.03); }
         .duration-header { color: #555; font-size: 13px; font-weight: 500; text-transform: none; margin-bottom: 2px; letter-spacing: 0; }
-        .work-duration { font-weight: 600; font-size: 17px; } 
+        .work-duration { font-weight: 600; font-size: 20px; } 
         .overtime { color: #1e7136; } 
         .undertime { color: var(--danger); }
 
@@ -342,8 +342,8 @@
         .status-select:hover { border-color: #adb5bd; }
         .btn-row { display: flex; gap: 6px; }
         .action-btn { 
-            border: none; border-radius: 8px; cursor: pointer; width: 38px; height: 38px; 
-            display: flex; align-items: center; justify-content: center; font-size: 17px; 
+            border: none; border-radius: 8px; cursor: pointer; width: 42px; height: 42px; 
+            display: flex; align-items: center; justify-content: center; font-size: 20px; 
             color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.08); transition: transform 0.15s, box-shadow 0.15s;
         }
         .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.12); }
@@ -403,10 +403,10 @@
             .workday-entry { padding: 12px 10px; gap: 8px; font-size: 13px; flex-wrap: wrap; align-items: flex-start; }
             .col-date { width: 75px; font-size: 12px; }
             .col-status, .col-duration { display: none; }
-            .col-times { width: 140px; font-size: 12px; gap: 4px; }
-            .time-row { padding: 4px; border-radius: 6px; flex-direction: column; gap: 2px; }
-            .time-row span { font-size: 9px; }
-            .time-display { font-size: 14px; }
+            .col-times { width: 100%; font-size: 16px; gap: 12px; justify-content: flex-start; }
+            .time-row { padding: 8px; border-radius: 8px; flex-direction: column; gap: 4px; flex: 1; }
+            .time-row span { font-size: 14px !important; margin-bottom: 2px !important; color: #555 !important; }
+            .time-display { font-size: 22px !important; padding: 4px 0 !important; }
             .col-commute { width: 100%; font-size: 12px; padding-left: 0; border-left: none; padding-top: 6px; border-top: 1px dashed #eee; order: 4; }
             .col-controls { width: auto; flex: 1; margin-left: auto; justify-content: flex-end; gap: 8px; }
             .status-select { font-size: 12px; padding: 5px 6px; min-width: auto; }
@@ -596,11 +596,13 @@
         <div class="calendar-wrap">
             <div class="calendar-header">
                 <div class="calendar-title"><h2 id="monthLabel">Monat</h2></div>
-                <div class="calendar-controls">
+                <div class="calendar-controls" style="display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: flex-start;">
                     <button class="btn btn-secondary" onclick="toggleSimpleView()" id="simpleViewBtn">Einfache Ansicht</button>
-                    <button class="btn btn-secondary" onclick="changeMonth(-1)">&#x25C0; Vorheriger</button>
-                    <button class="btn btn-secondary" onclick="changeMonth(0)">Heute</button>
-                    <button class="btn btn-secondary" onclick="changeMonth(1)">N&auml;chster &#x25B6;</button>
+                    <div style="display: flex; flex-wrap: nowrap; gap: 8px; width: 100%; justify-content: flex-start;">
+                        <button class="btn btn-secondary" onclick="changeMonth(-1)" style="flex: 1;">&#x25C0; Vorheriger</button>
+                        <button class="btn btn-secondary" onclick="changeMonth(0)" style="flex: 1;">Heute</button>
+                        <button class="btn btn-secondary" onclick="changeMonth(1)" style="flex: 1;">N&auml;chster &#x25B6;</button>
+                    </div>
                 </div>
             </div>
             <div class="calendar-list" id="calendarList"></div>
