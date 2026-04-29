@@ -288,7 +288,7 @@
         .col-date { width: 95px; display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
         .date-main { font-weight: 800; font-size: 14px; color: #222; }
         .date-status { color: #666; font-size: 12px; font-weight: 500; }
-        .mobile-subline { display: none; font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.2; text-align: center; }
+        .mobile-subline { display: none; }
         .leave-worktime { color: var(--green-dark); font-weight: 600; }
 
         .col-status { width: 110px; flex-shrink: 0; display: flex; justify-content: flex-start; }
@@ -305,7 +305,7 @@
         .status-na { background: #f8f9fa; color: #6c757d; border: 1px dashed #dee2e6; } 
         .status-holiday { background: #fbe3e4; color: #a4262c; }
 
-        .col-times { width: 200px; display: flex; flex-direction: row; gap: 8px; flex-shrink: 0; align-items: center; }
+        .col-times { width: auto; flex: 1; display: flex; flex-direction: row; gap: 8px; flex-shrink: 0; align-items: center; }
         .time-row { 
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; 
             background: #fff; border: 1px solid #e0e0e0; padding: 6px; border-radius: 8px; flex: 1;
@@ -407,7 +407,7 @@
             .status-select { font-size: 12px; padding: 5px 6px; min-width: auto; }
             .action-btn { width: 30px; height: 30px; font-size: 13px; }
             .time-wrapper { width: 100%; }
-            .mobile-subline { display: block; }
+            .mobile-subline { display: none; }
             .details-panel, .holiday-indicator { padding-left: 12px; }
             .trace-legend { flex-direction: column; gap: 8px; align-items: flex-start; }
 
@@ -1443,9 +1443,9 @@ function saveCfg() {
                 }
 
                 const tHtml = !isEdit ? `<div class="time-row"><span>Kommen</span><div class="time-wrapper"><div class="time-display">${fmtTime(data.arr)}</div></div></div>
-                    <div class="time-row"><span>Gehen</span><div class="time-wrapper"><div class="time-display">${fmtTime(data.dep)}</div><div class="mobile-subline leave-worktime">${durMob}</div></div></div>` 
+                    <div class="time-row"><span>Gehen</span><div class="time-wrapper"><div class="time-display">${fmtTime(data.dep)}</div></div></div>` 
                 : `<div class="time-row"><span>Kommen</span><div class="time-wrapper"><input type="time" id="in_${dS}" value="${timeToInput(data.arr)}" class="time-input"></div></div>
-                    <div class="time-row"><span>Gehen</span><div class="time-wrapper"><input type="time" id="out_${dS}" value="${timeToInput(data.dep)}" class="time-input"><div class="mobile-subline leave-worktime">${durMob}</div></div></div>`;
+                    <div class="time-row"><span>Gehen</span><div class="time-wrapper"><input type="time" id="out_${dS}" value="${timeToInput(data.dep)}" class="time-input"></div></div>`;
 
                 let cTxt = "";
                 if (data.commute && (data.commute.toW?.k > 0 || data.commute.toH?.k > 0)) {
@@ -1455,8 +1455,8 @@ function saveCfg() {
 
                 const w = document.createElement("div");
                 w.innerHTML = `<div class="workday-entry ${isInactive ? 'inactive' : ''}">
-                        <div class="col-date"><div class="date-main">${dObj.toLocaleDateString("de-DE", { weekday: "short" })}<br>${d}.${m + 1}.</div><div class="mobile-subline date-status">${hName || getStLabel(st)}</div>${jsonAssignments[dS] ? `<div class="help-text">${jsonAssignments[dS]}</div>` : ''}</div>
-                        <div class="col-status"><span class="status-badge ${getStatusClass(st)}">${hName || getStLabel(st)}</span></div>
+                        <div class="col-date"><div class="date-main">${dObj.toLocaleDateString("de-DE", { weekday: "short" })}<br>${d}.${m + 1}.</div>${jsonAssignments[dS] ? `<div class="help-text">${jsonAssignments[dS]}</div>` : ''}</div>
+                        
                         <div class="col-times">${tHtml}</div>
                         <div class="col-duration"><span class="duration-header">Arbeitszeit</span><div class="work-duration ${cls}">${dur}</div></div>
                         <div class="col-commute">${cTxt}</div>
@@ -1467,9 +1467,9 @@ function saveCfg() {
                                 <option value="holiday" ${st === 'holiday' ? 'selected' : ''}>Feiertag</option><option value="na" ${st === 'na' ? 'selected' : ''}>N.A.</option>
                             </select>
                             <div class="btn-row">
-                                ${hasTrace(dS) ? `<button class="action-btn btn-trace" onclick="showTrace('${dS}')" title="Route">&#x1F5FA;&#xFE0F;</button>` : ''}
-                                ${!isInactive && data.visits && data.visits.length > 1 ? `<button class="action-btn btn-info" onclick="toggleDet('${dS}')" title="Info">&#x2139;&#xFE0F;</button>` : ''}
-                                ${!isInactive ? (!isEdit ? `<button class="action-btn btn-edit" onclick="toggleEdit('${dS}')" title="Bearbeiten">&#x270F;&#xFE0F;</button>` : `<button class="action-btn btn-save" onclick="saveDay('${dS}')" title="Speichern">&#x1F4BE;</button>`) : ''}
+                                ${hasTrace(dS) ? `<button class="action-btn btn-trace" onclick="showTrace('${dS}')" title="Route">&#x1F5FA;&#xFE0F;</button>` : '<div style="width:34px; height:34px; flex-shrink:0;"></div>'}
+                                ${!isInactive && data.visits && data.visits.length > 1 ? `<button class="action-btn btn-info" onclick="toggleDet('${dS}')" title="Info">&#x2139;&#xFE0F;</button>` : '<div style="width:34px; height:34px; flex-shrink:0;"></div>'}
+                                ${!isInactive ? (!isEdit ? `<button class="action-btn btn-edit" onclick="toggleEdit('${dS}')" title="Bearbeiten">&#x270F;&#xFE0F;</button>` : `<button class="action-btn btn-save" onclick="saveDay('${dS}')" title="Speichern">&#x1F4BE;</button>`) : '<div style="width:34px; height:34px; flex-shrink:0;"></div>'}
                             </div>
                         </div>
                     </div>
