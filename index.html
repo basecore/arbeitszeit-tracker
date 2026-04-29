@@ -279,18 +279,18 @@
 
         
         .workday-entry { 
-            display: flex; align-items: center; gap: 15px; padding: 14px 18px; 
-            border-bottom: 1px solid #eaeaea; font-size: 14px; transition: all 0.2s ease;
-            background: #fff; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            display: flex; align-items: stretch; gap: 15px; padding: 16px 18px; 
+            border-bottom: 2px solid #f0f0f0; margin-bottom: 8px; font-size: 14px; transition: all 0.2s ease;
+            background: #fff; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; border-radius: 8px;
         }
         .workday-entry * {
             font-family: inherit;
         }
 
         .workday-entry:hover { background: #fcfcfc; box-shadow: inset 4px 0 0 var(--green); }
-        .workday-entry:last-child { border-bottom: none; }
+        .workday-entry:last-child { border-bottom: 1px solid #eaeaea; } /* Ensure all days have a border */
 
-        .col-date { width: 95px; display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+        .col-date { width: 95px; display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; align-items: center; justify-content: center; background: #fff; border: 1px solid #e0e0e0; padding: 6px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); text-align: center; align-self: stretch; }
         .date-main { font-weight: 600; font-size: 18px; color: #222; }
         .date-status { color: #666; font-size: 12px; font-weight: 500; }
         .mobile-subline { display: none; }
@@ -314,7 +314,7 @@
         .time-row { 
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; 
             background: #fff; border: 1px solid #e0e0e0; padding: 6px; border-radius: 8px; flex: 1;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02); height: 100%; align-self: stretch;
         }
         .time-row span { color: #555; font-size: 14px !important; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; }
         .time-wrapper { width: 100%; display: flex; justify-content: center; }
@@ -356,7 +356,7 @@
         .details-panel.show { display: block; }
         .holiday-indicator { background: #fff3cd; color: #856404; font-size: 13px; padding: 6px 14px 8px 124px; border-top: 1px solid #f1df9d; }
 
-        .workday-entry.inactive { background-color: #fafafa; }
+        .workday-entry.inactive { background-color: #fafafa; opacity: 0.7; }
         .workday-entry.inactive .date-main, .workday-entry.inactive .date-status { color: #888; }
         .workday-entry.inactive .col-times, .workday-entry.inactive .col-duration, .workday-entry.inactive .col-commute { 
             opacity: 0.35; filter: grayscale(100%); pointer-events: none; 
@@ -400,7 +400,7 @@
             .simple-table th, .simple-table td { padding: 14px 10px; }
             .simple-table th { font-size: 1.05rem; }
             .simple-table td { font-size: 1.2rem; }
-            .workday-entry { padding: 12px 10px; gap: 8px; font-size: 13px; flex-wrap: wrap; align-items: flex-start; }
+            .workday-entry { padding: 16px 12px; gap: 12px; font-size: 13px; flex-wrap: wrap; align-items: stretch; border-bottom: 2px solid #f0f0f0; margin-bottom: 8px; border-radius: 8px; }
             .col-date { width: 75px; font-size: 12px; }
             .col-status, .col-duration { display: none; }
             .col-times { width: 100%; font-size: 16px; gap: 12px; justify-content: flex-start; }
@@ -540,7 +540,7 @@
                                     <input type="checkbox" id="roundQuarter" checked onchange="renderCal()">
                                     <span class="toggle-slider"></span>
                                 </span>
-                                Kommen &amp; Gehen runden (nur in der Einfachen Ansicht)
+                                Kommen &amp; Gehen runden
                             </label>
                         </div>
                     </div>
@@ -1449,8 +1449,13 @@ function saveCfg() {
                     else if (mNet < mTg) { cls = "undertime"; dur = "-" + Math.floor((mTg - mNet) / 60) + ":" + String((mTg - mNet) % 60).padStart(2, "0"); }
                 }
 
-                const tHtml = !isEdit ? `<div class="time-row"><span>Kommen</span><div class="time-wrapper"><div class="time-display">${fmtTime(data.arr)}</div></div></div>
-                    <div class="time-row"><span>Gehen</span><div class="time-wrapper"><div class="time-display">${fmtTime(data.dep)}</div></div></div>` 
+                const doRound = document.getElementById("roundQuarter")?.checked ?? true;
+                const roundText = doRound ? '<br><span style=\"font-size: 9px; font-weight: 400; color: #999; text-transform: none; margin-top:2px; display:block;\">(&frac14;h gerundet)</span>' : '';
+                const arrTimeStr = doRound ? fmtTime(getRoundedTime(data.arr)) : fmtTime(data.arr);
+                const depTimeStr = doRound ? fmtTime(getRoundedTime(data.dep)) : fmtTime(data.dep);
+
+                const tHtml = !isEdit ? `<div class="time-row"><span style="text-align:center;">Kommen${roundText}</span><div class="time-wrapper"><div class="time-display">${arrTimeStr}</div></div></div>
+                    <div class="time-row"><span style="text-align:center;">Gehen${roundText}</span><div class="time-wrapper"><div class="time-display">${depTimeStr}</div></div></div>` 
                 : `<div class="time-row"><span>Kommen</span><div class="time-wrapper"><input type="time" id="in_${dS}" value="${timeToInput(data.arr)}" class="time-input"></div></div>
                     <div class="time-row"><span>Gehen</span><div class="time-wrapper"><input type="time" id="out_${dS}" value="${timeToInput(data.dep)}" class="time-input"></div></div>`;
 
