@@ -3,96 +3,99 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GPS Arbeitszeit-Tracker v2.0.0</title>
+    <title>GPS Arbeitszeit-Tracker v1.8</title>
 
-        <meta name="theme-color" content="#006400" />
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <meta name="theme-color" content="#005a2b" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
         :root {
-            --green-dark: #006400;
-            --green: #1d7f3f;
-            --green-light: #32cd32;
-            --blue-light: #e6f0fa;
-            --green-bg: #e6f5e6;
-            --text: #333;
-            --muted: #666;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
-            --bg: #f5f5f5;
-            --card: #fff;
-            --shadow: 0 4px 10px rgba(0,0,0,0.08);
+            --green-dark: #005a2b;
+            --green: #1a7a3e;
+            --green-light: #2eb82e;
+            --blue-light: #e8f1fa;
+            --green-bg: #eaf5ea;
+            --text-main: #2c3e50;
+            --text-muted: #5c6b7a;
+            --danger: #d93025;
+            --warning: #f29900;
+            --info: #0277bd;
+            --bg-body: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-light: #e1e4e8;
+            --shadow-sm: 0 2px 6px rgba(0,0,0,0.05);
+            --shadow-md: 0 6px 16px rgba(0,0,0,0.08);
 
             /* Trace Colors */
-            --route-hin: #007bff;
-            --route-rueck: #fd7e14;
-            --route-pause: #6f42c1;
-            --route-arbeit: #28a745;
-            --route-sonst: #adb5bd;
+            --route-hin: #1a73e8;
+            --route-rueck: #e37400;
+            --route-pause: #8e24aa;
+            --route-arbeit: #1e8e3e;
+            --route-sonst: #9aa0a6;
         }
 
         * { box-sizing: border-box; }
 
         body { 
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             margin: 0; 
             padding: 20px; 
-            background: var(--bg); 
-            color: var(--text); 
+            background: var(--bg-body); 
+            color: var(--text-main); 
             padding-bottom: 100px; 
+            line-height: 1.5;
         }
 
         .container { 
             max-width: 1600px; 
             margin: 0 auto; 
-            background: var(--card); 
-            border-radius: 12px; 
+            background: var(--card-bg); 
+            border-radius: 16px; 
             overflow: hidden; 
-            box-shadow: var(--shadow); 
+            box-shadow: var(--shadow-md); 
         }
 
         .header { 
-            background: linear-gradient(135deg, var(--green-dark), var(--green-light)); 
+            background: linear-gradient(135deg, var(--green-dark), var(--green)); 
             color: #fff; 
-            padding: 24px 20px; 
+            padding: 28px 24px; 
             text-align: center; 
         }
-        .header h1 { margin: 0; font-size: 2rem; font-weight: 300; }
-        .header p { margin: 8px 0 0; opacity: 0.95; }
+        .header h1 { margin: 0; font-size: 2.2rem; font-weight: 600; letter-spacing: -0.5px; }
+        .header p { margin: 10px 0 0; font-size: 1.05rem; opacity: 0.9; }
 
         .step-header {
-            background: #f0f8ff;
+            background: #f8fafc;
             color: var(--green-dark);
-            padding: 12px 20px;
+            padding: 14px 24px;
             margin: 0;
-            font-size: 1.15rem;
-            font-weight: 700;
-            border-bottom: 1px solid #dce8f5;
-            border-top: 1px solid #dce8f5;
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-light);
+            border-top: 1px solid var(--border-light);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         .step-header:first-of-type { border-top: none; }
 
         .upload-section { 
-            padding: 18px 20px; 
-            background: #fcfcfc; 
+            padding: 20px 24px; 
+            background: #ffffff; 
             display: flex; 
             flex-wrap: wrap; 
             align-items: center; 
-            gap: 12px; 
+            gap: 14px; 
         }
 
         .assistant-section {
-            padding: 16px 20px;
-            background: #fff9e6;
-            border-top: 1px solid #f1e2b3;
-            border-bottom: 1px solid #f1e2b3;
+            padding: 16px 24px;
+            background: #fff8e1;
+            border-top: 1px solid #ffecb3;
+            border-bottom: 1px solid #ffecb3;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
         .assistant-section p { margin: 0; font-size: 14px; color: #555; }
 
@@ -101,38 +104,41 @@
 
         .file-input-label, .btn, button { 
             border: none; 
-            border-radius: 20px; 
+            border-radius: 8px; 
             cursor: pointer; 
             transition: all 0.2s ease; 
             display: inline-flex; 
             align-items: center; 
             justify-content: center; 
-            gap: 6px; 
+            gap: 8px; 
             text-decoration: none; 
+            font-family: inherit;
         }
         .file-input-label, .btn { 
             background: var(--green-dark); 
             color: #fff; 
-            padding: 10px 16px; 
+            padding: 10px 18px; 
             font-size: 14px; 
-            font-weight: 600; 
+            font-weight: 500; 
+            box-shadow: 0 2px 4px rgba(0,90,43,0.2);
         }
         .file-input-label:hover, .btn:hover { 
             background: var(--green); 
             transform: translateY(-1px); 
+            box-shadow: 0 4px 8px rgba(0,90,43,0.3);
         }
 
-        .btn-secondary { background: #6c757d; } 
-        .btn-secondary:hover { background: #5a6268; }
-        .btn-warning { background: #ff9800; color: #fff; } 
-        .btn-warning:hover { background: #f08a00; }
-        .btn-danger { background: var(--danger); color: #fff; } 
-        .btn-danger:hover { background: #c82333; }
+        .btn-secondary { background: #64748b; box-shadow: 0 2px 4px rgba(100,116,139,0.2); } 
+        .btn-secondary:hover { background: #475569; box-shadow: 0 4px 8px rgba(100,116,139,0.3); }
+        .btn-warning { background: var(--warning); color: #fff; box-shadow: 0 2px 4px rgba(242,153,0,0.2); } 
+        .btn-warning:hover { background: #e08e00; box-shadow: 0 4px 8px rgba(242,153,0,0.3); }
+        .btn-danger { background: var(--danger); color: #fff; box-shadow: 0 2px 4px rgba(217,48,37,0.2); } 
+        .btn-danger:hover { background: #c5221f; box-shadow: 0 4px 8px rgba(217,48,37,0.3); }
 
         .progress-bar { 
             flex: 1 1 240px; 
-            height: 6px; 
-            background: #e9ecef; 
+            height: 8px; 
+            background: #e2e8f0; 
             border-radius: 999px; 
             overflow: hidden; 
             min-width: 160px; 
@@ -141,261 +147,369 @@
             height: 100%; 
             width: 0%; 
             background: linear-gradient(90deg, var(--green-dark), var(--green-light)); 
-            transition: width 0.25s ease; 
+            transition: width 0.3s ease; 
         }
 
-        .config-container { padding: 20px; background: #fff; }
+        .config-container { padding: 24px; background: #fff; }
         .config-section { 
-            background: var(--green-bg); 
-            border: 1px solid #b3d7b3; 
-            border-radius: 10px; 
+            background: var(--card-bg); 
+            border: 1px solid var(--border-light); 
+            border-radius: 12px; 
             margin-bottom: 16px; 
             overflow: hidden; 
+            box-shadow: var(--shadow-sm);
         }
         .config-section:last-child { margin-bottom: 0; }
-        .config-section.home { background: var(--blue-light); border-color: #b3d1e6; }
-        .config-section.misc { background: #f7f7f7; border-color: #ddd; }
         .config-header { 
-            padding: 14px 18px; 
+            padding: 16px 20px; 
             cursor: pointer; 
             display: flex; 
             align-items: center; 
             justify-content: space-between; 
-            background: rgba(0,0,0,0.03); 
+            background: #f8fafc; 
+            border-bottom: 1px solid transparent;
+            transition: background 0.2s;
         }
-        .config-header h3 { margin: 0; font-size: 1.05rem; }
-        .config-content { padding: 16px 18px 18px; display: block; }
+        .config-header:hover { background: #f1f5f9; }
+        .config-section:not(.collapsed) .config-header { border-bottom-color: var(--border-light); }
+        .config-header h3 { margin: 0; font-size: 1.1rem; color: var(--text-main); font-weight: 600; }
+        .config-content { padding: 20px; display: block; background: #fff; }
         .config-section.collapsed .config-content { display: none; }
-        .toggle-icon { font-weight: bold; }
+        .toggle-icon { font-weight: bold; color: var(--text-muted); transition: transform 0.2s; }
+        .config-section:not(.collapsed) .toggle-icon { transform: rotate(180deg); }
 
         .config-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
-            gap: 14px; 
-            margin-bottom: 12px; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 16px; 
+            margin-bottom: 16px; 
         }
         .config-group { display: flex; flex-direction: column; gap: 6px; }
-        .config-group label { font-size: 13px; font-weight: 600; color: #555; }
+        .config-group label { font-size: 13.5px; font-weight: 600; color: var(--text-muted); }
         .config-group input, .config-group select, .config-group textarea { 
-            padding: 8px 10px; 
-            border: 1px solid #ccc; 
-            border-radius: 6px; 
+            padding: 10px 12px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 8px; 
             font-size: 14px; 
             width: 100%; 
+            color: var(--text-main);
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .config-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .config-group input:focus, .config-group select:focus, .config-group textarea:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(26,122,62,0.15);
+        }
+        .config-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
 
-        .help-text { font-size: 12px; color: var(--muted); margin-top: 4px; }
-        .small-note { margin-top: 10px; padding: 10px 12px; border-radius: 8px; background: #fff3cd; color: #7a4b00; font-size: 13px; font-weight: 700; border-left: 4px solid #ff9800; }
-        .map-container { margin-top: 15px; border: 1px solid #ccc; border-radius: 8px; overflow: hidden; }
+        .small-note { font-size: 12.5px; color: var(--text-muted); margin-top: 12px; }
+        .map-container { margin-top: 16px; border: 1px solid var(--border-light); border-radius: 10px; overflow: hidden; }
         .map { height: 300px; width: 100%; }
 
-        .stats-wrap { padding: 15px 20px 10px; background: #fff; }
+        .stats-wrap { padding: 20px 24px 10px; background: #fff; }
         .stats-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
-            gap: 14px; 
-            margin-top: 8px; 
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+            gap: 16px; 
         }
         .stat-card { 
-            background: #fff; 
-            border: 1px solid #eee; 
-            border-radius: 10px; 
-            padding: 14px; 
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05); 
+            background: #f8fafc; 
+            border: 1px solid var(--border-light); 
+            border-radius: 12px; 
+            padding: 18px; 
+            text-align: center;
         }
-        .stat-val { font-size: 1.5rem; font-weight: 700; color: var(--green-dark); }
-        .stat-lbl { margin-top: 6px; color: var(--muted); font-size: 13px; }
-        .val-positive { color: #28a745; }
+        .stat-val { font-size: 1.7rem; font-weight: 700; color: var(--green-dark); line-height: 1.2; }
+        .stat-lbl { margin-top: 4px; color: var(--text-muted); font-size: 13.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .val-positive { color: #0d9488; }
         .val-negative { color: var(--danger); }
 
-        .calendar-wrap { padding: 0 20px 20px; background: #fff;}
+        .calendar-wrap { padding: 10px 24px 24px; background: #fff;}
         .calendar-header { 
             display: flex; 
             align-items: center; 
             justify-content: space-between; 
-            gap: 12px; 
-            margin: 10px 0 14px; 
+            gap: 16px; 
+            margin: 10px 0 20px; 
             flex-wrap: wrap; 
         }
+        .calendar-title h2 { margin: 0; font-size: 1.5rem; color: var(--text-main); }
+        .calendar-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+        
         .calendar-list { 
-            border: 1px solid #eee; 
-            border-radius: 10px; 
+            border: 1px solid var(--border-light); 
+            border-radius: 12px; 
             overflow: hidden; 
-            background: #fff; 
+            background: var(--bg-body); 
+            display: flex;
+            flex-direction: column;
+            gap: 1px; /* Creates inner borders */
         }
 
-        .simple-table-wrap { padding: 10px 0; }
+        .simple-table-wrap { padding: 0; background: #fff; }
         .simple-table {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
             background: #fff;
         }
-        .simple-table th,
-        .simple-table td {
-            border-bottom: 2px solid #e5e5e5;
-            padding: 18px 16px;
+        .simple-table th, .simple-table td {
+            border-bottom: 1px solid var(--border-light);
+            padding: 16px;
             text-align: left;
         }
-        .simple-table th {
-            background: #f3f6f3;
-            color: #006400;
-            font-size: 1.35rem;
-            font-weight: 800;
-        }
-        .simple-table td {
-            font-size: 1.55rem;
-            font-weight: 700;
-            color: #222;
-        }
-        .simple-table .col-date-simple { width: 40%; }
-        .simple-table .col-time-simple { width: 30%; text-align: center; }
-        .simple-empty { color: #999; font-weight: 600; }
+        .simple-table th { background: #f8fafc; color: var(--text-muted); font-size: 1.1rem; font-weight: 600; }
+        .simple-table td { font-size: 1.25rem; font-weight: 600; color: var(--text-main); }
+        .simple-table .col-date-simple { width: 45%; }
+        .simple-table .col-time-simple { width: 27.5%; text-align: center; }
+        .simple-empty { color: #a0aec0; font-weight: 400; }
 
         .toggle-switch-wrap {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #444;
-            cursor: pointer;
-            user-select: none;
+            display: inline-flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; color: var(--text-main); cursor: pointer; user-select: none;
         }
-        .toggle-switch { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+        .toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .toggle-slider {
-            position: absolute; inset: 0; background: #ccc; border-radius: 999px; transition: background 0.2s;
-        }
+        .toggle-slider { position: absolute; inset: 0; background: #cbd5e1; border-radius: 999px; transition: background 0.2s; }
         .toggle-slider::before {
             content: ""; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px;
             background: #fff; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
-        .toggle-switch input:checked + .toggle-slider { background: var(--green-dark); }
-        .toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+        .toggle-switch input:checked + .toggle-slider { background: var(--green); }
+        .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
 
-        .simple-view-active #calendarList { border: 2px solid #dfe7df; border-radius: 12px; overflow: hidden; }
-
+        /* --- REDESIGNED NORMAL VIEW (LIST ITEMS) --- */
         .workday-entry { 
-            display: flex; align-items: flex-start; gap: 12px; padding: 14px; 
-            border-bottom: 1px solid #eee; font-size: 14.5px; 
+            display: flex; 
+            align-items: center; 
+            padding: 16px 20px; 
+            background: #fff;
+            font-size: 15px;
+            position: relative;
+            transition: background 0.15s;
         }
-        .workday-entry:last-child { border-bottom: none; }
+        .workday-entry:hover { background: #fdfdfd; }
 
-        .col-date { width: 110px; font-weight: 700; padding-top: 4px; flex-shrink: 0; }
-        .col-status { width: 90px; flex-shrink: 0; padding-top: 4px; }
-        .col-times { width: 170px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
-        .col-duration { width: 100px; text-align: center; flex-shrink: 0; padding-top: 4px; }
-        .col-commute { width: 230px; font-size: 13px; color: var(--muted); border-left: 1px solid #eee; padding-left: 12px; flex-shrink: 0; }
-        .col-controls { width: 150px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; margin-left: auto; }
-
-        .date-main { font-weight: 700; }
-        .mobile-subline { display: none; font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.2; text-align: center; }
-        .date-status { color: #444; }
-        .leave-worktime { color: var(--green-dark); font-weight: 600; }
-
-        .status-badge { 
-            display: inline-block; border-radius: 999px; font-size: 12px; 
-            padding: 4px 8px; font-weight: 700; white-space: nowrap; 
+        .col-date { 
+            width: 100px; 
+            flex-shrink: 0; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 2px;
         }
-        .status-work { background: #d4edda; color: #155724; } 
-        .status-homeoffice { background: #d1ecf1; color: #0c5460; }
-        .status-vacation { background: #fff3cd; color: #856404; } 
-        .status-free { background: #f1f3f5; color: #495057; }
-        .status-na { background: #e9ecef; color: #495057; } 
-        .status-holiday { background: #fde2e1; color: #9b1c1c; }
+        .date-main { font-weight: 700; font-size: 16px; color: var(--text-main); line-height: 1.2; }
+        .mobile-subline { font-size: 12.5px; color: var(--text-muted); font-weight: 500; }
+        .help-text-date { font-size: 11px; color: #888; margin-top: 2px; }
 
-        .time-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-        .time-row span { color: var(--muted); margin-top: 4px; }
-
-        .time-wrapper { display: flex; flex-direction: column; align-items: center; width: 66px; }
+        .col-status { width: 110px; flex-shrink: 0; }
+        
+        .col-times { 
+            flex: 1; 
+            display: flex; 
+            align-items: center; 
+            gap: 20px; 
+            min-width: 200px;
+        }
+        .time-box { display: flex; align-items: center; gap: 8px; }
+        .time-lbl { color: var(--text-muted); font-size: 13.5px; font-weight: 500; width: 55px; }
+        
         .time-display { 
-            background: #f8f9fa; border: 1px solid #e6e6e6; border-radius: 6px; 
-            padding: 4px 0; width: 100%; text-align: center; cursor: pointer; user-select: none; 
+            background: #f1f5f9; border: 1px solid var(--border-light); border-radius: 6px; 
+            padding: 6px 12px; font-weight: 600; font-size: 15px; color: var(--text-main);
+            min-width: 65px; text-align: center; cursor: pointer; user-select: none;
+            transition: background 0.15s;
         }
-        .time-display:hover { background: #eef7ee; }
-        .time-input { width: 100%; padding: 4px 0; text-align: center; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        .time-display:hover { background: #e2e8f0; }
+        .time-input { 
+            width: 85px; padding: 5px; text-align: center; border: 2px solid var(--green); 
+            border-radius: 6px; font-size: 15px; font-weight: 600; outline: none; font-family: inherit;
+        }
 
-        .duration-header { display: block; color: var(--muted); font-size: 11px; margin-bottom: 4px; text-transform: uppercase; }
-        .work-duration { font-weight: 700; font-size: 15px; } 
-        .overtime { color: #28a745; } 
+        .col-duration { 
+            width: 110px; 
+            text-align: right; 
+            flex-shrink: 0; 
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        .duration-header { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 2px; }
+        .work-duration { font-weight: 700; font-size: 17px; } 
+        .overtime { color: #059669; } 
         .undertime { color: var(--danger); }
 
-        .status-select { width: 100%; padding: 5px 6px; font-size: 13px; border: 1px solid #ddd; border-radius: 6px; background: #fff; }
-        .btn-row { display: flex; gap: 4px; justify-content: flex-end; }
-        .action-btn { border: none; border-radius: 6px; cursor: pointer; padding: 5px 7px; min-width: 32px; font-size: 13px; color: #fff; }
-        .btn-trace { background: #6c757d; } 
-        .btn-info { background: var(--info); } 
-        .btn-edit { background: var(--warning); color: #333; } 
-        .btn-save { background: #28a745; }
+        .col-commute { 
+            width: 180px; 
+            font-size: 13.5px; 
+            color: var(--text-muted); 
+            padding-left: 20px; 
+            border-left: 1px solid var(--border-light); 
+            flex-shrink: 0;
+            line-height: 1.4;
+            margin-left: 20px;
+        }
 
-        .details-panel { display: none; background: #f0f8ff; border-top: 1px solid #dee2e6; padding: 8px 14px 10px 124px; font-size: 13px; color: #333; }
+        .col-controls { 
+            width: 180px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: flex-end;
+            gap: 10px; 
+            flex-shrink: 0; 
+            margin-left: auto; 
+        }
+
+        .status-badge { 
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 6px; font-size: 13px; padding: 5px 10px; font-weight: 600; letter-spacing: 0.3px;
+        }
+        .status-work { background: #dcfce7; color: #065f46; } 
+        .status-homeoffice { background: #e0f2fe; color: #075985; }
+        .status-vacation { background: #fef3c7; color: #92400e; } 
+        .status-free { background: #f1f5f9; color: #475569; }
+        .status-na { background: #e2e8f0; color: #64748b; } 
+        .status-holiday { background: #fee2e2; color: #991b1b; }
+
+        .status-select { 
+            padding: 6px 8px; font-size: 14px; font-weight: 500; border: 1px solid var(--border-light); 
+            border-radius: 6px; background: #fff; color: var(--text-main); cursor: pointer; outline: none;
+        }
+        .status-select:focus { border-color: var(--green); }
+        
+        .action-btn { 
+            border: none; border-radius: 6px; cursor: pointer; padding: 6px; 
+            width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+            font-size: 15px; color: #fff; transition: opacity 0.2s, transform 0.1s;
+        }
+        .action-btn:hover { opacity: 0.9; transform: scale(1.05); }
+        .action-btn:active { transform: scale(0.95); }
+        .btn-trace { background: #64748b; } 
+        .btn-info { background: var(--info); } 
+        .btn-edit { background: var(--warning); color: #fff; } 
+        .btn-save { background: #10b981; }
+
+        .details-panel { 
+            display: none; background: #f0f9ff; border-top: 1px dashed var(--border-light); 
+            padding: 12px 20px 12px 120px; font-size: 14px; color: #0369a1; 
+        }
         .details-panel.show { display: block; }
-        .holiday-indicator { background: #fff3cd; color: #856404; font-size: 13px; padding: 6px 14px 8px 124px; border-top: 1px solid #f1df9d; }
+        .holiday-indicator { 
+            background: #fffbeb; color: #b45309; font-size: 14.5px; font-weight: 500;
+            padding: 10px 20px 10px 120px; border-top: 1px dashed #fde68a; 
+        }
 
         .workday-entry.inactive { background-color: #fafafa; }
-        .workday-entry.inactive .date-main, .workday-entry.inactive .date-status { color: #888; }
+        .workday-entry.inactive .date-main, .workday-entry.inactive .mobile-subline { color: #94a3b8; }
         .workday-entry.inactive .col-times, .workday-entry.inactive .col-duration, .workday-entry.inactive .col-commute { 
-            opacity: 0.35; filter: grayscale(100%); pointer-events: none; 
+            opacity: 0.4; filter: grayscale(100%); pointer-events: none; 
         }
 
         .toast-save { 
-            position: fixed; bottom: 20px; right: 20px; background: #333; color: white; 
-            padding: 10px 16px; border-radius: 999px; font-size: 13px; opacity: 0; 
-            transition: opacity 0.25s ease; pointer-events: none; z-index: 3000; 
+            position: fixed; bottom: 24px; right: 24px; background: #1e293b; color: white; 
+            padding: 12px 20px; border-radius: 8px; font-size: 14.5px; font-weight: 500; opacity: 0; 
+            transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(10px); pointer-events: none; z-index: 3000; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-        .toast-save.show { opacity: 0.92; }
+        .toast-save.show { opacity: 1; transform: translateY(0); }
 
-        .footer { margin-top: 30px; padding: 22px 20px; border-top: 1px solid #eee; background: #fafafa; }
-        .footer-info { text-align: center; line-height: 1.6; color: #555; font-size: 14px; }
+        .footer { margin-top: 40px; padding: 24px; border-top: 1px solid var(--border-light); background: #f8fafc; }
+        .footer-info { text-align: center; color: var(--text-muted); font-size: 14.5px; }
         .footer-info p { margin: 6px 0; }
         .footer-info a { color: var(--green-dark); text-decoration: none; font-weight: 600; }
         .footer-info a:hover { text-decoration: underline; }
 
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 5000; }
+        /* Modals */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(3px); z-index: 5000; }
         .modal-content { 
-            background: #fff; width: min(96vw, 1000px); max-height: 92vh; 
-            overflow: auto; margin: 4vh auto; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); 
+            background: #fff; width: min(94vw, 900px); max-height: 90vh; 
+            overflow: auto; margin: 5vh auto; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); 
+            display: flex; flex-direction: column;
         }
-        .modal-header { padding: 14px 18px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .modal-header h3 { margin: 0; }
-        .modal-close { font-size: 24px; cursor: pointer; color: #666; line-height: 1; }
-        .modal-body { padding: 16px 18px 20px; }
+        .modal-header { padding: 18px 24px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border-radius: 16px 16px 0 0; }
+        .modal-header h3 { margin: 0; font-size: 1.25rem; color: var(--text-main); }
+        .modal-close { font-size: 26px; cursor: pointer; color: var(--text-muted); line-height: 1; padding: 4px; border-radius: 4px; transition: background 0.2s; }
+        .modal-close:hover { background: #e2e8f0; color: #000; }
+        .modal-body { padding: 24px; flex: 1; overflow-y: auto; }
 
-        #traceMap { height: 460px; border-radius: 10px; overflow: hidden; }
-        .trace-legend { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 12px; justify-content: center; font-size: 13px; background: #f8f9fa; padding: 8px; border-radius: 8px; border: 1px solid #eee; }
-        .trace-legend span { display: inline-flex; align-items: center; gap: 4px; font-weight: 500; }
-        .trace-legend .box { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+        #traceMap { height: 500px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-light); }
+        .trace-legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px; justify-content: center; font-size: 14px; background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid var(--border-light); }
+        .trace-legend span { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; color: var(--text-main); }
+        .trace-legend .box { width: 16px; height: 16px; border-radius: 4px; display: inline-block; }
 
-        textarea#holidayEditor { width: 100%; min-height: 280px; border: 1px solid #ccc; border-radius: 8px; padding: 10px; font-family: monospace; font-size: 13px; resize: vertical; }
+        textarea#holidayEditor { width: 100%; min-height: 300px; border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; font-family: 'Courier New', Courier, monospace; font-size: 14px; resize: vertical; line-height: 1.4; }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 1024px) {
+            .col-commute { display: none; } /* Hide commute info on medium screens to save space */
+        }
 
         @media (max-width: 768px) {
-            body { padding: 10px; }
-            .step-header { font-size: 1.05rem; padding: 10px 15px; }
-            .upload-section { padding: 14px 12px; }
-            .config-container, .stats-wrap, .calendar-wrap { padding-left: 8px; padding-right: 8px; }
-            .simple-table th, .simple-table td { padding: 14px 10px; }
-            .simple-table th { font-size: 1.05rem; }
-            .simple-table td { font-size: 1.2rem; }
-            .workday-entry { padding: 12px 6px; gap: 6px; font-size: 13px; }
-            .col-date { width: 75px; font-size: 12px; }
-            .col-status, .col-duration { display: none; }
-            .col-times { width: 100px; font-size: 12px; }
-            .col-commute { width: 90px; font-size: 11px; padding-left: 6px; border-left: none; }
-            .col-controls { width: 100px; margin-left: auto; }
-            .status-select { font-size: 12px; padding: 5px 2px; }
-            .action-btn { padding: 5px 5px; min-width: 28px; font-size: 12px; }
-            .time-row { align-items: flex-start; flex-direction: column; gap: 2px; }
-            .time-wrapper { width: 100%; }
-            .mobile-subline { display: block; }
-            .details-panel, .holiday-indicator { padding-left: 12px; }
-            .trace-legend { flex-direction: column; gap: 8px; align-items: flex-start; }
+            body { padding: 12px; padding-bottom: 60px; }
+            .container { border-radius: 12px; }
+            .header { padding: 20px 16px; }
+            .header h1 { font-size: 1.7rem; }
+            .step-header { font-size: 1.1rem; padding: 12px 16px; }
+            .upload-section, .config-container, .stats-wrap, .calendar-wrap { padding: 16px; }
+            
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .stat-card { padding: 12px; }
+            .stat-val { font-size: 1.4rem; }
+            .stat-lbl { font-size: 12px; }
 
-            #checkMap { height: 280px !important; margin-bottom: 10px !important; }
-            #locationModal .modal-body { padding: 12px 14px 15px !important; }
-            #locationModal .config-actions { margin-top: 8px; }
-            #checkResult { padding: 10px !important; font-size: 13px !important; margin-bottom: 10px !important; }
+            /* Mobile List Layout - Completely Cleaned Up */
+            .workday-entry { 
+                flex-direction: column; 
+                align-items: stretch; 
+                padding: 16px; 
+                gap: 14px;
+            }
+            
+            .col-date { width: 100%; flex-direction: row; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+            .date-main { font-size: 17px; display: flex; align-items: baseline; gap: 8px; }
+            .date-main br { display: none; } /* Show day and date in one line */
+            .date-main::after { content: "•"; color: #cbd5e1; font-size: 12px; }
+            .mobile-subline.date-status { display: none; } /* Hide duplicate status text */
+            
+            .col-status { width: auto; position: absolute; top: 14px; right: 16px; }
+            .status-badge { font-size: 12px; padding: 4px 8px; }
+
+            .col-times { 
+                width: 100%; 
+                flex-direction: row; 
+                justify-content: space-between;
+                gap: 10px;
+                background: #f8fafc;
+                padding: 10px;
+                border-radius: 8px;
+            }
+            .time-box { flex-direction: column; align-items: flex-start; gap: 4px; flex: 1; }
+            .time-lbl { font-size: 12px; text-transform: uppercase; width: auto; }
+            .time-display { width: 100%; text-align: left; padding: 8px 10px; font-size: 16px; background: #fff; }
+            .time-input { width: 100%; padding: 8px; font-size: 16px; }
+
+            .col-duration { 
+                width: 100%; 
+                flex-direction: row; 
+                align-items: center; 
+                justify-content: space-between;
+                padding-top: 4px;
+            }
+            .duration-header { margin: 0; font-size: 13.5px; }
+
+            .col-controls { 
+                width: 100%; 
+                margin: 0; 
+                justify-content: space-between;
+                border-top: 1px solid #f1f5f9;
+                padding-top: 14px;
+            }
+            .status-select { flex: 1; max-width: 140px; padding: 8px; }
+            .btn-row { display: flex; gap: 8px; }
+            .action-btn { width: 38px; height: 38px; font-size: 16px; }
+
+            .details-panel, .holiday-indicator { padding: 12px 16px; font-size: 13.5px; }
+            
+            #checkMap { height: 280px !important; margin-bottom: 12px !important; }
+            #traceMap { height: 350px; }
         }
     </style>
 
@@ -406,15 +520,15 @@
     <div class="container">
         <div class="header">
             <h1>&#x1F3E2; GPS Arbeitszeit-Tracker</h1>
-            <p>Kompakte Analyse mit Fahrtweg &amp; Zeiterfassung aus GPX-, KML-, CSV- und Google Timeline JSON-Dateien</p>
+            <p>Smarte Zeiterfassung &amp; Streckenanalyse aus GPX, KML und CSV</p>
         </div>
 
         <h2 class="step-header">1. Standorte &amp; Einstellungen definieren</h2>
         <div class="config-container">
-            <div class="config-section collapsed" id="sec-wp">
+            <div class="config-section" id="sec-wp">
                 <div class="config-header" onclick="toggleSection('sec-wp')">
                     <h3>&#x1F3E2; Arbeitsplatz Konfiguration</h3>
-                    <span class="toggle-icon">&#x25B6;</span>
+                    <span class="toggle-icon">&#x25BC;</span>
                 </div>
                 <div class="config-content">
                     <div class="config-grid">
@@ -444,19 +558,19 @@
                         </div>
                     </div>
                     <div class="config-actions">
-                        <button class="btn" onclick="searchAddress('wp')">&#x1F50E; Adresse aus Text suchen</button>
-                        <button class="btn btn-secondary" onclick="useGPS('wp')">&#x1F4CD; GPS-Position verwenden</button>
+                        <button class="btn" onclick="searchAddress('wp')">&#x1F50E; Adresse suchen</button>
+                        <button class="btn btn-secondary" onclick="useGPS('wp')">&#x1F4CD; Eigene GPS-Position</button>
                         <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
                     </div>
-                    <div class="small-note">&#9888;&#65039; Tipp: Sp&auml;ter auch automatisch per "&#x1F50D; Standorte pr&uuml;fen &amp; automatisch finden".</div>
+                    <div class="small-note">Hinweis: Die Standorte können später auch automatisch aus den Routen ermittelt werden.</div>
                     <div class="map-container"><div id="mapWp" class="map"></div></div>
                 </div>
             </div>
 
-            <div class="config-section home collapsed" id="sec-home">
+            <div class="config-section home" id="sec-home">
                 <div class="config-header" onclick="toggleSection('sec-home')">
                     <h3>&#x1F3E0; Zuhause Konfiguration</h3>
-                    <span class="toggle-icon">&#x25B6;</span>
+                    <span class="toggle-icon">&#x25BC;</span>
                 </div>
                 <div class="config-content">
                     <div class="config-grid">
@@ -478,19 +592,18 @@
                         </div>
                     </div>
                     <div class="config-actions">
-                        <button class="btn" onclick="searchAddress('home')">&#x1F50E; Adresse aus Text suchen</button>
-                        <button class="btn btn-secondary" onclick="useGPS('home')">&#x1F4CD; GPS-Position verwenden</button>
+                        <button class="btn" onclick="searchAddress('home')">&#x1F50E; Adresse suchen</button>
+                        <button class="btn btn-secondary" onclick="useGPS('home')">&#x1F4CD; Eigene GPS-Position</button>
                         <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
                     </div>
-                    <div class="small-note">&#9888;&#65039; Tipp: Sp&auml;ter auch automatisch per "&#x1F50D; Standorte pr&uuml;fen &amp; automatisch finden".</div>
                     <div class="map-container"><div id="mapHome" class="map"></div></div>
                 </div>
             </div>
 
-            <div class="config-section misc collapsed" id="sec-misc">
+            <div class="config-section misc" id="sec-misc">
                 <div class="config-header" onclick="toggleSection('sec-misc')">
-                    <h3>&#x2699;&#xFE0F; Allgemeine Einstellungen &amp; Feiertage</h3>
-                    <span class="toggle-icon">&#x25B6;</span>
+                    <h3>&#x2699;&#xFE0F; Weitere Einstellungen &amp; Feiertage</h3>
+                    <span class="toggle-icon">&#x25BC;</span>
                 </div>
                 <div class="config-content">
                     <div class="config-grid">
@@ -509,63 +622,57 @@
                                 <option value="manual">Manuell</option>
                             </select>
                         </div>
-                        <div class="config-group">
-                            <label>&frac14;h-Rundung der Zeiten</label>
+                        <div class="config-group" style="justify-content: center;">
                             <label class="toggle-switch-wrap">
                                 <span class="toggle-switch">
                                     <input type="checkbox" id="roundQuarter" checked onchange="renderCal()">
                                     <span class="toggle-slider"></span>
                                 </span>
-                                Kommen &amp; Gehen runden
+                                Zeiten auf &frac14;h runden
                             </label>
                         </div>
                     </div>
                     <div class="config-group" style="margin-top: 15px;">
-                        <label>JSON-Namenskonfiguration (optional, Format: {"YYYY-MM-DD":"Name"})</label>
-                        <textarea id="jsonConfig" style="height: 80px;" placeholder='{ "2026-04-09": "Max Mustermann" }'></textarea>
+                        <label>Spezielle Tagesnamen (Format: {"YYYY-MM-DD":"Name"})</label>
+                        <textarea id="jsonConfig" style="height: 80px;" placeholder='{ "2026-04-09": "Geschäftsreise Berlin" }'></textarea>
                     </div>
                     <div class="config-actions">
                         <button class="btn" onclick="applyTimezoneSettings()">Einstellungen anwenden</button>
                         <button class="btn btn-warning" onclick="openHolidayEditor()">&#x1F389; Feiertage bearbeiten</button>
-                        <button class="btn btn-secondary" onclick="fetchHolidaysFromAPI()">&#x1F4E5; Feiertage von API laden</button>
-                        <span id="holidayApiStatus" style="font-size:12px;color:#666;margin-left:4px;"></span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <h2 class="step-header">2. GPS-Strecke laden</h2>
+        <h2 class="step-header">2. Routen-Daten hochladen</h2>
         <div class="upload-section">
             <div class="file-input-wrapper">
-                <input type="file" id="trackFile" class="file-input" accept=".gpx,.kml,.csv,.json" multiple>
-                <label for="trackFile" class="file-input-label">&#x1F4CD; Strecke laden (GPX/KML/CSV/Timeline)</label>
+                <input type="file" id="trackFile" class="file-input" accept=".gpx,.kml,.csv" multiple>
+                <label for="trackFile" class="file-input-label">&#x1F4CD; Strecken laden (GPX/KML/CSV)</label>
             </div>
             <div class="file-input-wrapper">
                 <input type="file" id="importFile" class="file-input" accept=".json" />
                 <label for="importFile" class="file-input-label btn-secondary">&#x1F4C2; Backup Import</label>
             </div>
-            <button class="btn btn-secondary" onclick="exportData()">&#x1F4BE; Export</button>
-            <button class="btn btn-danger" onclick="resetAll()">&#x1F5D1;&#xFE0F; Reset</button>
+            <button class="btn btn-secondary" onclick="exportData()">&#x1F4BE; Exportieren</button>
+            <button class="btn btn-danger" onclick="resetAll()">&#x1F5D1;&#xFE0F; Zurücksetzen</button>
             <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-            <div id="importStatus" style="font-size:13px;color:#006400;font-weight:500;padding:4px 8px;background:#e6f5e6;border-radius:6px;margin-left:12px;min-width:280px;display:none;">
-                ✅ <strong>Feiertage von Bayern \(BY\) verwendet</strong> – erkannt für <span id="detectedYears"></span>
-            </div>
         </div>
 
         <div class="assistant-section" id="assistantBox" style="display: none;">
-            <p id="assistantText"><strong>Standorte unbekannt oder keine Zeiten gefunden nach dem Laden?</strong> Lass den Tracker deine echten Standorte anhand der Route ermitteln:</p>
-            <button class="btn btn-warning" onclick="checkLocations()" style="width: 100%; max-width: 400px;">&#x1F50D; Standorte pr&uuml;fen &amp; automatisch finden</button>
+            <p id="assistantText"><strong>Keine Arbeitszeiten auf der Route gefunden?</strong> Lass den Tracker deine echten Standorte automatisch ermitteln:</p>
+            <button class="btn btn-warning" onclick="checkLocations()" style="width: 100%; max-width: 400px;">&#x1F50D; Standorte automatisch finden</button>
         </div>
 
         <h2 class="step-header">3. Auswertung &amp; Zeiten</h2>
         <div class="stats-wrap">
             <div class="stats-grid">
-                <div class="stat-card"><div class="stat-val" id="statDays">0</div><div class="stat-lbl">Tage</div></div>
+                <div class="stat-card"><div class="stat-val" id="statDays">0</div><div class="stat-lbl">Erfasste Tage</div></div>
                 <div class="stat-card"><div class="stat-val" id="statWork">0:00</div><div class="stat-lbl">Arbeitszeit</div></div>
                 <div class="stat-card"><div class="stat-val" id="statTarget">0:00</div><div class="stat-lbl">Sollzeit</div></div>
-                <div class="stat-card"><div class="stat-val" id="statDiff">0:00</div><div class="stat-lbl">Differenz</div></div>
+                <div class="stat-card"><div class="stat-val" id="statDiff">0:00</div><div class="stat-lbl">Über/Unterstunden</div></div>
                 <div class="stat-card"><div class="stat-val" id="statDistance">0.0 km</div><div class="stat-lbl">Gesamtstrecke</div></div>
-                <div class="stat-card"><div class="stat-val" id="statCommute">0.0 km</div><div class="stat-lbl">Pendeldistanz</div></div>
+                <div class="stat-card"><div class="stat-val" id="statCommute">0.0 km</div><div class="stat-lbl">Pendelstrecke</div></div>
             </div>
         </div>
 
@@ -584,7 +691,7 @@
 
         <div class="footer">
             <div class="footer-info">
-                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v2.0.0</a></p>
+                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v1.8 (Redesign)</a></p>
                 <p>Entwickelt von <b>Sebastian R&ouml;&szlig;er</b></p>
                 <p>
                     <a href="https://github.com/basecore/arbeitszeit-tracker" target="_blank">GitHub Projekt</a> &nbsp;|&nbsp;
@@ -602,8 +709,8 @@
                 <span class="modal-close" onclick="closeModal('locationModal')">&times;</span>
             </div>
             <div class="modal-body">
-                <div id="checkMap" style="height: 400px; border-radius: 10px; overflow: hidden; margin-bottom: 15px;"></div>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">
+                <div id="checkMap" style="height: 400px; border-radius: 12px; overflow: hidden; margin-bottom: 16px; border: 1px solid var(--border-light);"></div>
+                <div style="background: #f8fafc; padding: 16px; border-radius: 10px; margin-bottom: 16px; font-size: 14.5px; line-height: 1.5; border: 1px solid var(--border-light);">
                     <div id="checkResult">Klicke auf "Standorte automatisch finden", um Adressen und Koordinaten basierend auf deinen hochgeladenen GPS-Routen zu ermitteln.</div>
                 </div>
                 <div class="config-actions">
@@ -634,49 +741,17 @@
     </div>
 
     <div class="modal" id="holidayModal">
-        <div class="modal-content">
+        <div class="modal-content" style="width: min(94vw, 600px);">
             <div class="modal-header">
                 <h3>Feiertage bearbeiten</h3>
                 <span class="modal-close" onclick="closeHolidayEditor()">&times;</span>
             </div>
             <div class="modal-body">
-                <p>Feiertage manuell bearbeiten oder automatisch passend zum Bundesland und Jahr laden.</p>
-                <div class="config-grid" style="margin-bottom:12px;">
-                    <div class="config-group">
-                        <label>Bundesland</label>
-                        <select id="holidayStateManual">
-                            <option value="">Auto</option>
-                            <option value="BY">Bayern</option>
-                            <option value="BW">Baden-Württemberg</option>
-                            <option value="BE">Berlin</option>
-                            <option value="BB">Brandenburg</option>
-                            <option value="HB">Bremen</option>
-                            <option value="HH">Hamburg</option>
-                            <option value="HE">Hessen</option>
-                            <option value="MV">Mecklenburg-Vorpommern</option>
-                            <option value="NI">Niedersachsen</option>
-                            <option value="NW">Nordrhein-Westfalen</option>
-                            <option value="RP">Rheinland-Pfalz</option>
-                            <option value="SL">Saarland</option>
-                            <option value="SN">Sachsen</option>
-                            <option value="ST">Sachsen-Anhalt</option>
-                            <option value="SH">Schleswig-Holstein</option>
-                            <option value="TH">Thüringen</option>
-                        </select>
-                    </div>
-                    <div class="config-group">
-                        <label>Jahr</label>
-                        <input type="number" id="holidayYearManual" min="2000" max="2100" step="1" />
-                    </div>
-                </div>
-                <div class="config-actions" style="margin-bottom:12px;">
-                    <button class="btn btn-secondary" onclick="loadManualHolidays()">Feiertage laden</button>
-                </div>
-                <p>Oder JSON mit <code>"YYYY-MM-DD": "Bezeichnung"</code> bearbeiten:</p>
+                <p style="margin-top:0; color:var(--text-muted);">Format: JSON mit <code>"YYYY-MM-DD": "Bezeichnung"</code></p>
                 <textarea id="holidayEditor"></textarea>
-                <div class="config-actions" style="margin-top:12px;">
-                    <button class="btn" onclick="saveHolidays()">Speichern</button>
-                    <button class="btn btn-secondary" onclick="closeHolidayEditor()">Schlie&szlig;en</button>
+                <div class="config-actions" style="margin-top:16px;">
+                    <button class="btn btn-save" onclick="saveHolidays()">Speichern</button>
+                    <button class="btn btn-secondary" onclick="closeHolidayEditor()">Abbrechen</button>
                 </div>
             </div>
         </div>
@@ -686,13 +761,13 @@
     <script>
         const DEFAULT_CFG = { 
             wp: { lat: 48.26134, lon: 11.67175, rad: 100, hours: 7, break: 30, addr: "Forschungszentrum Garching" }, 
-            home: { lat: 48.13743, lon: 11.57549, rad: 100, addr: "Rathaus M\u00FCnchen" }, 
+            home: { lat: 48.13743, lon: 11.57549, rad: 100, addr: "Rathaus München" }, 
             tz: { dayOff: 0, hourOff: 0, mode: "auto" } 
         };
         const defaultHolidays = {
-            "2026-01-01": "Neujahr", "2026-01-06": "Hl. 3 K\u00F6nige", "2026-04-03": "Karfreitag",
+            "2026-01-01": "Neujahr", "2026-01-06": "Hl. 3 Könige", "2026-04-03": "Karfreitag",
             "2026-04-06": "Ostermontag", "2026-05-01": "Tag der Arbeit", "2026-05-14": "Himmelfahrt",
-            "2026-05-25": "Pfingstmontag", "2026-06-04": "Fronleichnam", "2026-08-15": "Mari\u00E4 Himmelfahrt",
+            "2026-05-25": "Pfingstmontag", "2026-06-04": "Fronleichnam", "2026-08-15": "Mariä Himmelfahrt",
             "2026-10-03": "Tag der Dt. Einheit", "2026-11-01": "Allerheiligen",
             "2026-12-25": "1. Weihnachtstag", "2026-12-26": "2. Weihnachtstag"
         };
@@ -705,7 +780,7 @@
 
         async function getAddress(lat, lon) {
             try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&email=gps-tracker@example.com`);
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
                 const data = await res.json();
                 if (data.address) {
                     const street = data.address.road || "";
@@ -714,11 +789,11 @@
                     if (street && city) return `${street} ${house}, ${city}`.trim();
                 }
                 return data.display_name || "Unbekannte Adresse";
-            } catch (e) { return "Adresse konnte nicht ermittelt werden"; }
+            } catch { return "Adresse konnte nicht ermittelt werden"; }
         }
 
         function checkLocations() {
-            document.getElementById("locationModal").style.display = "block";
+            document.getElementById("locationModal").style.display = "flex";
             document.getElementById("btnApplyLocs").style.display = "none";
 
             setTimeout(() => {
@@ -748,7 +823,7 @@
                     checkMap.fitBounds([[minLat, minLon], [maxLat, maxLon]], { padding: [20, 20] });
                     document.getElementById("checkResult").innerHTML = `<b>${Object.keys(trackData).length} Tage mit GPS-Routen im Speicher.</b><br>Die roten Punkte zeigen, wo du warst. Liegen die gr&uuml;nen (Arbeit) und blauen (Zuhause) Kreise genau auf den intensivsten roten Clustern?`;
                 } else {
-                    document.getElementById("checkResult").innerHTML = "<b>Keine GPS-Daten im Speicher gefunden.</b> Bitte lade zuerst GPX/KML/CSV-Dateien hoch.";
+                    document.getElementById("checkResult").innerHTML = "<b>Keine GPS-Daten im Speicher gefunden.</b> Bitte lade zuerst Dateien hoch.";
                 }
                 checkMap.invalidateSize();
             }, 100);
@@ -756,7 +831,6 @@
 
         async function autoFindLocations() {
             document.getElementById("checkResult").innerHTML = "<i>Analysiere Daten und frage Adressen ab... Bitte warten.</i>";
-
             setTimeout(async () => {
                 let homePoints = [], workPoints = [];
                 for (const [dS, pts] of Object.entries(trackData)) {
@@ -827,6 +901,10 @@
                 document.getElementById("homeAddr").value = foundHome.addr;
             }
             saveCfg(); closeModal('locationModal');
+            if (confirm("Standorte aktualisiert! Möchtest du die Arbeitszeiten anhand der neuen Standorte jetzt komplett neu berechnen?")) {
+                startProgress(); let allData = {}; for (const dS in trackData) allData[dS] = trackData[dS];
+                setTimeout(() => { finishLoad(allData); showToast("Zeiten neu berechnet!"); }, 500);
+            }
         }
 
         function showToast(msg = "Gespeichert") { 
@@ -835,15 +913,8 @@
         }
 
         function toggleSection(id) { 
-            const sec = document.getElementById(id);
-            if (!sec) return;
-            sec.classList.toggle("collapsed");
-            const icon = sec.querySelector(".toggle-icon");
-            if (icon) icon.innerHTML = sec.classList.contains("collapsed") ? "&#x25B6;" : "&#x25BC;";
-            setTimeout(() => {
-                if (id === 'sec-wp' && mapWp) mapWp.invalidateSize();
-                if (id === 'sec-home' && mapHome) mapHome.invalidateSize();
-            }, 100);
+            document.getElementById(id).classList.toggle("collapsed"); 
+            setTimeout(() => { if (id === 'sec-wp' && mapWp) mapWp.invalidateSize(); if (id === 'sec-home' && mapHome) mapHome.invalidateSize(); }, 100); 
         }
 
         function collapseConfigs() { 
@@ -859,17 +930,9 @@
             const homeLon = (document.getElementById('homeLon')?.value || '').trim();
             const homeRad = (document.getElementById('homeRad')?.value || '').trim();
 
-            const dayOffset = (document.getElementById('dayOffset')?.value || '').trim();
-            const hourOffset = (document.getElementById('hourOffset')?.value || '').trim();
-            const tzMode = (document.getElementById('tzMode')?.value || '').trim();
-            const roundQuarter = document.getElementById('roundQuarter')?.checked ?? true;
-            const holidayRows = document.querySelectorAll('#holidayList .holiday-item').length;
-
             const wpConfigured = !!(wpAddr || wpLat || wpLon || (wpRad && wpRad !== '100') || (wpHours && wpHours !== '8') || (wpBreak && wpBreak !== '30'));
             const homeConfigured = !!(homeAddr || homeLat || homeLon || (homeRad && homeRad !== '100'));
-            const miscConfigured = !!((dayOffset && dayOffset !== '0') || (hourOffset && hourOffset !== '0') || (tzMode && tzMode !== 'auto') || roundQuarter === false || holidayRows > 0);
-
-            if (!wpConfigured && !homeConfigured && !miscConfigured) return;
+            const miscConfigured = document.querySelectorAll('#holidayList .holiday-item').length > 0;
 
             if (wpConfigured) document.getElementById('sec-wp')?.classList.add('collapsed');
             if (homeConfigured) document.getElementById('sec-home')?.classList.add('collapsed');
@@ -910,45 +973,26 @@
         }
         function finishProgress() { clearInterval(progressTimer); document.getElementById("progressFill").style.width = "100%"; setTimeout(() => document.getElementById("progressFill").style.width = "0%", 500); }
 
-        function getStLabel(st) { const m = { "work":"B\u00FCro", "homeoffice":"Home", "vacation":"Urlaub", "free":"Frei", "holiday":"Feiertag", "na":"N.A." }; return m[st] || "N.A."; }
+        function getStLabel(st) { const m = { "work":"Büro", "homeoffice":"Home", "vacation":"Urlaub", "free":"Frei", "holiday":"Feiertag", "na":"N.A." }; return m[st] || "N.A."; }
         function getStatusClass(st) { return "status-" + (st || "na"); }
         function hasTrace(d) { return Array.isArray(trackData[d]) && trackData[d].length > 1; }
 
-        function loadHolidays() { const s = localStorage.getItem("my_holidays"); if (s) { try { activeHolidays = JSON.parse(s); return; } catch (e) {} } activeHolidays = structuredClone(defaultHolidays); }
-                async function loadManualHolidays() {
-            const state = document.getElementById("holidayStateManual").value || cfg.wp.bundesland || "BY";
-            const year = parseInt(document.getElementById("holidayYearManual").value, 10) || new Date().getFullYear();
-            const statusEl = document.getElementById("holidayEditor");
-            if (statusEl) statusEl.value = "";
-            const h = await fetchHolidaysForState(state, year);
-            if (!h) { alert("Feiertage konnten nicht geladen werden."); return; }
-            activeHolidays = h;
-            localStorage.setItem("my_holidays", JSON.stringify(activeHolidays));
-            renderCal();
-            const importStatusEl = document.getElementById("importStatus");
-            if (importStatusEl) {
-                importStatusEl.innerHTML = `✅ <strong>Feiertage von ${BUNDESLAND_NAMES[state] || state} (${state}) verwendet</strong> – erkannt für das Jahr ${year}`;
-                importStatusEl.style.display = "inline-flex";
-            }
-            closeHolidayEditor();
-            showToast("Feiertage geladen");
-        }
-
-function saveHolidays() { try { activeHolidays = document.getElementById("holidayEditor").value.trim() ? JSON.parse(document.getElementById("holidayEditor").value.trim()) : {}; localStorage.setItem("my_holidays", JSON.stringify(activeHolidays)); closeHolidayEditor(); renderCal(); showToast("Feiertage gespeichert"); } catch (e) { alert("Fehler im JSON-Format."); } }
-        function openHolidayEditor() { document.getElementById("holidayEditor").value = JSON.stringify(activeHolidays, null, 2); document.getElementById("holidayModal").style.display = "block"; }
+        function loadHolidays() { const s = localStorage.getItem("my_holidays"); if (s) { try { activeHolidays = JSON.parse(s); return; } catch {} } activeHolidays = structuredClone(defaultHolidays); }
+        function saveHolidays() { try { activeHolidays = document.getElementById("holidayEditor").value.trim() ? JSON.parse(document.getElementById("holidayEditor").value.trim()) : {}; localStorage.setItem("my_holidays", JSON.stringify(activeHolidays)); closeHolidayEditor(); renderCal(); showToast("Feiertage gespeichert"); } catch (e) { alert("Fehler im JSON-Format."); } }
+        function openHolidayEditor() { document.getElementById("holidayEditor").value = JSON.stringify(activeHolidays, null, 2); document.getElementById("holidayModal").style.display = "flex"; }
         function closeHolidayEditor() { document.getElementById("holidayModal").style.display = "none"; }
 
         function useGPS(t) {
-            if (!navigator.geolocation) { alert("GPS wird nicht unterst\u00FCtzt."); return; }
-            const btn = event.target; btn.textContent = "\u23F3 Orten..."; btn.disabled = true;
+            if (!navigator.geolocation) { alert("GPS wird nicht unterstützt."); return; }
+            const btn = event.target; btn.innerHTML = "&#x23F3; Orten..."; btn.disabled = true;
             navigator.geolocation.getCurrentPosition(
                 async pos => {
                     document.getElementById(t === "wp" ? "wpLat" : "homeLat").value = pos.coords.latitude.toFixed(6);
                     document.getElementById(t === "wp" ? "wpLon" : "homeLon").value = pos.coords.longitude.toFixed(6);
                     autoSave(t); await reverseLookup(t);
-                    btn.textContent = "\uD83D\uDCCD GPS-Position verwenden"; btn.disabled = false; showToast("Position gesetzt \u2713");
+                    btn.innerHTML = "&#x1F4CD; Eigene GPS-Position"; btn.disabled = false; showToast("Position gesetzt");
                 },
-                err => { btn.textContent = "\uD83D\uDCCD GPS-Position verwenden"; btn.disabled = false; alert("GPS-Fehler. Bitte Standortfreigabe prüfen."); },
+                err => { btn.innerHTML = "&#x1F4CD; Eigene GPS-Position"; btn.disabled = false; alert("GPS-Fehler. Bitte Standortfreigabe prüfen."); },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         }
@@ -961,31 +1005,23 @@ function saveHolidays() { try { activeHolidays = document.getElementById("holida
             document.getElementById("tzMode").value = cfg.tz.mode || 'auto'; document.getElementById("jsonConfig").value = JSON.stringify(jsonAssignments, null, 2);
         }
 
-        
         function loadSettings() {
             const s = localStorage.getItem("my_cfg");
-            if (s) { try { const st = JSON.parse(s); cfg = { wp: {...DEFAULT_CFG.wp, ...(st.wp||{})}, home: {...DEFAULT_CFG.home, ...(st.home||{})}, tz: {...DEFAULT_CFG.tz, ...(st.tz||{})} }; } catch (e) { cfg = structuredClone(DEFAULT_CFG); } }
-            try { workData = JSON.parse(localStorage.getItem("workData")) || {}; } catch (e) { workData = {}; }
-            try { trackData = JSON.parse(localStorage.getItem("trackData")) || {}; } catch (e) { trackData = {}; }
-            try { jsonAssignments = JSON.parse(localStorage.getItem("jsonAssignments")) || {}; } catch (e) { jsonAssignments = {}; }
+            if (s) { try { const st = JSON.parse(s); cfg = { wp: {...DEFAULT_CFG.wp, ...(st.wp||{})}, home: {...DEFAULT_CFG.home, ...(st.home||{})}, tz: {...DEFAULT_CFG.tz, ...(st.tz||{})} }; } catch { cfg = structuredClone(DEFAULT_CFG); } }
+            try { workData = JSON.parse(localStorage.getItem("workData")) || {}; } catch { workData = {}; }
+            try { trackData = JSON.parse(localStorage.getItem("trackData")) || {}; } catch { trackData = {}; }
+            try { jsonAssignments = JSON.parse(localStorage.getItem("jsonAssignments")) || {}; } catch { jsonAssignments = {}; }
             setUIFromCfg();
-
-            const wpConfigured = cfg.wp.lat !== DEFAULT_CFG.wp.lat || cfg.wp.lon !== DEFAULT_CFG.wp.lon || cfg.wp.addr !== DEFAULT_CFG.wp.addr;
-            const homeConfigured = cfg.home.lat !== DEFAULT_CFG.home.lat || cfg.home.lon !== DEFAULT_CFG.home.lon || cfg.home.addr !== DEFAULT_CFG.home.addr;
-            const miscConfigured = cfg.tz.dayOff !== 0 || cfg.tz.hourOff !== 0 || Object.keys(jsonAssignments).length > 0;
-
-            if (wpConfigured) document.getElementById('sec-wp').classList.add('collapsed');
-            if (homeConfigured) document.getElementById('sec-home').classList.add('collapsed');
-            if (miscConfigured) document.getElementById('sec-misc').classList.add('collapsed');
+            collapseConfigs();
         }
-function saveCfg() {
+
+        function saveCfg() {
             cfg.wp.lat = parseFloat(document.getElementById("wpLat").value) || DEFAULT_CFG.wp.lat; cfg.wp.lon = parseFloat(document.getElementById("wpLon").value) || DEFAULT_CFG.wp.lon;
             cfg.wp.rad = parseInt(document.getElementById("wpRad").value) || DEFAULT_CFG.wp.rad; cfg.wp.hours = parseFloat(document.getElementById("wpHours").value) || DEFAULT_CFG.wp.hours;
             cfg.wp.break = parseInt(document.getElementById("wpBreak").value) || DEFAULT_CFG.wp.break; cfg.wp.addr = document.getElementById("wpAddr").value.trim();
             cfg.home.lat = parseFloat(document.getElementById("homeLat").value) || DEFAULT_CFG.home.lat; cfg.home.lon = parseFloat(document.getElementById("homeLon").value) || DEFAULT_CFG.home.lon;
             cfg.home.rad = parseInt(document.getElementById("homeRad").value) || DEFAULT_CFG.home.rad; cfg.home.addr = document.getElementById("homeAddr").value.trim();
-            localStorage.setItem("my_cfg", JSON.stringify(cfg)); drawZone("wp"); drawZone("home"); showToast("Konfiguration gespeichert");
-        if (Object.keys(trackData).length > 0 && confirm("Einstellungen gespeichert! Möchtest du die Arbeitszeiten anhand der neuen Einstellungen jetzt komplett neu berechnen?")) { startProgress(); let allData = {}; for (const dS in trackData) allData[dS] = trackData[dS]; setTimeout(() => { finishLoad(allData); showToast("Zeiten neu berechnet!"); }, 500); }
+            localStorage.setItem("my_cfg", JSON.stringify(cfg)); drawZone("wp"); drawZone("home"); showToast("Konfiguration gespeichert"); calcStats(); renderCal();
         }
 
         function autoSave(t) {
@@ -996,11 +1032,11 @@ function saveCfg() {
 
         function applyTimezoneSettings() {
             cfg.tz.dayOff = parseInt(document.getElementById("dayOffset").value) || 0; cfg.tz.hourOff = parseInt(document.getElementById("hourOffset").value) || 0; cfg.tz.mode = document.getElementById("tzMode").value || "auto";
-            try { jsonAssignments = document.getElementById("jsonConfig").value.trim() ? JSON.parse(document.getElementById("jsonConfig").value.trim()) : {}; localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments)); } catch (e) { alert("Ungültiges JSON."); }
+            try { jsonAssignments = document.getElementById("jsonConfig").value.trim() ? JSON.parse(document.getElementById("jsonConfig").value.trim()) : {}; localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments)); } catch { alert("Ungültiges JSON."); }
             localStorage.setItem("my_cfg", JSON.stringify(cfg)); renderCal(); showToast("Einstellungen gespeichert");
         }
 
-        function resetAll() { if (confirm("Wirklich alle lokalen Daten löschen?")) { localStorage.clear(); location.reload(); } }
+        function resetAll() { if (confirm("Wirklich alle lokalen Daten unwiderruflich löschen?")) { localStorage.clear(); location.reload(); } }
 
         async function searchAddress(t) {
             const q = document.getElementById(t === "wp" ? "wpAddr" : "homeAddr").value.trim(); if (!q) return alert("Bitte eine Adresse eingeben.");
@@ -1011,17 +1047,17 @@ function saveCfg() {
                 document.getElementById(t === "wp" ? "wpLat" : "homeLat").value = parseFloat(data[0].lat).toFixed(6); 
                 document.getElementById(t === "wp" ? "wpLon" : "homeLon").value = parseFloat(data[0].lon).toFixed(6); 
                 autoSave(t);
-            } catch (e) { alert("Fehler bei Adresssuche."); }
+            } catch { alert("Fehler bei Adresssuche."); }
         }
 
         async function reverseLookup(t) {
             const lat = document.getElementById(t === "wp" ? "wpLat" : "homeLat").value;
             const lon = document.getElementById(t === "wp" ? "wpLon" : "homeLon").value;
             try { 
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&email=gps-tracker@example.com`); 
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`); 
                 const data = await res.json();
                 if (data.display_name) { document.getElementById(t === "wp" ? "wpAddr" : "homeAddr").value = data.display_name; autoSave(t); }
-            } catch (e) {}
+            } catch {}
         }
 
         function initMaps() {
@@ -1037,187 +1073,18 @@ function saveCfg() {
             if (t === "wp" && mapWp) {
                 if (wpMarker) mapWp.removeLayer(wpMarker); if (wpCircle) mapWp.removeLayer(wpCircle);
                 wpMarker = L.marker([cfg.wp.lat, cfg.wp.lon]).addTo(mapWp).bindPopup(cfg.wp.addr || "Arbeitsplatz");
-                wpCircle = L.circle([cfg.wp.lat, cfg.wp.lon], { radius: cfg.wp.rad, color: "#006400", fillColor: "#32cd32", fillOpacity: 0.15 }).addTo(mapWp);
+                wpCircle = L.circle([cfg.wp.lat, cfg.wp.lon], { radius: cfg.wp.rad, color: "#005a2b", fillColor: "#2eb82e", fillOpacity: 0.15 }).addTo(mapWp);
                 mapWp.setView([cfg.wp.lat, cfg.wp.lon]);
             }
             if (t === "home" && mapHome) {
                 if (homeMarker) mapHome.removeLayer(homeMarker); if (homeCircle) mapHome.removeLayer(homeCircle);
                 homeMarker = L.marker([cfg.home.lat, cfg.home.lon]).addTo(mapHome).bindPopup(cfg.home.addr || "Zuhause");
-                homeCircle = L.circle([cfg.home.lat, cfg.home.lon], { radius: cfg.home.rad, color: "#003c7d", fillColor: "#4ea3ff", fillOpacity: 0.15 }).addTo(mapHome);
+                homeCircle = L.circle([cfg.home.lat, cfg.home.lon], { radius: cfg.home.rad, color: "#0277bd", fillColor: "#4ea3ff", fillOpacity: 0.15 }).addTo(mapHome);
                 mapHome.setView([cfg.home.lat, cfg.home.lon]);
             }
         }
 
         function normalizeTimestamp(r) { if (!r) return null; const d = new Date(r); if (!isNaN(d)) return d.getTime(); const d2 = new Date(r.replace(" ", "T")); return !isNaN(d2) ? d2.getTime() : null; }
-
-
-        // ===================== GOOGLE TIMELINE JSON PARSER v2.0.0 =====================
-        // Supports all known Google Takeout Timeline JSON formats:
-        //   - Records.json (classic, locations[])
-        //   - Semantic Location History monthly files (timelineObjects[])
-        //   - New 2024+ format (semanticSegments[], rawSignals[])
-        // Based on: https://dawarich.app/blog/building-a-privacy-first-google-timeline-visualizer/
-        //       and: https://github.com/dawarich-app/site/blob/main/src/components/TimelineMap.js
-
-        function parseGoogleTimeline(txt) {
-            let data;
-            try { data = JSON.parse(txt); } catch(e) { console.error("Timeline JSON Parse Error:", e); return {}; }
-            const pts = [];
-
-            // Format 1: Classic Records.json { "locations": [ { latitudeE7, longitudeE7, timestamp } ] }
-            if (data.locations && Array.isArray(data.locations)) {
-                for (const loc of data.locations) {
-                    const lat = (loc.latitudeE7  !== undefined) ? loc.latitudeE7  / 1e7 : loc.latitude;
-                    const lon = (loc.longitudeE7 !== undefined) ? loc.longitudeE7 / 1e7 : loc.longitude;
-                    const tsRaw = loc.timestamp || loc.timestampMs;
-                    if (!tsRaw || !Number.isFinite(lat) || !Number.isFinite(lon)) continue;
-                    let ts = (typeof tsRaw === 'string') ? new Date(tsRaw).getTime() : parseInt(tsRaw, 10);
-                    if (ts && ts < 1e12) ts *= 1000; // seconds -> ms
-                    if (ts && Number.isFinite(lat) && Number.isFinite(lon)) pts.push({ lat, lon, time: ts });
-                }
-                if (pts.length > 0) { pts.sort((a, b) => a.time - b.time); return splitPointsByDay(pts); }
-            }
-
-            // Format 2: Semantic Location History { "timelineObjects": [...] }
-            if (data.timelineObjects && Array.isArray(data.timelineObjects)) {
-                return parseSemanticTimeline(data.timelineObjects);
-            }
-
-            // Format 3: New 2024+ { "semanticSegments": [...] }
-            if (data.semanticSegments && Array.isArray(data.semanticSegments)) {
-                return parseSemanticSegments(data.semanticSegments, pts);
-            }
-
-            // Format 4: New 2024+ { "rawSignals": [...] }
-            if (data.rawSignals && Array.isArray(data.rawSignals)) {
-                return parseRawSignals(data.rawSignals, pts);
-            }
-
-            // Format 5: Direct array [{ latitudeE7, longitudeE7, timestamp }]
-            if (Array.isArray(data)) {
-                for (const item of data) {
-                    if (item.latitudeE7 !== undefined) {
-                        const lat = item.latitudeE7 / 1e7, lon = item.longitudeE7 / 1e7;
-                        let ts = item.timestamp ? new Date(item.timestamp).getTime() : parseInt(item.timestampMs||'0', 10);
-                        if (ts && ts < 1e12) ts *= 1000;
-                        if (Number.isFinite(lat) && Number.isFinite(lon) && ts) pts.push({ lat, lon, time: ts });
-                    }
-                }
-                if (pts.length > 0) { pts.sort((a, b) => a.time - b.time); return splitPointsByDay(pts); }
-            }
-
-            console.warn("Google Timeline JSON: Unbekanntes Format. Keys:", Object.keys(data).join(", "));
-            return {};
-        }
-
-        // Parse Semantic Location History (monatliche Takeout-Dateien)
-        function parseSemanticTimeline(objects) {
-            const pts = [];
-            for (const obj of objects) {
-                // placeVisit: Aufenthalt an einem Ort
-                if (obj.placeVisit) {
-                    const pv = obj.placeVisit, loc = pv.location;
-                    if (loc && loc.latitudeE7 !== undefined) {
-                        const lat = loc.latitudeE7 / 1e7, lon = loc.longitudeE7 / 1e7;
-                        const ts = pv.duration?.startTimestamp ? new Date(pv.duration.startTimestamp).getTime() : null;
-                        const te = pv.duration?.endTimestamp   ? new Date(pv.duration.endTimestamp).getTime()   : null;
-                        if (ts && Number.isFinite(lat) && Number.isFinite(lon)) {
-                            pts.push({ lat, lon, time: ts });
-                            if (te) pts.push({ lat, lon, time: te });
-                        }
-                    }
-                }
-                // activitySegment: Fahrt / Bewegung
-                if (obj.activitySegment) {
-                    const seg = obj.activitySegment;
-                    const sw = seg.startLocation, ew = seg.endLocation;
-                    const ts = seg.duration?.startTimestamp ? new Date(seg.duration.startTimestamp).getTime() : null;
-                    const te = seg.duration?.endTimestamp   ? new Date(seg.duration.endTimestamp).getTime()   : null;
-                    if (sw && sw.latitudeE7 !== undefined && ts)
-                        pts.push({ lat: sw.latitudeE7 / 1e7, lon: sw.longitudeE7 / 1e7, time: ts });
-                    // Wegpunkte entlang der Route (interpoliert)
-                    if (seg.waypointPath?.waypoints) {
-                        const wpts = seg.waypointPath.waypoints, dur = (ts && te) ? (te - ts) : 0;
-                        wpts.forEach((wp, i) => {
-                            const lat = wp.latE7 / 1e7, lon = wp.lngE7 / 1e7;
-                            const t = ts ? ts + (dur * i / Math.max(wpts.length - 1, 1)) : null;
-                            if (Number.isFinite(lat) && Number.isFinite(lon) && t) pts.push({ lat, lon, time: t });
-                        });
-                    }
-                    // Simplified raw path (Rohdaten entlang der Strecke)
-                    if (seg.simplifiedRawPath?.points) {
-                        for (const p of seg.simplifiedRawPath.points) {
-                            const lat = p.latE7 / 1e7, lon = p.lngE7 / 1e7;
-                            const t = p.timestamp ? new Date(p.timestamp).getTime() : null;
-                            if (Number.isFinite(lat) && Number.isFinite(lon) && t) pts.push({ lat, lon, time: t });
-                        }
-                    }
-                    if (ew && ew.latitudeE7 !== undefined && te)
-                        pts.push({ lat: ew.latitudeE7 / 1e7, lon: ew.longitudeE7 / 1e7, time: te });
-                }
-            }
-            pts.sort((a, b) => a.time - b.time);
-            return splitPointsByDay(pts);
-        }
-
-        // Parse neues 2024+ semanticSegments Format
-        function parseSemanticSegments(segments, pts) {
-            for (const seg of segments) {
-                if (seg.visit?.topCandidate?.placeLocation) {
-                    const raw = seg.visit.topCandidate.placeLocation;
-                    const coords = parseGeoUri(raw.latLng || raw);
-                    const ts = seg.startTime ? new Date(seg.startTime).getTime() : null;
-                    const te = seg.endTime   ? new Date(seg.endTime).getTime()   : null;
-                    if (coords && ts) {
-                        pts.push({ lat: coords.lat, lon: coords.lon, time: ts });
-                        if (te) pts.push({ lat: coords.lat, lon: coords.lon, time: te });
-                    }
-                }
-                if (seg.timelinePath && Array.isArray(seg.timelinePath)) {
-                    for (const p of seg.timelinePath) {
-                        const coords = parseGeoUri(p.point);
-                        const t = p.time ? new Date(p.time).getTime() : null;
-                        if (coords && t) pts.push({ lat: coords.lat, lon: coords.lon, time: t });
-                    }
-                }
-                if (seg.activity) {
-                    const ts = seg.startTime ? new Date(seg.startTime).getTime() : null;
-                    const te = seg.endTime   ? new Date(seg.endTime).getTime()   : null;
-                    if (seg.activity.start) { const c = parseGeoUri(seg.activity.start); if (c && ts) pts.push({ lat: c.lat, lon: c.lon, time: ts }); }
-                    if (seg.activity.end)   { const c = parseGeoUri(seg.activity.end);   if (c && te) pts.push({ lat: c.lat, lon: c.lon, time: te }); }
-                }
-            }
-            pts.sort((a, b) => a.time - b.time);
-            return splitPointsByDay(pts);
-        }
-
-        // Parse rawSignals GPS-Pings (2024+ Export)
-        function parseRawSignals(signals, pts) {
-            for (const sig of signals) {
-                if (sig.position) {
-                    const p = sig.position;
-                    const lat = (p.LatDeg !== undefined) ? p.LatDeg : (p.latitudeE7 !== undefined ? p.latitudeE7 / 1e7 : NaN);
-                    const lon = (p.LngDeg !== undefined) ? p.LngDeg : (p.longitudeE7 !== undefined ? p.longitudeE7 / 1e7 : NaN);
-                    const t = p.timestamp ? new Date(p.timestamp).getTime() : null;
-                    if (Number.isFinite(lat) && Number.isFinite(lon) && t) pts.push({ lat, lon, time: t });
-                }
-            }
-            pts.sort((a, b) => a.time - b.time);
-            return splitPointsByDay(pts);
-        }
-
-        // "geo:lat,lon" URI Parser (neues Google-Format 2024+)
-        function parseGeoUri(str) {
-            if (!str) return null;
-            if (typeof str === 'object' && str.latitudeE7 !== undefined)
-                return { lat: str.latitudeE7 / 1e7, lon: str.longitudeE7 / 1e7 };
-            const s = String(str);
-            const m = s.match(/geo:([+-]?[\d.]+),([+-]?[\d.]+)/i) || s.match(/^([+-]?[\d.]+),([+-]?[\d.]+)$/);
-            if (!m) return null;
-            const lat = parseFloat(m[1]), lon = parseFloat(m[2]);
-            return Number.isFinite(lat) && Number.isFinite(lon) ? { lat, lon } : null;
-        }
-        // ======================================================================
 
         function parseGPX(txt) {
             const pts = [];
@@ -1233,7 +1100,7 @@ function saveCfg() {
             const whens = xml.getElementsByTagName("when"), coords = xml.getElementsByTagName("gx:coord");
             if (whens.length > 0 && coords.length > 0 && whens.length === coords.length) {
                 for (let i = 0; i < whens.length; i++) {
-                    const ts = normalizeTimestamp(whens[i].textContent.trim()), parts = coords[i].textContent.trim().split(/\s+/);
+                    const ts = normalizeTimestamp(whens[i].textContent.trim()), parts = coords[i].textContent.trim().split(/s+/);
                     if (ts && parts.length >= 2) { const lon = parseFloat(parts[0]), lat = parseFloat(parts[1]); if (Number.isFinite(lat) && Number.isFinite(lon)) pts.push({ lat, lon, time: ts }); }
                 }
             } else {
@@ -1256,7 +1123,9 @@ function saveCfg() {
         }
 
         function parseCSV(txt) {
-            const rows = txt.split(/\r?\n/).filter(l => l.trim().length > 0); if (rows.length < 2) return {};
+            const rows = txt.split(/
+?
+/).filter(l => l.trim().length > 0); if (rows.length < 2) return {};
             const delim = (rows[0].indexOf(';') > -1 && rows[0].indexOf(',') === -1) ? ';' : ',';
             const headers = parseCSVLine(rows[0], delim).map(h => h.replace(/["']/g, '').toLowerCase());
             const pts = [];
@@ -1322,7 +1191,7 @@ function saveCfg() {
 
                 const a = analyze(pts);
                 if (a) {
-                    if (a.net && a.net > (5 / 60)) validDays++; // Mehr als 5 Minuten am Stück am Arbeitsplatz
+                    if (a.net && a.net > (5 / 60)) validDays++; 
 
                     const old = workData[dS] || {};
                     let newStatus = old.status;
@@ -1338,58 +1207,35 @@ function saveCfg() {
                         return false;
                     }).map(p => ({ lat: p.lat, lon: p.lon, time: p.time }));
 
-                    try {
-                        localStorage.setItem('workData', JSON.stringify(workData));
-                        localStorage.setItem('trackData', JSON.stringify(trackData));
-                    } catch (e) {
-                        // Speicher voll! Lösche älteste GPS-Tracks, aber behalte die berechneten Zeiten (workData)
+                    localStorage.setItem('workData', JSON.stringify(workData));
+                    try { localStorage.setItem('trackData', JSON.stringify(trackData)); } 
+                    catch (e) {
                         const days = Object.keys(trackData).sort();
-                        while (days.length > 0) { 
-                            const oldestDay = days.shift(); 
-                            if (oldestDay !== dS) { 
-                                delete trackData[oldestDay]; 
-                                try { 
-                                    localStorage.setItem('trackData', JSON.stringify(trackData)); 
-                                    localStorage.setItem('workData', JSON.stringify(workData));
-                                    break; 
-                                } catch (err) {} 
-                            } 
-                        }
+                        while (days.length > 0) { const oldestDay = days.shift(); if (oldestDay !== dS) { delete trackData[oldestDay]; try { localStorage.setItem('trackData', JSON.stringify(trackData)); break; } catch (err) {} } }
                     }
                 }
             }
 
-            try {
-                localStorage.setItem("workData", JSON.stringify(workData)); 
-                localStorage.setItem("trackData", JSON.stringify(trackData));
-            } catch (e) {
-                console.warn("Storage still full at end of load.");
-            }
+            localStorage.setItem("workData", JSON.stringify(workData)); 
+            localStorage.setItem("trackData", JSON.stringify(trackData));
 
             if (latestDay) {
                 const p = latestDay.split("-");
                 curMonth = new Date(parseInt(p[0]), parseInt(p[1]) - 1, 1);
             }
 
-            collapseConfigs(); renderCal(); calcStats(); finishProgress(); showToast("Datei analysiert");
+            collapseConfigs(); renderCal(); calcStats(); finishProgress(); showToast("Datei erfolgreich analysiert");
 
             if (totalDays > 0 && validDays === 0) {
                 const mStr = Array.from(monthsSet).join(", ");
                 document.getElementById('assistantBox').style.display = 'flex';
-                document.getElementById('assistantText').innerHTML = `<strong>Achtung: Keine Arbeitszeiten gefunden!</strong><br>Es wurden ${totalPts} GPS-Punkte f&uuml;r ${mStr} geladen, aber dein eingestellter Arbeitsplatz/Zuhause liegt nicht auf der Route. Lass den Tracker deine echten Standorte jetzt automatisch ermitteln:`;
+                document.getElementById('assistantText').innerHTML = `<strong>Achtung: Keine Arbeitszeiten am Standort gefunden!</strong><br>Es wurden ${totalPts} GPS-Punkte f&uuml;r ${mStr} geladen, aber dein eingestellter Arbeitsplatz liegt nicht auf der Route. Lass den Tracker deine echten Standorte nun automatisch ermitteln:`;
             } else {
                 document.getElementById('assistantBox').style.display = 'none';
             }
-
-            // Auto-check Bundesland of workplace and update holidays from feiertage-api.de
-            const gpsYears = Array.from(new Set(Object.keys(gData).map(d => parseInt(d.split('-')[0])).filter(y => y > 2000 && y < 2100))).sort();
-            if (gpsYears.length > 0) {
-                checkAndUpdateHolidaysForWorkplace(gpsYears);
-                
-                setTimeout(() => { const el = document.getElementById("importStatus"); if (el) el.style.display = "none"; }, 12000);
-            }
         }
 
+        // --- THE REDESIGNED RENDER FUNCTION ---
         function renderCal() {
             const list = document.getElementById("calendarList"); list.innerHTML = "";
             const y = curMonth.getFullYear(), m = curMonth.getMonth();
@@ -1415,47 +1261,61 @@ function saveCfg() {
                 const data = workData[dS] || {}, hName = activeHolidays[dS], st = hName ? "holiday" : (data.status || ([0,6].includes(dObj.getDay()) ? "free" : "na"));
                 const isInactive = ["holiday", "free", "vacation"].includes(st), isEdit = !!editModeDays[dS];
 
-                let dur = "--:--", durMob = "", cls = "";
+                let dur = "--:--", cls = "";
                 if (typeof data.net === "number") {
                     const mNet = Math.round(data.net * 60), mTg = Math.round(cfg.wp.hours * 60);
-                    durMob = dur = Math.floor(mNet / 60) + ":" + String(mNet % 60).padStart(2, "0");
-                    if (mNet > mTg) { cls = "overtime"; dur = "+" + Math.floor((mNet - mTg) / 60) + ":" + String((mNet - mTg) % 60).padStart(2, "0"); }
-                    else if (mNet < mTg) { cls = "undertime"; dur = "-" + Math.floor((mTg - mNet) / 60) + ":" + String((mTg - mNet) % 60).padStart(2, "0"); }
+                    dur = Math.floor(mNet / 60) + ":" + String(mNet % 60).padStart(2, "0");
+                    if (mNet > mTg) { cls = "overtime"; dur += ` <span style="font-size:12px; font-weight:600;">(+${Math.floor((mNet - mTg) / 60)}:${String((mNet - mTg) % 60).padStart(2, "0")})</span>`; }
+                    else if (mNet < mTg) { cls = "undertime"; dur += ` <span style="font-size:12px; font-weight:600;">(-${Math.floor((mTg - mNet) / 60)}:${String((mTg - mNet) % 60).padStart(2, "0")})</span>`; }
                 }
 
-                const tHtml = !isEdit ? `<div class="time-row"><span>Kommen</span><div class="time-wrapper"><div class="time-display">${fmtTime(data.arr)}</div></div></div>
-                    <div class="time-row"><span>Gehen</span><div class="time-wrapper"><div class="time-display">${fmtTime(data.dep)}</div><div class="mobile-subline leave-worktime">${durMob}</div></div></div>` 
-                : `<div class="time-row"><span>Kommen</span><div class="time-wrapper"><input type="time" id="in_${dS}" value="${timeToInput(data.arr)}" class="time-input"></div></div>
-                    <div class="time-row"><span>Gehen</span><div class="time-wrapper"><input type="time" id="out_${dS}" value="${timeToInput(data.dep)}" class="time-input"><div class="mobile-subline leave-worktime">${durMob}</div></div></div>`;
+                // New layout for times
+                const tHtml = !isEdit ? 
+                    `<div class="time-box"><span class="time-lbl">Kommen</span><div class="time-display">${fmtTime(getRoundedTime(data.arr))}</div></div>
+                     <div class="time-box"><span class="time-lbl">Gehen</span><div class="time-display">${fmtTime(getRoundedTime(data.dep))}</div></div>` 
+                :   `<div class="time-box"><span class="time-lbl">Kommen</span><input type="time" id="in_${dS}" value="${timeToInput(getRoundedTime(data.arr))}" class="time-input"></div>
+                     <div class="time-box"><span class="time-lbl">Gehen</span><input type="time" id="out_${dS}" value="${timeToInput(getRoundedTime(data.dep))}" class="time-input"></div>`;
 
                 let cTxt = "";
                 if (data.commute && (data.commute.toW?.k > 0 || data.commute.toH?.k > 0)) {
-                    if (data.commute.toW?.k > 0) cTxt += `<div>Hin ${data.commute.toW.k.toFixed(1)} km / ${Math.round(data.commute.toW.m)} min</div>`;
-                    if (data.commute.toH?.k > 0) cTxt += `<div>R\u00FCck ${data.commute.toH.k.toFixed(1)} km / ${Math.round(data.commute.toH.m)} min</div>`;
-                } else if (data.totalKm) { cTxt = `<div>Gesamt ${data.totalKm.toFixed(1)} km</div>`; }
+                    if (data.commute.toW?.k > 0) cTxt += `<div style="margin-bottom:2px;">&#x2B08; Hin: <b>${Math.round(data.commute.toW.m)} min</b> <span style="opacity:0.7">(${data.commute.toW.k.toFixed(1)} km)</span></div>`;
+                    if (data.commute.toH?.k > 0) cTxt += `<div>&#x2B0A; R&uuml;ck: <b>${Math.round(data.commute.toH.m)} min</b> <span style="opacity:0.7">(${data.commute.toH.k.toFixed(1)} km)</span></div>`;
+                } else if (data.totalKm) { cTxt = `<div>Gesamt: <b>${data.totalKm.toFixed(1)} km</b></div>`; }
 
                 const w = document.createElement("div");
                 w.innerHTML = `<div class="workday-entry ${isInactive ? 'inactive' : ''}">
-                        <div class="col-date"><div class="date-main">${dObj.toLocaleDateString("de-DE", { weekday: "short" })}<br>${d}.${m + 1}.</div><div class="mobile-subline date-status">${hName || getStLabel(st)}</div>${jsonAssignments[dS] ? `<div class="help-text">${jsonAssignments[dS]}</div>` : ''}</div>
+                        <div class="col-date">
+                            <div class="date-main">${dObj.toLocaleDateString("de-DE", { weekday: "short" })}<br>${d}.${m + 1}.</div>
+                            <div class="mobile-subline date-status">${hName || getStLabel(st)}</div>
+                            ${jsonAssignments[dS] ? `<div class="help-text-date">${jsonAssignments[dS]}</div>` : ''}
+                        </div>
+                        
                         <div class="col-status"><span class="status-badge ${getStatusClass(st)}">${hName || getStLabel(st)}</span></div>
+                        
                         <div class="col-times">${tHtml}</div>
-                        <div class="col-duration"><span class="duration-header">Arbeitszeit</span><div class="work-duration ${cls}">${dur}</div></div>
+                        
+                        <div class="col-duration">
+                            <span class="duration-header">Arbeit</span>
+                            <div class="work-duration ${cls}">${dur}</div>
+                        </div>
+                        
                         <div class="col-commute">${cTxt}</div>
+                        
                         <div class="col-controls">
                             <select class="status-select" onchange="setStatus('${dS}', this.value)">
-                                <option value="work" ${st === 'work' ? 'selected' : ''}>B\u00FCro</option><option value="homeoffice" ${st === 'homeoffice' ? 'selected' : ''}>Home</option>
+                                <option value="work" ${st === 'work' ? 'selected' : ''}>B&uuml;ro</option><option value="homeoffice" ${st === 'homeoffice' ? 'selected' : ''}>Homeoffice</option>
                                 <option value="vacation" ${st === 'vacation' ? 'selected' : ''}>Urlaub</option><option value="free" ${st === 'free' ? 'selected' : ''}>Frei</option>
                                 <option value="holiday" ${st === 'holiday' ? 'selected' : ''}>Feiertag</option><option value="na" ${st === 'na' ? 'selected' : ''}>N.A.</option>
                             </select>
                             <div class="btn-row">
-                                ${hasTrace(dS) ? `<button class="action-btn btn-trace" onclick="showTrace('${dS}')" title="Route">&#x1F5FA;&#xFE0F;</button>` : ''}
-                                ${!isInactive && data.visits && data.visits.length > 1 ? `<button class="action-btn btn-info" onclick="toggleDet('${dS}')" title="Info">&#x2139;&#xFE0F;</button>` : ''}
-                                ${!isInactive ? (!isEdit ? `<button class="action-btn btn-edit" onclick="toggleEdit('${dS}')" title="Bearbeiten">&#x270F;&#xFE0F;</button>` : `<button class="action-btn btn-save" onclick="saveDay('${dS}')" title="Speichern">&#x1F4BE;</button>`) : ''}
+                                ${hasTrace(dS) ? `<button class="action-btn btn-trace" onclick="showTrace('${dS}')" title="Strecke ansehen">&#x1F5FA;&#xFE0F;</button>` : ''}
+                                ${!isInactive && data.visits && data.visits.length > 1 ? `<button class="action-btn btn-info" onclick="toggleDet('${dS}')" title="Besuchsdetails">&#x2139;&#xFE0F;</button>` : ''}
+                                ${!isInactive ? (!isEdit ? `<button class="action-btn btn-edit" onclick="toggleEdit('${dS}')" title="Zeiten bearbeiten">&#x270E;&#xFE0F;</button>` : `<button class="action-btn btn-save" onclick="saveDay('${dS}')" title="Speichern">&#x2714;&#xFE0F;</button>`) : ''}
                             </div>
                         </div>
                     </div>
-                    ${hName ? `<div class="holiday-indicator">${hName}</div>` : ''}
-                    ${!isInactive && data.visits && data.visits.length > 1 ? `<div id="det-${dS}" class="details-panel">Mehrfache Besuche erfasst.<br><strong>Pause:</strong> ${Math.floor(data.breakMin/60)}:${String(data.breakMin%60).padStart(2,'0')} h</div>` : ''}`;
+                    ${hName ? `<div class="holiday-indicator">&#x2B50; Feiertag / Spezieller Tag: ${hName}</div>` : ''}
+                    ${!isInactive && data.visits && data.visits.length > 1 ? `<div id="det-${dS}" class="details-panel">&#x2139; Es wurden mehrfache Besuche am Standort erfasst.<br>Gesamte <strong>Pausenzeit/Abwesenheit:</strong> ${Math.floor(data.breakMin/60)}:${String(data.breakMin%60).padStart(2,'0')} h</div>` : ''}`;
                 list.appendChild(w);
             }
         }
@@ -1469,7 +1329,7 @@ function saveCfg() {
             const oTs = document.getElementById("out_"+d)?.value ? new Date(d+"T"+document.getElementById("out_"+d).value+":00").getTime() : null;
             if (!workData[d]) workData[d] = { day: d }; workData[d].arr = iTs; workData[d].dep = oTs;
             if (iTs && oTs && oTs > iTs) { const g = (oTs - iTs) / 3600000; workData[d].gross = g; workData[d].net = Math.max(0, g - ((cfg.wp.break || 0) / 60)); workData[d].visits = [{ tStart: iTs, tEnd: oTs }]; }
-            editModeDays[d] = false; localStorage.setItem("workData", JSON.stringify(workData)); renderCal(); calcStats();
+            editModeDays[d] = false; localStorage.setItem("workData", JSON.stringify(workData)); renderCal(); calcStats(); showToast("Tag gespeichert");
         }
 
         function changeMonth(o) { curMonth = o === 0 ? new Date() : new Date(curMonth.getFullYear(), curMonth.getMonth() + o, 1); renderCal(); calcStats(); }
@@ -1494,7 +1354,7 @@ function saveCfg() {
 
         function showTrace(d) {
             const pts = trackData[d]; if (!pts || pts.length < 2) return;
-            document.getElementById("traceTitle").textContent = "Route " + d; document.getElementById("traceModal").style.display = "block";
+            document.getElementById("traceTitle").textContent = "Strecke am " + d.split('-').reverse().join('.'); document.getElementById("traceModal").style.display = "flex";
             const data = workData[d] || {}; let tHExit = null, tHEnter = null;
             if (data.arr) { for (let i = pts.findIndex(p => p.time >= data.arr); i >= 0; i--) if (getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) { tHExit = pts[i].time; break; } }
             if (data.dep) { for (let i = pts.findIndex(p => p.time >= data.dep); i < pts.length; i++) if (getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) { tHEnter = pts[i].time; break; } }
@@ -1512,12 +1372,12 @@ function saveCfg() {
                 let cC = getColor(pts[0].time), cL = [[pts[0].lat, pts[0].lon]];
                 for (let i = 1; i < pts.length; i++) {
                     const p = pts[i], nc = getColor(p.time); cL.push([p.lat, p.lon]);
-                    if (nc !== cC || i === pts.length - 1) { L.polyline(cL, { color: cC, weight: 5, opacity: 0.8 }).addTo(traceLayerGroup); cL = [[p.lat, p.lon]]; cC = nc; }
+                    if (nc !== cC || i === pts.length - 1) { L.polyline(cL, { color: cC, weight: 5, opacity: 0.85 }).addTo(traceLayerGroup); cL = [[p.lat, p.lon]]; cC = nc; }
                 }
                 L.marker([pts[0].lat, pts[0].lon]).addTo(traceLayerGroup).bindPopup("Start"); L.marker([pts[pts.length - 1].lat, pts[pts.length - 1].lon]).addTo(traceLayerGroup).bindPopup("Ende");
-                L.circle([cfg.wp.lat, cfg.wp.lon], { radius: cfg.wp.rad, color: "#006400", fillColor: "#32cd32", fillOpacity: 0.15 }).addTo(traceLayerGroup);
-                L.circle([cfg.home.lat, cfg.home.lon], { radius: cfg.home.rad, color: "#003c7d", fillColor: "#4ea3ff", fillOpacity: 0.15 }).addTo(traceLayerGroup);
-                const lls = pts.map(p => [p.lat, p.lon]); traceMap.fitBounds(L.latLngBounds(lls), { padding: [20, 20] }); traceMap.invalidateSize();
+                L.circle([cfg.wp.lat, cfg.wp.lon], { radius: cfg.wp.rad, color: "#005a2b", fillColor: "#2eb82e", fillOpacity: 0.15 }).addTo(traceLayerGroup);
+                L.circle([cfg.home.lat, cfg.home.lon], { radius: cfg.home.rad, color: "#0277bd", fillColor: "#4ea3ff", fillOpacity: 0.15 }).addTo(traceLayerGroup);
+                const lls = pts.map(p => [p.lat, p.lon]); traceMap.fitBounds(L.latLngBounds(lls), { padding: [30, 30] }); traceMap.invalidateSize();
             }, 100);
         }
 
@@ -1532,297 +1392,11 @@ function saveCfg() {
                     localStorage.setItem("my_cfg", JSON.stringify(cfg)); localStorage.setItem("my_holidays", JSON.stringify(activeHolidays)); 
                     localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments)); localStorage.setItem("workData", JSON.stringify(workData)); localStorage.setItem("trackData", JSON.stringify(trackData));
                     setUIFromCfg(); initMaps(); renderCal(); calcStats(); showToast("Backup erfolgreich importiert");
-                    // Check Bundesland after import
-                    const importYears = Array.from(new Set(Object.keys(workData).map(d => parseInt(d.split('-')[0])).filter(y => y > 2000 && y < 2100))).sort();
-                    if (importYears.length > 0) checkAndUpdateHolidaysForWorkplace(importYears);
-                } catch (e) { alert("Ung\u00FCltige Export-Datei."); }
+                } catch { alert("Ungültige Export-Datei."); }
             }; reader.readAsText(file);
         }
 
-        
-        // ===================== BUNDESLAND & FEIERTAGE-API =====================
-
-        // Mapping from Nominatim state names to feiertage-api.de state codes
-        const BUNDESLAND_MAP = {
-            "Bayern": "BY",
-            "Baden-Württemberg": "BW",
-            "Berlin": "BE",
-            "Brandenburg": "BB",
-            "Bremen": "HB",
-            "Hamburg": "HH",
-            "Hessen": "HE",
-            "Mecklenburg-Vorpommern": "MV",
-            "Niedersachsen": "NI",
-            "Nordrhein-Westfalen": "NW",
-            "Rheinland-Pfalz": "RP",
-            "Saarland": "SL",
-            "Sachsen": "SN",
-            "Sachsen-Anhalt": "ST",
-            "Schleswig-Holstein": "SH",
-            "Thüringen": "TH"
-        };
-
-        const BUNDESLAND_NAMES = {
-            "BY": "Bayern",
-            "BW": "Baden-Württemberg",
-            "BE": "Berlin",
-            "BB": "Brandenburg",
-            "HB": "Bremen",
-            "HH": "Hamburg",
-            "HE": "Hessen",
-            "MV": "Mecklenburg-Vorpommern",
-            "NI": "Niedersachsen",
-            "NW": "Nordrhein-Westfalen",
-            "RP": "Rheinland-Pfalz",
-            "SL": "Saarland",
-            "SN": "Sachsen",
-            "ST": "Sachsen-Anhalt",
-            "SH": "Schleswig-Holstein",
-            "TH": "Thüringen"
-        };
-
-        // Get Bundesland code from workplace GPS coordinates via Nominatim
-                        // Get Bundesland code from workplace GPS coordinates via BigDataCloud API (file:// friendly!)
-        async function getWorkplaceBundesland(lat, lon) {
-            try {
-                if (!lat || !lon || lat === 0 || lon === 0) return null;
-                const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=de`;
-                const res = await fetch(url);
-                if (!res.ok) throw new Error("HTTP " + res.status);
-                const data = await res.json();
-
-                const candidates = [
-                    data.principalSubdivision, 
-                    data.locality, 
-                    data.city
-                ].filter(Boolean).map(s => String(s).toLowerCase());
-
-                const matches = [
-                    ["BY", ["bayern", "oberbayern", "niederbayern", "oberpfalz", "oberfranken", "unterfranken", "mittelfranken", "schwaben", "münchen"]],
-                    ["BW", ["baden-württemberg", "baden wuerttemberg", "baden württemberg"]],
-                    ["BE", ["berlin"]],
-                    ["BB", ["brandenburg"]],
-                    ["HB", ["bremen"]],
-                    ["HH", ["hamburg"]],
-                    ["HE", ["hessen"]],
-                    ["MV", ["mecklenburg-vorpommern", "mecklenburg vorpommern"]],
-                    ["NI", ["niedersachsen"]],
-                    ["NW", ["nordrhein-westfalen", "nordrhein westfalen"]],
-                    ["RP", ["rheinland-pfalz", "rheinland pfalz"]],
-                    ["SL", ["saarland"]],
-                    ["SN", ["sachsen"]],
-                    ["ST", ["sachsen-anhalt", "sachsen anhalt"]],
-                    ["SH", ["schleswig-holstein", "schleswig holstein"]],
-                    ["TH", ["thüringen", "thueringen"]]
-                ];
-
-                for (const [code, keys] of matches) {
-                    if (keys.some(k => candidates.some(c => c.includes(k)))) {
-                        return { code, name: code === "BY" ? "Bayern" : (BUNDESLAND_NAMES[code] || code) };
-                    }
-                }
-
-                // Generic fallback
-                for (const [name, code] of Object.entries(BUNDESLAND_MAP)) {
-                    if (candidates.some(c => c.includes(name.toLowerCase().split(" ")[0]))) return { code, name };
-                }
-                return null;
-            } catch (e) {
-                console.warn("Geocoding failed:", e);
-                return null;
-            }
-        }
-
-        // Fetch holidays from feiertage-api.de for given state code and year
-        async function fetchHolidaysForState(stateCode, year) {
-            try {
-                const res = await fetch(`https://feiertage-api.de/api/?jahr=${year}&nur_land=${stateCode}`);
-                const data = await res.json();
-                const holidays = {};
-                for (const [name, info] of Object.entries(data)) {
-                    if (info.datum) holidays[info.datum] = name;
-                }
-                return holidays;
-            } catch (e) { return null; }
-        }
-
-        // Detect the year(s) from loaded GPS data
-        function getGPSYears() {
-            const years = new Set();
-            for (const dS of Object.keys(trackData)) {
-                const y = parseInt(dS.split("-")[0]);
-                if (y > 2000 && y < 2100) years.add(y);
-            }
-            if (years.size === 0) for (const dS of Object.keys(workData)) {
-                const y = parseInt(dS.split("-")[0]);
-                if (y > 2000 && y < 2100) years.add(y);
-            }
-            return Array.from(years).sort();
-        }
-
-        // Main function: check workplace Bundesland from GPS, compare with stored, offer to update holidays
-        async function checkAndUpdateHolidaysForWorkplace(yearsFromGPS) {
-            let lat = cfg.wp.lat, lon = cfg.wp.lon;
-            let detected = null;
-
-            // 1. GPS Track Mittelpunkt
-            let firstPt = null;
-            for (const dS in trackData) {
-                if (trackData[dS] && trackData[dS].length > 0) {
-                    firstPt = trackData[dS][Math.floor(trackData[dS].length / 2)];
-                    break;
-                }
-            }
-            if (!firstPt) {
-                for (const dS in workData) {
-                    if (workData[dS] && false) {
-                        firstPt = workData[dS].traces[0];
-                        break;
-                    }
-                }
-            }
-
-            if (firstPt && firstPt.lat) {
-                detected = await getWorkplaceBundesland(firstPt.lat, firstPt.lon);
-            }
-
-            // 2. Arbeitsplatz-Koordinaten als sofortiger Fallback!
-            if (!detected && lat && lon) {
-                detected = await getWorkplaceBundesland(lat, lon);
-            }
-            if (!detected && cfg.home && cfg.home.lat) {
-                detected = await getWorkplaceBundesland(cfg.home.lat, cfg.home.lon);
-            }
-
-            const years = yearsFromGPS || getGPSYears();
-            if (years.length === 0) years.push(new Date().getFullYear());
-
-            if (!detected) {
-                const manualState = cfg.wp.bundesland || document.getElementById("holidayStateManual")?.value || "BY";
-                const manualYear = new Date().getFullYear(); // immer aktuelles Jahr nehmen
-                const importStatusEl = document.getElementById("importStatus");
-                if (importStatusEl) {
-                    importStatusEl.innerHTML = `ℹ️ <strong>Bundesland nicht erkannt.</strong> Nutze Fallback: ${BUNDESLAND_NAMES[manualState] || manualState}, ${manualYear}.`;
-                    importStatusEl.style.display = "inline-flex";
-                    setTimeout(() => { importStatusEl.style.display = "none"; }, 10000);
-                }
-                const h = await fetchHolidaysForState(manualState, manualYear);
-                if (h) {
-                    activeHolidays = h;
-                    localStorage.setItem("my_holidays", JSON.stringify(activeHolidays));
-                    renderCal();
-                }
-                return;
-            }
-
-            cfg.wp.bundesland = detected.code;
-            localStorage.setItem("my_cfg", JSON.stringify(cfg));
-
-            let merged = {};
-            for (const year of years) {
-                const h = await fetchHolidaysForState(detected.code, year);
-                if (h) Object.assign(merged, h);
-            }
-
-            if (Object.keys(merged).length > 0) {
-                activeHolidays = merged;
-                localStorage.setItem("my_holidays", JSON.stringify(activeHolidays));
-                renderCal();
-
-                const importStatusEl = document.getElementById("importStatus");
-                if (importStatusEl) {
-                    importStatusEl.innerHTML = `✅ <strong>Feiertage von ${detected.name} (${detected.code})</strong> – automatisch geladen für ${formatYears(years)}`;
-                    importStatusEl.style.display = "inline-flex";
-                    setTimeout(() => { importStatusEl.style.display = "none"; }, 15000);
-                }
-
-                const hs = document.getElementById("holidayStateManual");
-                if (hs) hs.value = detected.code;
-                const hy = document.getElementById("holidayYearManual");
-                if (hy && years.length) hy.value = years[0];
-
-                showToast(`Feiertage ${detected.name} geladen`);
-            }
-        }
-
-        async function fetchHolidaysFromAPI() {
-            const statusEl = document.getElementById("holidayApiStatus");
-            if (statusEl) statusEl.textContent = "⏳ Prüfe Koordinaten...";
-
-            let detected = null;
-            let firstPt = null;
-            for (const dS in trackData) {
-                if (trackData[dS] && trackData[dS].length > 0) {
-                    firstPt = trackData[dS][Math.floor(trackData[dS].length / 2)];
-                    break;
-                }
-            }
-            // Zuerst GPS Strecke versuchen
-            if (firstPt) detected = await getWorkplaceBundesland(firstPt.lat, firstPt.lon);
-            // Dann Arbeitsplatz versuchen!
-            if (!detected && cfg.wp.lat) detected = await getWorkplaceBundesland(cfg.wp.lat, cfg.wp.lon);
-
-            if (!detected) {
-                if (statusEl) { statusEl.textContent = "⚠️ Bundesland aus GPS/Arbeitsplatz nicht erkannt"; setTimeout(() => statusEl.textContent = "", 4000); }
-                return;
-            }
-
-            const years = getGPSYears();
-            if (years.length === 0) years.push(new Date().getFullYear());
-
-            cfg.wp.bundesland = detected.code;
-            localStorage.setItem("my_cfg", JSON.stringify(cfg));
-
-            let merged = {};
-            for (const year of years) {
-                const h = await fetchHolidaysForState(detected.code, year);
-                if (h) Object.assign(merged, h);
-            }
-
-            if (Object.keys(merged).length > 0) {
-                activeHolidays = merged;
-                localStorage.setItem("my_holidays", JSON.stringify(activeHolidays));
-                renderCal();
-
-                if (statusEl) { statusEl.textContent = `✅ ${detected.code} für ${years.join(", ")} geladen`; setTimeout(() => { statusEl.textContent = ""; }, 6000); }
-
-                const importStatusEl = document.getElementById("importStatus");
-                if (importStatusEl) {
-                    importStatusEl.innerHTML = `✅ <strong>Feiertage von ${detected.name} (${detected.code})</strong> – automatisch geladen für ${formatYears(years)}`;
-                    importStatusEl.style.display = "inline-flex";
-                    setTimeout(() => { importStatusEl.style.display = "none"; }, 10000);
-                }
-
-                showToast(`Feiertage ${detected.name} geladen`);
-            }
-        }
-        // ===================== END BUNDESLAND & FEIERTAGE-API =====================
-
-                function downloadAsHTML() {
-            const html = document.documentElement.outerHTML;
-            const blob = new Blob([html], { type: 'text/html' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'gps-arbeitszeit-tracker-v1.10.0.html';
-            a.click();
-        }
-
-        
-        
-        function setImportInfo(html, showMs = 12000) {
-            const el = document.getElementById("importStatus");
-            if (!el) return;
-            el.innerHTML = html;
-            el.style.display = "inline-flex";
-            if (showMs) setTimeout(() => { el.style.display = "none"; }, showMs);
-        }
-
-function formatYears(years) {
-            if (years.length === 1) return `das Jahr ${years[0]}`;
-            if (years.length === 2) return `die Jahre ${years[0]}, ${years[1]}`;
-            return `die Jahre ${years.slice(0,3).join(", ")}${years.length > 3 ? " u.v.m." : ""}`;
-        }
-document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", () => {
             loadHolidays(); loadSettings(); initMaps(); renderCal(); calcStats();
             document.getElementById('trackFile').addEventListener('change', async (e) => {
                 const files = e.target.files;
@@ -1833,26 +1407,13 @@ document.addEventListener("DOMContentLoaded", () => {
                         for (let i = 0; i < files.length; i++) {
                             const file = files[i], text = await file.text(), name = file.name.toLowerCase();
                             let parsedData = null;
-                            if (name.endsWith('.gpx')) parsedData = parseGPX(text);
-                            else if (name.endsWith('.kml')) parsedData = parseKML(text);
-                            else if (name.endsWith('.csv')) parsedData = parseCSV(text);
-                            else if (name.endsWith('.json')) {
-                                try {
-                                    const probe = JSON.parse(text);
-                                    if (probe.locations || probe.timelineObjects || probe.semanticSegments || probe.rawSignals || Array.isArray(probe)) {
-                                        parsedData = parseGoogleTimeline(text);
-                                    } else {
-                                        console.warn(`${file.name}: Kein Timeline-JSON (sieht wie Backup aus) – übersprungen.`);
-                                        continue;
-                                    }
-                                } catch(e) { console.warn('Ungültiges JSON:', file.name); continue; }
-                            }
+                            if (name.endsWith('.gpx')) parsedData = parseGPX(text); else if (name.endsWith('.kml')) parsedData = parseKML(text); else if (name.endsWith('.csv')) parsedData = parseCSV(text);
                             else { console.warn(`Überspringe ${file.name}: Unbekanntes Dateiformat.`); continue; }
                             if (parsedData) { for (const [dS, pts] of Object.entries(parsedData)) { if (!allParsedData[dS]) allParsedData[dS] = []; allParsedData[dS].push(...pts); } }
                         }
                         for (const dS of Object.keys(allParsedData)) allParsedData[dS].sort((a, b) => a.time - b.time);
                         if (Object.keys(allParsedData).length > 0) finishLoad(allParsedData);
-                        else { finishProgress(); alert('Keine g\u00FCltigen GPS-Daten gefunden.'); }
+                        else { finishProgress(); alert('Keine gültigen GPS-Daten gefunden.'); }
                     } catch (err) { finishProgress(); alert('Fehler beim Laden: ' + err.message); }
                     e.target.value = '';
                 }
