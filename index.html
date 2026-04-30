@@ -1000,7 +1000,8 @@
 
         function getStLabel(st) { const m = { "work":"B\u00FCro", "homeoffice":"Home", "vacation":"Urlaub", "free":"Frei", "holiday":"Feiertag", "aussendienst":"Außend.", "weiterbildung":"Weiterbildung", "na":"N.A." }; return m[st] || "N.A."; }
         function getStatusClass(st) { return "status-" + (st || "na"); }
-        function hasTrace(d) { return Array.isArray(trackData[d]) && trackData[d].length > 1; }
+        function hasDayInfo(dS, data, isInactive) { if (isInactive) return false; return hasTrace(dS) || (data.visits && data.visits.length >= 1) || (data.pauses && data.pauses.length >= 1) || (data.aussendienst && data.aussendienst.length > 0 && !data.aussendienstDismissed) || !!data.specialLocations || typeof data.arr === "number" || typeof data.dep === "number"; }
+        function hasTrace(d) { return Array.isArray(trackData[d]) && trackData[d].length >= 1; }
 
         function loadHolidays() { const s = localStorage.getItem("my_holidays"); if (s) { try { activeHolidays = JSON.parse(s); return; } catch (e) {} } activeHolidays = structuredClone(defaultHolidays); }
                 async function loadManualHolidays() {
@@ -1775,9 +1776,7 @@ function saveCfg() {
                 } else if (istHtml) {
                     cTxt = `<div style="display:flex; align-items:center;">${istHtml}</div>`;
                 }
-:${String(absMin % 60).padStart(2, '0')}`;
-                    cTxt += `<div style="margin-top:4px;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:700;background:${diffMin >= 0 ? '#e8f5e9' : '#ffebee'};color:${diffMin >= 0 ? '#1b5e20' : '#b71c1c'};border-left:3px solid ${diffMin >= 0 ? '#2e7d32' : '#d32f2f'};">Ist: ${fmtDurationHours(data.net)} (${sign}${diffTxt})</div>`;
-                }
+
 
                 const w = document.createElement("div");
                 w.innerHTML = `<div class="workday-entry ${isInactive ? 'inactive' : ''}">
@@ -1794,20 +1793,21 @@ function saveCfg() {
                             </select>
                             <div class="btn-row">
                                 ${hasTrace(dS) ? `<button class="action-btn btn-trace" onclick="showTrace('${dS}')" title="Route">&#x1F5FA;&#xFE0F;</button>` : '<div style="width:42px; height:42px; flex-shrink:0;"></div>'}
-                                ${(!isInactive && ((data.visits && data.visits.length > 1) || (data.aussendienst && data.aussendienst.length > 0 && !data.aussendienstDismissed) || data.specialLocations)) ? `<button class="action-btn btn-info" onclick="toggleDet('${dS}')" title="Info">&#x2139;&#xFE0F;</button>` : '<div style="width:42px; height:42px; flex-shrink:0;"></div>'}
+                                ${hasDayInfo(dS, data, isInactive) ? `<button class="action-btn btn-info" onclick="toggleDet('${dS}')" title="Info">&#x2139;&#xFE0F;</button>` : '<div style="width:42px; height:42px; flex-shrink:0;"></div>'}
                                 ${!isInactive ? (!isEdit ? `<button class="action-btn btn-edit" onclick="toggleEdit('${dS}')" title="Bearbeiten">&#x270F;&#xFE0F;</button>` : `<button class="action-btn btn-save" onclick="saveDay('${dS}')" title="Speichern">&#x1F4BE;</button>`) : '<div style="width:42px; height:42px; flex-shrink:0;"></div>'}
                             </div>
                         </div>
                     </div>
                     ${hName ? `<div class="holiday-indicator">${hName}</div>` : ''}
-                    ${((!isInactive && data.visits && data.visits.length > 1) || (data.aussendienst && data.aussendienst.length > 0 && !data.aussendienstDismissed) || data.specialLocations) ? `<div id="det-${dS}" class="details-panel">${renderSpecialLocations(data)}
-                    ${data.visits && data.visits.length > 1 ? `Mehrfache Besuche erfasst.<br>${
-                        (data.pauses && data.pauses.length > 0)
+                    ${hasDayInfo(dS, data, isInactive) ? `<div id="det-${dS}" class="details-panel">${renderSpecialLocations(data)}
+                    ${data.visits && data.visits.length > 0 ? `
+                        ${data.visits.length > 1 ? 'Mehrfache Besuche erfasst.<br>' : ''}
+                        ${(data.pauses && data.pauses.length > 0)
                         ? data.pauses.map((p,i) => {
                             const durMin = Math.round((p.tEnd - p.tStart)/60000);
-                            return `<span style="display:inline-block;margin-top:4px;padding:3px 8px;background:#f0f8ff;border-radius:4px;border-left:3px solid #17a2b8;font-size:12px;">⏸️ <b>Pause ${i+1}:</b> ${fmtTime(p.tStart)} – ${fmtTime(p.tEnd)} &nbsp;·&nbsp; ${durMin} min &nbsp;·&nbsp; 🚶 ${p.km.toFixed(1)} km</span>`;
+                            return \`<span style="display:inline-block;margin-top:4px;padding:3px 8px;background:#f0f8ff;border-radius:4px;border-left:3px solid #17a2b8;font-size:12px;">⏸️ <b>Pause ${i+1}:</b> ${fmtTime(p.tStart)} – ${fmtTime(p.tEnd)} &nbsp;·&nbsp; ${durMin} min &nbsp;·&nbsp; 🚶 ${p.km.toFixed(1)} km</span>\`;
                           }).join('<br>')
-                        : `<strong>Pause:</strong> ${Math.floor(data.breakMin/60)}:${String(data.breakMin%60).padStart(2,'0')} h`
+                        : \`<strong>Pause:</strong> ${Math.floor((data.breakMin||0)/60)}:${String((data.breakMin||0)%60).padStart(2,'0')} h\`
                     }` : ''}
                     ${data.aussendienst && data.aussendienst.length > 0 && !data.aussendienstDismissed ? `<div style="margin-top:8px;padding:8px 10px;background:#fff3cd;border-radius:6px;border-left:3px solid #ff9800;font-size:12px;">
                         ⚠️ <b>Möglicher Außendienst erkannt:</b><br>
