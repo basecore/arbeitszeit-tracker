@@ -1364,16 +1364,85 @@ function saveCfg() {
             return g;
         }
 
-        function analyze(pts) {
-            if (!pts || !pts.length) return null; 
-            pts = [...pts].sort((a, b) => a.time - b.time);
-            const visits = []; let inW = false, sV = null;
-            for (const p of pts) {
-                const isInside = getDist(p.lat, p.lon, cfg.wp.lat, cfg.wp.lon) <= cfg.wp.rad;
-                if (isInside && !inW) { inW = true; sV = p.time; }
-                if (!isInside && inW) { inW = false; visits.push({ tStart: sV, tEnd: p.time }); sV = null; }
-            }
-            if (inW && sV) visits.push({ tStart: sV, tEnd: pts[pts.length - 1].time });
+        
+function getClusterCenter(points, radiusM = 250) {
+  if (!points || !points.length) return null;
+
+  let bestGroup = null;
+
+  for (const anchor of points) {
+    const group = points.filter(p =>
+      getDist(p.lat, p.lon, anchor.lat, anchor.lon) <= radiusM
+    );
+    if (!bestGroup || group.length > bestGroup.length) bestGroup = group;
+  }
+
+  if (!bestGroup || !bestGroup.length) return null;
+
+  const lat = bestGroup.reduce((s, p) => s + p.lat, 0) / bestGroup.length;
+  const lon = bestGroup.reduce((s, p) => s + p.lon, 0) / bestGroup.length;
+
+  return { lat, lon, rad: radiusM };
+}
+
+function analyzeSpecialDay(d, pts) {
+  if (!pts || !pts.length) return null;
+
+  const dayPts = pts.filter(p => {
+    const h = new Date(p.time).getHours();
+    return h >= 8 && h < 19;
+  });
+
+  const nightPts = pts.filter(p => {
+    const h = new Date(p.time).getHours();
+    return h < 6 || h >= 20;
+  });
+
+  const specialWp = getClusterCenter(dayPts, 250) || { ...cfg.wp };
+  const specialHome = getClusterCenter(nightPts, 250) || { ...cfg.home };
+
+  return analyze(pts, {
+    ...cfg,
+    wp: { ...cfg.wp, ...specialWp },
+    home: { ...cfg.home, ...specialHome }
+  });
+}
+
+function analyze(pts, customCfg = null) {
+if (!pts || !pts.length) return null;
+pts = [...pts].sort((a, b) => a.time - b.time);
+
+const cfgUse = customCfg || cfg;
+
+const rawVisits = [];
+let inW = false, sV = null;
+
+for (const p of pts) {
+const isInside = getDist(p.lat, p.lon, cfgUse.wp.lat, cfgUse.wp.lon) <= cfgUse.wp.rad;
+if (isInside && !inW) {
+  inW = true;
+  sV = p.time;
+}
+if (!isInside && inW) {
+  inW = false;
+  rawVisits.push({ tStart: sV, tEnd: p.time });
+  sV = null;
+}
+}
+
+if (inW && sV) rawVisits.push({ tStart: sV, tEnd: pts[pts.length - 1].time });
+
+const MIN_BREAK_MS = 10 * 60000;
+const visits = [];
+
+for (const v of rawVisits) {
+const last = visits[visits.length - 1];
+if (last && (v.tStart - last.tEnd) < MIN_BREAK_MS) {
+  last.tEnd = Math.max(last.tEnd, v.tEnd);
+} else {
+  visits.push({ ...v });
+}
+}
 
             let arr = null, dep = null, grossMs = 0, breakMs = 0;
             if (visits.length) {
@@ -1385,8 +1454,8 @@ function saveCfg() {
             const commute = { toW: { k: 0, m: 0 }, toH: { k: 0, m: 0 } };
             if (arr && dep && pts.length > 1) {
                 const iS = pts.findIndex(p => p.time >= arr), iE = pts.findIndex(p => p.time >= dep);
-                if (iS > 0) { for (let i = iS; i >= 0; i--) if (getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) { commute.toW.k = getPathLen(pts, i, iS); commute.toW.m = (pts[iS].time - pts[i].time) / 60000; break; } }
-                if (iE > -1 && iE < pts.length - 1) { for (let i = iE; i < pts.length; i++) if (getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) { commute.toH.k = getPathLen(pts, iE, i); commute.toH.m = (pts[i].time - pts[iE].time) / 60000; break; } }
+                if (iS > 0) { for (let i = iS; i >= 0; i--) if (getDist(pts[i].lat, pts[i].lon, cfgUse.home.lat, cfgUse.home.lon) <= cfgUse.home.rad) { commute.toW.k = getPathLen(pts, i, iS); commute.toW.m = (pts[iS].time - pts[i].time) / 60000; break; } }
+                if (iE > -1 && iE < pts.length - 1) { for (let i = iE; i < pts.length; i++) if (getDist(pts[i].lat, pts[i].lon, cfgUse.home.lat, cfgUse.home.lon) <= cfgUse.home.rad) { commute.toH.k = getPathLen(pts, iE, i); commute.toH.m = (pts[i].time - pts[iE].time) / 60000; break; } }
             }
             
             // Detailed pause segments (between workplace visits)
@@ -1415,8 +1484,8 @@ function saveCfg() {
                     if (dur < AUSS_MIN_MS) return;
                     const cLat = s.pts.reduce((a,p) => a+p.lat, 0) / s.pts.length;
                     const cLon = s.pts.reduce((a,p) => a+p.lon, 0) / s.pts.length;
-                    const distWp   = getDist(cLat, cLon, cfg.wp.lat,   cfg.wp.lon);
-                    const distHome = getDist(cLat, cLon, cfg.home.lat, cfg.home.lon);
+                    const distWp   = getDist(cLat, cLon, cfgUse.wp.lat,   cfgUse.wp.lon);
+                    const distHome = getDist(cLat, cLon, cfgUse.home.lat, cfgUse.home.lon);
                     if (distWp < AUSS_MIN_M) return;
                     const near = s.pts.filter(p => getDist(p.lat, p.lon, cLat, cLon) <= 250).length;
                     if (near / s.pts.length < AUSS_STAT_TH) return; // mostly driving, not stationary
@@ -1433,8 +1502,8 @@ function saveCfg() {
                     });
                 };
                 for (const p of workPts) {
-                    const atWork = getDist(p.lat, p.lon, cfg.wp.lat,   cfg.wp.lon)   <= cfg.wp.rad;
-                    const atHome = getDist(p.lat, p.lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad;
+                    const atWork = getDist(p.lat, p.lon, cfgUse.wp.lat,   cfgUse.wp.lon)   <= cfgUse.wp.rad;
+                    const atHome = getDist(p.lat, p.lon, cfgUse.home.lat, cfgUse.home.lon) <= cfgUse.home.rad;
                     if (!atWork && !atHome) {
                         if (!seg) seg = { start: p.time, end: p.time, pts: [p] };
                         else { seg.end = p.time; seg.pts.push(p); }
@@ -1573,11 +1642,23 @@ function saveCfg() {
                 : `<div class="time-row"><span>Kommen</span><div class="time-wrapper"><input type="time" id="in_${dS}" value="${timeToInput(data.arr)}" class="time-input"></div></div>
                     <div class="time-row"><span>Gehen</span><div class="time-wrapper"><input type="time" id="out_${dS}" value="${timeToInput(data.dep)}" class="time-input"></div></div>`;
 
-                let cTxt = "";
-                if (data.commute && (data.commute.toW?.k > 0 || data.commute.toH?.k > 0)) {
-                    if (data.commute.toW?.k > 0) cTxt += `<div>Hin ${data.commute.toW.k.toFixed(1)} km / ${Math.round(data.commute.toW.m)} min</div>`;
-                    if (data.commute.toH?.k > 0) cTxt += `<div>R\u00FCck ${data.commute.toH.k.toFixed(1)} km / ${Math.round(data.commute.toH.m)} min</div>`;
-                } else if (data.totalKm) { cTxt = `<div>Gesamt ${data.totalKm.toFixed(1)} km</div>`; }
+                
+        let cTxt = "";
+        if (data.commute && (data.commute.toW?.k > 0 || data.commute.toH?.k > 0)) {
+          if (data.commute.toW?.k > 0) cTxt += `<div>Hin ${data.commute.toW.k.toFixed(1)} km / ${Math.round(data.commute.toW.m)} min</div>`;
+          if (data.commute.toH?.k > 0) cTxt += `<div>R\u00FCck ${data.commute.toH.k.toFixed(1)} km / ${Math.round(data.commute.toH.m)} min</div>`;
+        } else if (data.totalKm) { cTxt = `<div>Gesamt ${data.totalKm.toFixed(1)} km</div>`; }
+
+        const targetHours = cfg.wp.hours || 0;
+        const actualHours = typeof data.net === "number" ? data.net : null;
+        const diffHours = actualHours === null ? null : (actualHours - targetHours);
+        const workBadge = actualHours === null ? "" : `
+          <div style="margin-top:4px; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:700; background:${diffHours >= 0 ? '#e8f5e9' : '#ffebee'}; color:${diffHours >= 0 ? '#1b5e20' : '#b71c1c'}; border-left:3px solid ${diffHours >= 0 ? '#2e7d32' : '#d32f2f'};">
+            Ist: ${fmtDurationHours(actualHours)} (${diffHours >= 0 ? '+' : ''}${fmtDurationHours(diffHours, true)})
+          </div>
+        `;
+        cTxt += workBadge;
+
 
                 const w = document.createElement("div");
                 w.innerHTML = `<div class="workday-entry ${isInactive ? 'inactive' : ''}">
@@ -1590,7 +1671,8 @@ function saveCfg() {
                             <select class="status-select" onchange="setStatus('${dS}', this.value)">
                                 <option value="work" ${st === 'work' ? 'selected' : ''}>B\u00FCro</option><option value="homeoffice" ${st === 'homeoffice' ? 'selected' : ''}>Home</option>
                                 <option value="vacation" ${st === 'vacation' ? 'selected' : ''}>Urlaub</option><option value="free" ${st === 'free' ? 'selected' : ''}>Frei</option>
-                                <option value="holiday" ${st === 'holiday' ? 'selected' : ''}>Feiertag</option><option value="aussendienst" ${st === 'aussendienst' ? 'selected' : ''}>Außend.</option><option value="na" ${st === 'na' ? 'selected' : ''}>N.A.</option>
+                                <option value="holiday" ${st === 'holiday' ? 'selected' : ''}>Feiertag</option><option value="aussendienst" ${st === 'aussendienst' ? 'selected' : ''}>Außend.</option>
+<option value="weiterbildung" ${st === 'weiterbildung' ? 'selected' : ''}>Weiterbildung</option><option value="na" ${st === 'na' ? 'selected' : ''}>N.A.</option>
                             </select>
                             <div class="btn-row">
                                 ${hasTrace(dS) ? `<button class="action-btn btn-trace" onclick="showTrace('${dS}')" title="Route">&#x1F5FA;&#xFE0F;</button>` : '<div style="width:42px; height:42px; flex-shrink:0;"></div>'}
@@ -1640,7 +1722,35 @@ function saveCfg() {
             localStorage.setItem('workData', JSON.stringify(workData));
             renderCal(); showToast('Vorschlag verworfen');
         }
-        function setStatus(d, v) { if (!workData[d]) workData[d] = { day: d }; workData[d].status = v; localStorage.setItem("workData", JSON.stringify(workData)); renderCal(); calcStats(); }
+        function setStatus(d, v) {
+  if (!workData[d]) workData[d] = { day: d };
+  workData[d].status = v;
+
+  if ((v === "aussendienst" || v === "weiterbildung") && trackData[d]?.length) {
+    const a = analyzeSpecialDay(d, trackData[d]);
+    if (a) {
+      workData[d] = {
+        ...workData[d],
+        day: d,
+        arr: a.arr,
+        dep: a.dep,
+        gross: a.gross,
+        net: a.net,
+        breakMin: a.breakMin,
+        visits: a.visits,
+        pauses: a.pauses,
+        aussendienst: a.aussendienst,
+        commute: a.commute,
+        totalKm: a.totalKm,
+        status: v
+      };
+    }
+  }
+
+  localStorage.setItem("workData", JSON.stringify(workData));
+  renderCal();
+  calcStats();
+}
         function toggleEdit(d) { editModeDays[d] = !editModeDays[d]; renderCal(); }
 
         function saveDay(d) {
