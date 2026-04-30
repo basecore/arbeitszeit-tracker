@@ -316,6 +316,7 @@
         .status-free { background: #f1f3f5; color: #495057; }
         .status-na { background: #f8f9fa; color: #6c757d; border: 1px dashed #dee2e6; } 
         .status-holiday { background: #fbe3e4; color: #a4262c; }
+        .status-aussendienst { background: #fff0e6; color: #c84b00; border: 1px solid #f5a060; }
 
         .col-times { width: auto; flex: 1; display: flex; flex-direction: row; gap: 8px; flex-shrink: 0; align-items: center; }
         .time-row { 
@@ -969,7 +970,7 @@
         }
         function finishProgress() { clearInterval(progressTimer); document.getElementById("progressFill").style.width = "100%"; setTimeout(() => document.getElementById("progressFill").style.width = "0%", 500); }
 
-        function getStLabel(st) { const m = { "work":"B\u00FCro", "homeoffice":"Home", "vacation":"Urlaub", "free":"Frei", "holiday":"Feiertag", "na":"N.A." }; return m[st] || "N.A."; }
+        function getStLabel(st) { const m = { "work":"B\u00FCro", "homeoffice":"Home", "vacation":"Urlaub", "free":"Frei", "holiday":"Feiertag", "aussendienst":"Außend.", "na":"N.A." }; return m[st] || "N.A."; }
         function getStatusClass(st) { return "status-" + (st || "na"); }
         function hasTrace(d) { return Array.isArray(trackData[d]) && trackData[d].length > 1; }
 
@@ -1362,7 +1363,62 @@ function saveCfg() {
                 if (iS > 0) { for (let i = iS; i >= 0; i--) if (getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) { commute.toW.k = getPathLen(pts, i, iS); commute.toW.m = (pts[iS].time - pts[i].time) / 60000; break; } }
                 if (iE > -1 && iE < pts.length - 1) { for (let i = iE; i < pts.length; i++) if (getDist(pts[i].lat, pts[i].lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad) { commute.toH.k = getPathLen(pts, iE, i); commute.toH.m = (pts[i].time - pts[iE].time) / 60000; break; } }
             }
-            return { arr, dep, visits, gross: visits.length ? grossMs / 3600000 : null, breakMin: Math.round(breakMs / 60000), net: visits.length ? grossMs / 3600000 : null, totalKm: getPathLen(pts, 0, pts.length - 1), commute };
+            
+            // Detailed pause segments (between workplace visits)
+            const pauses = [];
+            for (let i = 0; i < visits.length - 1; i++) {
+                const pStart = visits[i].tEnd;
+                const pEnd   = visits[i+1].tStart;
+                const pausePts = pts.filter(p => p.time >= pStart && p.time <= pEnd);
+                let pauseKm = 0;
+                for (let j = 0; j < pausePts.length - 1; j++)
+                    pauseKm += getDist(pausePts[j].lat, pausePts[j].lon, pausePts[j+1].lat, pausePts[j+1].lon) / 1000;
+                pauses.push({ tStart: pStart, tEnd: pEnd, km: Math.round(pauseKm * 10) / 10 });
+            }
+
+            // Außendienst / Training detection
+            const AUSS_MIN_MS  = 90 * 60000;   // ≥ 90 min outside both locations
+            const AUSS_MIN_M   = 500;           // ≥ 500 m from workplace center
+            const AUSS_STAT_TH = 0.35;          // ≥ 35% of points within 250 m of centroid
+            const aussendienst = [];
+            if (arr && dep && pts.length > 5) {
+                const workPts = pts.filter(p => p.time >= arr && p.time <= dep);
+                let seg = null;
+                const flushSeg = (s) => {
+                    if (!s) return;
+                    const dur = s.end - s.start;
+                    if (dur < AUSS_MIN_MS) return;
+                    const cLat = s.pts.reduce((a,p) => a+p.lat, 0) / s.pts.length;
+                    const cLon = s.pts.reduce((a,p) => a+p.lon, 0) / s.pts.length;
+                    const distWp   = getDist(cLat, cLon, cfg.wp.lat,   cfg.wp.lon);
+                    const distHome = getDist(cLat, cLon, cfg.home.lat, cfg.home.lon);
+                    if (distWp < AUSS_MIN_M) return;
+                    const near = s.pts.filter(p => getDist(p.lat, p.lon, cLat, cLon) <= 250).length;
+                    if (near / s.pts.length < AUSS_STAT_TH) return; // mostly driving, not stationary
+                    // Commute leg: path from start of segment to its center
+                    const sIdx = pts.findIndex(p => p.time >= s.start);
+                    const eIdx = pts.findIndex(p => p.time >= s.end);
+                    const legKm = (sIdx >= 0 && eIdx > sIdx) ? getPathLen(pts, sIdx, eIdx) : (distWp / 1000);
+                    aussendienst.push({
+                        tStart: s.start, tEnd: s.end,
+                        lat: cLat, lon: cLon,
+                        distWpM: Math.round(distWp),
+                        durationMin: Math.round(dur / 60000),
+                        commuteKm: Math.round(legKm * 10) / 10
+                    });
+                };
+                for (const p of workPts) {
+                    const atWork = getDist(p.lat, p.lon, cfg.wp.lat,   cfg.wp.lon)   <= cfg.wp.rad;
+                    const atHome = getDist(p.lat, p.lon, cfg.home.lat, cfg.home.lon) <= cfg.home.rad;
+                    if (!atWork && !atHome) {
+                        if (!seg) seg = { start: p.time, end: p.time, pts: [p] };
+                        else { seg.end = p.time; seg.pts.push(p); }
+                    } else { flushSeg(seg); seg = null; }
+                }
+                flushSeg(seg);
+            }
+
+            return { arr, dep, visits, pauses, aussendienst, gross: visits.length ? grossMs / 3600000 : null, breakMin: Math.round(breakMs / 60000), net: visits.length ? grossMs / 3600000 : null, totalKm: getPathLen(pts, 0, pts.length - 1), commute };
         }
 
         function finishLoad(gData) {
@@ -1388,7 +1444,7 @@ function saveCfg() {
                     if (a.visits && a.visits.length > 0) { if (!newStatus || newStatus === "na" || newStatus === "free" || newStatus === "holiday") newStatus = "work"; }
                     if (!newStatus || newStatus === "na") { if (activeHolidays[dS]) newStatus = "holiday"; else if ([0,6].includes(new Date(dS+"T12:00").getDay())) newStatus = "free"; else newStatus = "na"; }
 
-                    workData[dS] = { ...old, day: dS, arr: a.arr, dep: a.dep, net: a.net, breakMin: a.breakMin, visits: a.visits, commute: a.commute, totalKm: a.totalKm, status: newStatus };
+                    workData[dS] = { ...old, day: dS, arr: a.arr, dep: a.dep, net: a.net, breakMin: a.breakMin, visits: a.visits, pauses: a.pauses, aussendienst: a.aussendienst, commute: a.commute, totalKm: a.totalKm, status: newStatus };
 
                     let lastP = null;
                     trackData[dS] = pts.filter(p => {
@@ -1509,22 +1565,50 @@ function saveCfg() {
                             <select class="status-select" onchange="setStatus('${dS}', this.value)">
                                 <option value="work" ${st === 'work' ? 'selected' : ''}>B\u00FCro</option><option value="homeoffice" ${st === 'homeoffice' ? 'selected' : ''}>Home</option>
                                 <option value="vacation" ${st === 'vacation' ? 'selected' : ''}>Urlaub</option><option value="free" ${st === 'free' ? 'selected' : ''}>Frei</option>
-                                <option value="holiday" ${st === 'holiday' ? 'selected' : ''}>Feiertag</option><option value="na" ${st === 'na' ? 'selected' : ''}>N.A.</option>
+                                <option value="holiday" ${st === 'holiday' ? 'selected' : ''}>Feiertag</option><option value="aussendienst" ${st === 'aussendienst' ? 'selected' : ''}>Außend.</option><option value="na" ${st === 'na' ? 'selected' : ''}>N.A.</option>
                             </select>
                             <div class="btn-row">
                                 ${hasTrace(dS) ? `<button class="action-btn btn-trace" onclick="showTrace('${dS}')" title="Route">&#x1F5FA;&#xFE0F;</button>` : '<div style="width:42px; height:42px; flex-shrink:0;"></div>'}
-                                ${!isInactive && data.visits && data.visits.length > 1 ? `<button class="action-btn btn-info" onclick="toggleDet('${dS}')" title="Info">&#x2139;&#xFE0F;</button>` : '<div style="width:42px; height:42px; flex-shrink:0;"></div>'}
+                                ${(!isInactive && ((data.visits && data.visits.length > 1) || (data.aussendienst && data.aussendienst.length > 0 && !data.aussendienstDismissed))) ? `<button class="action-btn btn-info" onclick="toggleDet('${dS}')" title="Info">&#x2139;&#xFE0F;</button>` : '<div style="width:42px; height:42px; flex-shrink:0;"></div>'}
                                 ${!isInactive ? (!isEdit ? `<button class="action-btn btn-edit" onclick="toggleEdit('${dS}')" title="Bearbeiten">&#x270F;&#xFE0F;</button>` : `<button class="action-btn btn-save" onclick="saveDay('${dS}')" title="Speichern">&#x1F4BE;</button>`) : '<div style="width:42px; height:42px; flex-shrink:0;"></div>'}
                             </div>
                         </div>
                     </div>
                     ${hName ? `<div class="holiday-indicator">${hName}</div>` : ''}
-                    ${!isInactive && data.visits && data.visits.length > 1 ? `<div id="det-${dS}" class="details-panel">Mehrfache Besuche erfasst.<br><strong>Pause:</strong> ${Math.floor(data.breakMin/60)}:${String(data.breakMin%60).padStart(2,'0')} h</div>` : ''}`;
+                    ${((!isInactive && data.visits && data.visits.length > 1) || (data.aussendienst && data.aussendienst.length > 0 && !data.aussendienstDismissed)) ? `<div id="det-${dS}" class="details-panel">
+                    ${data.visits && data.visits.length > 1 ? `Mehrfache Besuche erfasst.<br>${
+                        (data.pauses && data.pauses.length > 0)
+                        ? data.pauses.map((p,i) => {
+                            const durMin = Math.round((p.tEnd - p.tStart)/60000);
+                            return \`<span style="display:inline-block;margin-top:4px;padding:3px 8px;background:#f0f8ff;border-radius:4px;border-left:3px solid #17a2b8;font-size:12px;">⏸️ <b>Pause ${i+1}:</b> \${fmtTime(p.tStart)} – \${fmtTime(p.tEnd)} &nbsp;·&nbsp; \${durMin} min &nbsp;·&nbsp; 🚶 \${p.km.toFixed(1)} km</span>\`;
+                          }).join('<br>')
+                        : \`<strong>Pause:</strong> \${Math.floor(data.breakMin/60)}:\${String(data.breakMin%60).padStart(2,'0')} h\`
+                    }` : ''}
+                    ${data.aussendienst && data.aussendienst.length > 0 && !data.aussendienstDismissed ? `<div style="margin-top:8px;padding:8px 10px;background:#fff3cd;border-radius:6px;border-left:3px solid #ff9800;font-size:12px;">
+                        ⚠️ <b>Möglicher Außendienst erkannt:</b><br>
+                        ${data.aussendienst.map(a => \`<span style="display:inline-block;margin-top:3px;">🏢 \${fmtTime(a.tStart)}–\${fmtTime(a.tEnd)} &nbsp;·&nbsp; \${a.durationMin} min &nbsp;·&nbsp; ~\${(a.distWpM/1000).toFixed(1)} km vom Büro &nbsp;·&nbsp; 🚗 \${a.commuteKm} km Weg</span>\`).join('<br>')}
+                        <br><button class="btn" style="margin-top:6px;font-size:11px;padding:4px 10px;border-radius:12px;" onclick="confirmAussendienst('${dS}')">✅ Außendienst bestätigen</button>
+                        <button class="btn btn-secondary" style="margin-top:6px;font-size:11px;padding:4px 10px;border-radius:12px;" onclick="dismissAussendienst('${dS}')">✖ Verwerfen</button>
+                    </div>` : ''}
+                </div>` : ''}`;
                 list.appendChild(w);
             }
         }
 
         function toggleDet(d) { document.getElementById("det-" + d)?.classList.toggle("show"); }
+        function confirmAussendienst(dS) {
+            if (!workData[dS]) workData[dS] = { day: dS };
+            workData[dS].status = 'aussendienst';
+            workData[dS].aussendienstConfirmed = true;
+            localStorage.setItem('workData', JSON.stringify(workData));
+            renderCal(); calcStats(); showToast('Außendienst gespeichert ✅');
+        }
+        function dismissAussendienst(dS) {
+            if (!workData[dS]) workData[dS] = { day: dS };
+            workData[dS].aussendienstDismissed = true;
+            localStorage.setItem('workData', JSON.stringify(workData));
+            renderCal(); showToast('Vorschlag verworfen');
+        }
         function setStatus(d, v) { if (!workData[d]) workData[d] = { day: d }; workData[d].status = v; localStorage.setItem("workData", JSON.stringify(workData)); renderCal(); calcStats(); }
         function toggleEdit(d) { editModeDays[d] = !editModeDays[d]; renderCal(); }
 
