@@ -1,10 +1,14 @@
 <div align="center">
 
-# 🏢 GPS Arbeitszeit-Tracker & Analysetool
+<img src="images/icon.svg" alt="GPS Arbeitszeit-Tracker Logo" width="120" height="120" style="margin-bottom: 15px;">
+
+# GPS Arbeitszeit-Tracker & Analysetool
 
 **Smarte Zeiterfassung & Streckenanalyse aus GPX, KML, CSV und JSON**
 
-[![Live Demo](https://img.shields.io/badge/Live--Demo-App_starten-005a2b?style=for-the-badge&logo=github)](https://basecore.github.io/arbeitszeit-tracker/)
+[![Live App](https://img.shields.io/badge/Open_Web_App-006400?style=for-the-badge&logo=appveyor)](https://basecore.github.io/arbeitszeit-tracker/)
+[![AI Generated](https://img.shields.io/badge/AI_Generated-Perplexity-20B8D9?style=for-the-badge&logo=google)](https://www.perplexity.ai/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/basecore/arbeitszeit-tracker)
 
 Eine webbasierte Progressive Web App (PWA) zur lokalen Auswertung von Arbeitszeiten, Aufenthalten am Arbeitsplatz und Fahrtwegen auf Basis von GPS-Tracking-Daten. Die App verarbeitet Dateien direkt im Browser, erkennt Arbeitszeiten anhand definierter Zonen für Zuhause und Arbeitsplatz und visualisiert Tagesrouten auf einer interaktiven Karte.
 
@@ -73,7 +77,7 @@ Für den Streckenimport werden aktuell folgende Dateitypen unterstützt:
 ## ⚙️ Einrichtung & Bedienung im Alltag
 
 **Einmalige Konfiguration:**
-1. Öffne die Bereiche **"🏢 Arbeitsplatz"** und **"🏠 Zuhause"**.
+1. Öffne die Bereiche **"<img src="images/icon.svg" width="18" style="vertical-align: text-bottom;"> Arbeitsplatz"** und **"🏠 Zuhause"**.
 2. Trage deine echten Adressen ein, setze den Punkt auf der Karte oder klicke auf `Standorte automatisch finden` nach deinem ersten Upload.
 3. Definiere den Radius (m), deine Sollstunden und die Standardpause.
 4. Klicke auf `Speichern`.
