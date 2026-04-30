@@ -1440,7 +1440,13 @@ function saveCfg() {
         function renderSpecialLocations(data) {
             if (!data || !data.specialLocations) return '';
             const s = data.specialLocations;
-            return `<div style="margin-top:8px;padding:8px 10px;background:#f5f7ff;border-radius:6px;border-left:3px solid #6f73d2;font-size:12px;">🧭 <b>Spezial-Orte:</b><br>${s.dayType}: ${s.dayLat.toFixed(5)}, ${s.dayLon.toFixed(5)}<br>${s.nightType}: ${s.nightLat.toFixed(5)}, ${s.nightLon.toFixed(5)}</div>`;
+            const dText = s.dayAddr || `${s.dayLat.toFixed(5)}, ${s.dayLon.toFixed(5)}`;
+            const nText = s.nightAddr || `${s.nightLat.toFixed(5)}, ${s.nightLon.toFixed(5)}`;
+            return `<div style="margin-top:8px;padding:8px 10px;background:#f5f7ff;border-radius:6px;border-left:3px solid #6f73d2;font-size:12px;line-height:1.4;">
+                🧭 <b>Spezial-Orte aufgelöst:</b><br>
+                <div style="margin-top:4px;"><b>${s.dayType}:</b> ${dText}</div>
+                <div style="margin-top:2px;"><b>${s.nightType}:</b> ${nText}</div>
+            </div>`;
         }
 
         function applyAnalysisToDay(day, analysis, status) {
@@ -1462,6 +1468,65 @@ function saveCfg() {
                 specialLocations: analysis.specialLocations || null,
                 status
             };
+        }
+
+        
+        async function fetchAddress(lat, lon) {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=18&email=gps-tracker@example.com`);
+                if (!res.ok) return null;
+                const data = await res.json();
+                if (!data || !data.address) return null;
+
+                const addr = data.address;
+                const road = addr.road || addr.pedestrian || addr.footway || addr.path || '';
+                const hno = addr.house_number || '';
+                const company = addr.amenity || addr.office || addr.shop || addr.building || addr.tourism || '';
+                const city = addr.city || addr.town || addr.village || '';
+
+                let str = '';
+                if (company) str += `<strong>${company}</strong>, `;
+                if (road) str += road + (hno ? ' ' + hno : '');
+                if (!str && city) str = city;
+                return str ? str.trim() : null;
+            } catch(e) {
+                return null;
+            }
+        }
+
+        async function detectSpecialLocationsAsync(pts, status) {
+            const special = detectSpecialLocations(pts, status);
+            const s = special.meta;
+
+            const [dAddr, nAddr] = await Promise.all([
+                fetchAddress(s.dayLat, s.dayLon),
+                fetchAddress(s.nightLat, s.nightLon)
+            ]);
+            s.dayAddr = dAddr || `${s.dayLat.toFixed(4)}, ${s.dayLon.toFixed(4)}`;
+            s.nightAddr = nAddr || `${s.nightLat.toFixed(4)}, ${s.nightLon.toFixed(4)}`;
+
+            return special;
+        }
+
+        async function analyzeSpecialDayAsync(day, pts, status) {
+            if (!pts || !pts.length) return null;
+            const special = await detectSpecialLocationsAsync(pts, status);
+            const a = analyze(pts, special.customCfg);
+            if (a) a.specialLocations = special.meta;
+            return a;
+        }
+
+        async function recalcDayByStatusAsync(day, status) {
+            if (!Array.isArray(trackData[day]) || trackData[day].length < 2) return false;
+            let analysis = null;
+            if (status === 'aussendienst' || status === 'weiterbildung') {
+                analysis = await analyzeSpecialDayAsync(day, trackData[day], status);
+            } else {
+                analysis = analyze(trackData[day]);
+            }
+            if (!analysis) return false;
+            applyAnalysisToDay(day, analysis, status);
+            return true;
         }
 
         function recalcDayByStatus(day, status) {
@@ -1692,16 +1757,25 @@ function saveCfg() {
                 : `<div class="time-row"><span>Kommen</span><div class="time-wrapper"><input type="time" id="in_${dS}" value="${timeToInput(data.arr)}" class="time-input"></div></div>
                     <div class="time-row"><span>Gehen</span><div class="time-wrapper"><input type="time" id="out_${dS}" value="${timeToInput(data.dep)}" class="time-input"></div></div>`;
 
-                let cTxt = "";
-                if (data.commute && (data.commute.toW?.k > 0 || data.commute.toH?.k > 0)) {
-                    if (data.commute.toW?.k > 0) cTxt += `<div>Hin ${data.commute.toW.k.toFixed(1)} km / ${Math.round(data.commute.toW.m)} min</div>`;
-                    if (data.commute.toH?.k > 0) cTxt += `<div>R\u00FCck ${data.commute.toH.k.toFixed(1)} km / ${Math.round(data.commute.toH.m)} min</div>`;
-                } else if (data.totalKm) { cTxt = `<div>Gesamt ${data.totalKm.toFixed(1)} km</div>`; }
+                                let cTxt = "";
+                let istHtml = "";
                 if (typeof data.net === "number") {
                     const diffMin = Math.round((data.net - cfg.wp.hours) * 60);
                     const sign = diffMin >= 0 ? '+' : '-';
                     const absMin = Math.abs(diffMin);
                     const diffTxt = `${Math.floor(absMin / 60)}:${String(absMin % 60).padStart(2, '0')}`;
+                    istHtml = `<span style="display:inline-block; margin-left:12px; padding:3px 8px; border-radius:6px; font-weight:700; background:${diffMin >= 0 ? '#e8f5e9' : '#ffebee'}; color:${diffMin >= 0 ? '#1b5e20' : '#b71c1c'}; border-left:3px solid ${diffMin >= 0 ? '#2e7d32' : '#d32f2f'};">Ist: ${fmtDurationHours(data.net)} (${sign}${diffTxt})</span>`;
+                }
+
+                if (data.commute && (data.commute.toW?.k > 0 || data.commute.toH?.k > 0)) {
+                    if (data.commute.toW?.k > 0) cTxt += `<div style="display:flex; align-items:center;">Hin ${data.commute.toW.k.toFixed(1)} km / ${Math.round(data.commute.toW.m)} min ${istHtml}</div>`;
+                    if (data.commute.toH?.k > 0) cTxt += `<div>R\u00FCck ${data.commute.toH.k.toFixed(1)} km / ${Math.round(data.commute.toH.m)} min</div>`;
+                } else if (data.totalKm) { 
+                    cTxt = `<div style="display:flex; align-items:center;">Gesamt ${data.totalKm.toFixed(1)} km ${istHtml}</div>`; 
+                } else if (istHtml) {
+                    cTxt = `<div style="display:flex; align-items:center;">${istHtml}</div>`;
+                }
+:${String(absMin % 60).padStart(2, '0')}`;
                     cTxt += `<div style="margin-top:4px;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:700;background:${diffMin >= 0 ? '#e8f5e9' : '#ffebee'};color:${diffMin >= 0 ? '#1b5e20' : '#b71c1c'};border-left:3px solid ${diffMin >= 0 ? '#2e7d32' : '#d32f2f'};">Ist: ${fmtDurationHours(data.net)} (${sign}${diffTxt})</div>`;
                 }
 
@@ -1753,11 +1827,12 @@ function saveCfg() {
         }
 
         function toggleDet(d) { document.getElementById("det-" + d)?.classList.toggle("show"); }
-        function confirmAussendienst(dS) {
+        async function confirmAussendienst(dS) {
             if (!workData[dS]) workData[dS] = { day: dS };
             workData[dS].status = 'aussendienst';
             workData[dS].aussendienstConfirmed = true;
-            recalcDayByStatus(dS, 'aussendienst');
+            showToast("Berechne Route & Orte...");
+            await recalcDayByStatusAsync(dS, 'aussendienst');
             localStorage.setItem('workData', JSON.stringify(workData));
             renderCal(); calcStats(); showToast('Außendienst gespeichert ✅');
         }
@@ -1767,13 +1842,20 @@ function saveCfg() {
             localStorage.setItem('workData', JSON.stringify(workData));
             renderCal(); showToast('Vorschlag verworfen');
         }
-        function setStatus(d, v) {
+        async function setStatus(d, v) {
             if (!workData[d]) workData[d] = { day: d };
             workData[d].status = v;
-            if (["work", "homeoffice", "na", "aussendienst", "weiterbildung"].includes(v)) recalcDayByStatus(d, v);
+
+            const requiresRecalc = ["work", "homeoffice", "na", "aussendienst", "weiterbildung"].includes(v);
+            if (requiresRecalc) {
+                // Zeige Lade-Indikator, falls Adress-Abruf dauert
+                showToast("Berechne Route & Orte...");
+                await recalcDayByStatusAsync(d, v);
+            }
             if (!["aussendienst", "weiterbildung"].includes(v) && workData[d]) workData[d].specialLocations = null;
             localStorage.setItem("workData", JSON.stringify(workData));
             renderCal(); calcStats();
+            if (requiresRecalc && ["aussendienst", "weiterbildung"].includes(v)) showToast("Standorte aufgelöst ✓");
         }
         function toggleEdit(d) { editModeDays[d] = !editModeDays[d]; renderCal(); }
 
