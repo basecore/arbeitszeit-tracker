@@ -504,14 +504,6 @@
 <label>Radius (m)</label>
 <input id="wpRad" onchange="autoSave('wp')" step="1" type="number"/>
 </div>
-<div class="config-group">
-<label>Sollstunden / Tag</label>
-<input id="wpHours" onchange="autoSave('wp')" step="0.25" type="number"/>
-</div>
-<div class="config-group">
-<label>Standardpause (Min.)</label>
-<input id="wpBreak" onchange="autoSave('wp')" step="1" type="number"/>
-</div>
 </div>
 <div class="config-actions">
 <button class="btn" onclick="searchAddress('wp')">🔎 Adresse aus Text suchen</button>
@@ -564,18 +556,23 @@
 <div class="config-grid">
 <div class="config-group">
 <label>Tages-Offset</label>
-<input id="dayOffset" max="2" min="-2" placeholder="0" step="1" type="number" value="0"/>
+<input id="dayOffset" max="2" min="-2" step="1" type="number" value="0"/>
 </div>
 <div class="config-group">
 <label>Stunden-Offset</label>
-<input id="hourOffset" max="24" min="-24" placeholder="0" step="1" type="number" value="0"/>
+<input id="hourOffset" max="24" min="-24" step="1" type="number" value="0"/>
 </div>
 <div class="config-group">
 <label>Zeitzonenmodus</label>
-<select id="tzMode" onchange="document.getElementById('tzManualString').style.display = this.value === 'manual' ? 'block' : 'none';">
+<select id="tzMode" onchange="document.getElementById('tzManualString').style.display = this.value === 'manual' ? 'block' : 'none'; autoSave('misc')">
 <option value="auto">Auto</option>
 <option value="manual">Manuell</option>
-</select><select id="tzManualString" style="display: none; margin-top: 5px;"><option value="Europe/Berlin">Europe/Berlin</option><option value="Europe/London">Europe/London</option><option value="UTC">UTC</option></select>
+</select>
+<select id="tzManualString" onchange="autoSave('misc')" style="display: none; margin-top: 5px;">
+<option value="Europe/Berlin">Europe/Berlin</option>
+<option value="Europe/London">Europe/London</option>
+<option value="UTC">UTC</option>
+</select>
 </div>
 <div class="config-group">
 <label>¼h-Rundung der Zeiten</label>
@@ -725,8 +722,8 @@
 </div>
 <div class="config-group">
 <label>Jahr</label>
-<input id="holidayYearManual" max="2100" min="2000" step="1" type="number" value="2026">
-</input></div>
+<input id="holidayYearManual" max="2100" min="2000" step="1" type="number" value="2026"/>
+</div>
 </div>
 <div class="config-actions" style="margin-bottom:12px;">
 <button class="btn btn-secondary" onclick="loadManualHolidays()">Feiertage laden</button>
@@ -1028,8 +1025,8 @@ function saveHolidays() { try { activeHolidays = document.getElementById("holida
             document.getElementById("wpLat").value = cfg.wp.lat || ''; document.getElementById("wpLon").value = cfg.wp.lon || ''; document.getElementById("wpRad").value = cfg.wp.rad || '';
             document.getElementById("wpHours").value = cfg.wp.hours || ''; document.getElementById("wpBreak").value = cfg.wp.break || ''; document.getElementById("wpAddr").value = cfg.wp.addr || '';
             document.getElementById("homeLat").value = cfg.home.lat || ''; document.getElementById("homeLon").value = cfg.home.lon || ''; document.getElementById("homeRad").value = cfg.home.rad || '';
-            document.getElementById("homeAddr").value = cfg.home.addr || ''; document.getElementById("dayOffset").value = cfg.tz.dayOff || ''; document.getElementById("hourOffset").value = cfg.tz.hourOff || '';
-            document.getElementById("tzMode").value = cfg.tz.mode || 'auto'; document.getElementById("jsonConfig").value = JSON.stringify(jsonAssignments, null, 2);
+            document.getElementById("homeAddr").value = cfg.home.addr || ''; document.getElementById("dayOffset").value = (cfg.tz.dayOff !== undefined && cfg.tz.dayOff !== null && !isNaN(cfg.tz.dayOff)) ? cfg.tz.dayOff : 0; document.getElementById("hourOffset").value = (cfg.tz.hourOff !== undefined && cfg.tz.hourOff !== null && !isNaN(cfg.tz.hourOff)) ? cfg.tz.hourOff : 0;
+            document.getElementById("tzMode").value = cfg.tz.mode || 'auto'; if(document.getElementById("tzManualString") && cfg.tz.tzString) document.getElementById("tzManualString").value = cfg.tz.tzString; if(cfg.tz.mode === "manual") { document.getElementById("tzManualString").style.display = "block"; } else { document.getElementById("tzManualString").style.display = "none"; } // document.getElementById("jsonConfig").value = JSON.stringify(jsonAssignments, null, 2);
         }
 
         
@@ -1066,8 +1063,8 @@ function saveCfg() {
         }
 
         function applyTimezoneSettings() {
-            cfg.tz.dayOff = parseInt(document.getElementById("dayOffset").value) || 0; cfg.tz.hourOff = parseInt(document.getElementById("hourOffset").value) || 0; cfg.tz.mode = document.getElementById("tzMode").value || "auto";
-            try { jsonAssignments = document.getElementById("jsonConfig").value.trim() ? JSON.parse(document.getElementById("jsonConfig").value.trim()) : {}; localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments)); } catch (e) { alert("Ungültiges JSON."); }
+            cfg.tz.dayOff = parseInt(document.getElementById("dayOffset").value) || 0; cfg.tz.hourOff = parseInt(document.getElementById("hourOffset").value) || 0; cfg.tz.mode = document.getElementById("tzMode").value || "auto"; cfg.tz.tzString = document.getElementById("tzManualString") ? document.getElementById("tzManualString").value : "Europe/Berlin";
+            try { jsonAssignments = (document.getElementById("jsonConfig") && document.getElementById("jsonConfig").value.trim()) ? JSON.parse(document.getElementById("jsonConfig").value.trim()) : {}; localStorage.setItem("jsonAssignments", JSON.stringify(jsonAssignments)); } catch (e) { alert("Ungültiges JSON."); }
             localStorage.setItem("my_cfg", JSON.stringify(cfg)); renderCal(); showToast("Einstellungen gespeichert");
         }
 
