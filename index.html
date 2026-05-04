@@ -1,22 +1,21 @@
 <!DOCTYPE html>
+
 <html lang="de">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GPS Arbeitszeit-Tracker v2.0.0</title>
-
-        <meta name="theme-color" content="#006400" />
-        <link rel="manifest" href="./manifest.json">
-        <link rel="icon" href="./images/icon.svg" type="image/svg+xml">
-        <link rel="icon" href="./images/icon-192.png" type="image/png" sizes="192x192">
-        <link rel="apple-touch-icon" href="./images/icon-192.png">
-        <meta name="mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <meta name="apple-mobile-web-app-title" content="Zeit-Tracker">
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GPS Arbeitszeit-Tracker v2.0.0</title>
+<meta content="#006400" name="theme-color"/>
+<link href="./manifest.json" rel="manifest"/>
+<link href="./images/icon.svg" rel="icon" type="image/svg+xml"/>
+<link href="./images/icon-192.png" rel="icon" sizes="192x192" type="image/png"/>
+<link href="./images/icon-192.png" rel="apple-touch-icon"/>
+<meta content="yes" name="mobile-web-app-capable"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="default" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="Zeit-Tracker" name="apple-mobile-web-app-title"/>
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+<style>
         :root {
             --green-dark: #006400;
             --green: #1d7f3f;
@@ -459,307 +458,290 @@
         #pwaInstallBtn.visible { display: inline-flex; }
         #pwaInstallBtn:hover { transform: translateX(-50%) translateY(-2px); box-shadow: 0 8px 24px rgba(0,100,0,0.55); }
     </style>
-
-</head>
+</link></head>
 <body>
-    <div class="toast-save" id="toastSave">Gespeichert</div>
-    <button id="pwaInstallBtn" onclick="installPWA()">&#x1F4F2; App installieren</button>
-
-    <div class="container">
-        <div class="header">
-            <h1><svg width="1.25em" height="1.25em" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="vertical-align: -0.15em; margin-right: 8px;">
-  <path d="M256 100 C150 100 120 180 120 250 C120 330 256 450 256 450 C256 450 392 330 392 250 C392 180 362 100 256 100 Z" fill="#ffffff"/>
-  <circle cx="256" cy="230" r="80" fill="var(--green-dark)"/>
-  <line x1="256" y1="230" x2="256" y2="170" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
-  <line x1="256" y1="230" x2="300" y2="230" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
-  <circle cx="256" cy="230" r="12" fill="#ffffff"/>
+<div class="toast-save" id="toastSave">Gespeichert</div>
+<button id="pwaInstallBtn" onclick="installPWA()">📲 App installieren</button>
+<div class="container">
+<div class="header">
+<h1><svg height="1.25em" style="vertical-align: -0.15em; margin-right: 8px;" viewbox="0 0 512 512" width="1.25em" xmlns="http://www.w3.org/2000/svg">
+<path d="M256 100 C150 100 120 180 120 250 C120 330 256 450 256 450 C256 450 392 330 392 250 C392 180 362 100 256 100 Z" fill="#ffffff"></path>
+<circle cx="256" cy="230" fill="var(--green-dark)" r="80"></circle>
+<line stroke="#ffffff" stroke-linecap="round" stroke-width="16" x1="256" x2="256" y1="230" y2="170"></line>
+<line stroke="#ffffff" stroke-linecap="round" stroke-width="16" x1="256" x2="300" y1="230" y2="230"></line>
+<circle cx="256" cy="230" fill="#ffffff" r="12"></circle>
 </svg> GPS Arbeitszeit-Tracker</h1>
-            <p>Kompakte Analyse mit Fahrtweg &amp; Zeiterfassung aus GPX-, KML-, CSV- und Google Timeline JSON-Dateien</p>
-        </div>
-
-        <h2 class="step-header">1. Standorte &amp; Einstellungen definieren</h2>
-        <div class="config-container">
-            <div class="config-section collapsed" id="sec-wp">
-                <div class="config-header" onclick="toggleSection('sec-wp')">
-                    <h3><svg width="1.25em" height="1.25em" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="vertical-align: -0.15em; margin-right: 8px;">
-  <path d="M256 100 C150 100 120 180 120 250 C120 330 256 450 256 450 C256 450 392 330 392 250 C392 180 362 100 256 100 Z" fill="#006400"/>
-  <circle cx="256" cy="230" r="80" fill="white"/>
-  <line x1="256" y1="230" x2="256" y2="170" stroke="#006400" stroke-width="16" stroke-linecap="round"/>
-  <line x1="256" y1="230" x2="300" y2="230" stroke="#006400" stroke-width="16" stroke-linecap="round"/>
-  <circle cx="256" cy="230" r="12" fill="#006400"/>
+<p>Kompakte Analyse mit Fahrtweg &amp; Zeiterfassung aus GPX-, KML-, CSV- und Google Timeline JSON-Dateien</p>
+</div>
+<h2 class="step-header">1. Standorte &amp; Einstellungen definieren</h2>
+<div class="config-container">
+<div class="config-section collapsed" id="sec-wp">
+<div class="config-header" onclick="toggleSection('sec-wp')">
+<h3><svg height="1.25em" style="vertical-align: -0.15em; margin-right: 8px;" viewbox="0 0 512 512" width="1.25em" xmlns="http://www.w3.org/2000/svg">
+<path d="M256 100 C150 100 120 180 120 250 C120 330 256 450 256 450 C256 450 392 330 392 250 C392 180 362 100 256 100 Z" fill="#006400"></path>
+<circle cx="256" cy="230" fill="white" r="80"></circle>
+<line stroke="#006400" stroke-linecap="round" stroke-width="16" x1="256" x2="256" y1="230" y2="170"></line>
+<line stroke="#006400" stroke-linecap="round" stroke-width="16" x1="256" x2="300" y1="230" y2="230"></line>
+<circle cx="256" cy="230" fill="#006400" r="12"></circle>
 </svg> Arbeitsplatz Konfiguration</h3>
-                    <span class="toggle-icon">&#x25B6;</span>
-                </div>
-                <div class="config-content">
-                    <div class="config-grid">
-                        <div class="config-group">
-                            <label>Adresse / Name</label>
-                            <input type="text" id="wpAddr" placeholder="z. B. Forschungszentrum Garching" />
-                        </div>
-                        <div class="config-group">
-                            <label>Breitengrad</label>
-                            <input type="number" id="wpLat" step="0.000001" onchange="autoSave('wp')" />
-                        </div>
-                        <div class="config-group">
-                            <label>L&auml;ngengrad</label>
-                            <input type="number" id="wpLon" step="0.000001" onchange="autoSave('wp')" />
-                        </div>
-                        <div class="config-group">
-                            <label>Radius (m)</label>
-                            <input type="number" id="wpRad" step="1" onchange="autoSave('wp')" />
-                        </div>
-                        <div class="config-group">
-                            <label>Sollstunden / Tag</label>
-                            <input type="number" id="wpHours" step="0.25" onchange="autoSave('wp')" />
-                        </div>
-                        <div class="config-group">
-                            <label>Standardpause (Min.)</label>
-                            <input type="number" id="wpBreak" step="1" onchange="autoSave('wp')" />
-                        </div>
-                    </div>
-                    <div class="config-actions">
-                        <button class="btn" onclick="searchAddress('wp')">&#x1F50E; Adresse aus Text suchen</button>
-                        <button class="btn btn-secondary" onclick="useGPS('wp')">&#x1F4CD; GPS-Position verwenden</button>
-                        <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
-                    </div>
-                    <div class="small-note">&#9888;&#65039; Tipp: Sp&auml;ter auch automatisch per "&#x1F50D; Standorte pr&uuml;fen &amp; automatisch finden".</div>
-                    <div class="map-container"><div id="mapWp" class="map"></div></div>
-                </div>
-            </div>
-
-            <div class="config-section home collapsed" id="sec-home">
-                <div class="config-header" onclick="toggleSection('sec-home')">
-                    <h3>&#x1F3E0; Zuhause Konfiguration</h3>
-                    <span class="toggle-icon">&#x25B6;</span>
-                </div>
-                <div class="config-content">
-                    <div class="config-grid">
-                        <div class="config-group">
-                            <label>Adresse / Name</label>
-                            <input type="text" id="homeAddr" placeholder="z. B. Rathaus M&uuml;nchen" />
-                        </div>
-                        <div class="config-group">
-                            <label>Breitengrad</label>
-                            <input type="number" id="homeLat" step="0.000001" onchange="autoSave('home')" />
-                        </div>
-                        <div class="config-group">
-                            <label>L&auml;ngengrad</label>
-                            <input type="number" id="homeLon" step="0.000001" onchange="autoSave('home')" />
-                        </div>
-                        <div class="config-group">
-                            <label>Radius (m)</label>
-                            <input type="number" id="homeRad" step="1" onchange="autoSave('home')" />
-                        </div>
-                    </div>
-                    <div class="config-actions">
-                        <button class="btn" onclick="searchAddress('home')">&#x1F50E; Adresse aus Text suchen</button>
-                        <button class="btn btn-secondary" onclick="useGPS('home')">&#x1F4CD; GPS-Position verwenden</button>
-                        <button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
-                    </div>
-                    <div class="small-note">&#9888;&#65039; Tipp: Sp&auml;ter auch automatisch per "&#x1F50D; Standorte pr&uuml;fen &amp; automatisch finden".</div>
-                    <div class="map-container"><div id="mapHome" class="map"></div></div>
-                </div>
-            </div>
-
-            <div class="config-section misc collapsed" id="sec-misc">
-                <div class="config-header" onclick="toggleSection('sec-misc')">
-                    <h3>&#x2699;&#xFE0F; Allgemeine Einstellungen &amp; Feiertage</h3>
-                    <span class="toggle-icon">&#x25B6;</span>
-                </div>
-                <div class="config-content">
-                    <div class="config-grid">
-                        <div class="config-group">
-                            <label>Tages-Offset</label>
-                            <input type="number" id="dayOffset" step="1" min="-2" max="2" />
-                        </div>
-                        <div class="config-group">
-                            <label>Stunden-Offset</label>
-                            <input type="number" id="hourOffset" step="1" min="-24" max="24" />
-                        </div>
-                        <div class="config-group">
-                            <label>Zeitzonenmodus</label>
-                            <select id="tzMode">
-                                <option value="auto">Auto</option>
-                                <option value="manual">Manuell</option>
-                            </select>
-                        </div>
-                        <div class="config-group">
-                            <label>&frac14;h-Rundung der Zeiten</label>
-                            <label class="toggle-switch-wrap">
-                                <span class="toggle-switch">
-                                    <input type="checkbox" id="roundQuarter" checked onchange="renderCal()">
-                                    <span class="toggle-slider"></span>
-                                </span>
+<span class="toggle-icon">▶</span>
+</div>
+<div class="config-content">
+<div class="config-grid">
+<div class="config-group">
+<label>Adresse / Name</label>
+<input id="wpAddr" placeholder="z. B. Forschungszentrum Garching" type="text"/>
+</div>
+<div class="config-group">
+<label>Breitengrad</label>
+<input id="wpLat" onchange="autoSave('wp')" step="0.000001" type="number"/>
+</div>
+<div class="config-group">
+<label>Längengrad</label>
+<input id="wpLon" onchange="autoSave('wp')" step="0.000001" type="number"/>
+</div>
+<div class="config-group">
+<label>Radius (m)</label>
+<input id="wpRad" onchange="autoSave('wp')" step="1" type="number"/>
+</div>
+<div class="config-group">
+<label>Sollstunden / Tag</label>
+<input id="wpHours" onchange="autoSave('wp')" step="0.25" type="number"/>
+</div>
+<div class="config-group">
+<label>Standardpause (Min.)</label>
+<input id="wpBreak" onchange="autoSave('wp')" step="1" type="number"/>
+</div>
+</div>
+<div class="config-actions">
+<button class="btn" onclick="searchAddress('wp')">🔎 Adresse aus Text suchen</button>
+<button class="btn btn-secondary" onclick="useGPS('wp')">📍 GPS-Position verwenden</button>
+<button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
+</div>
+<div class="small-note">⚠️ Tipp: Später auch automatisch per "🔍 Standorte prüfen &amp; automatisch finden".</div>
+<div class="map-container"><div class="map" id="mapWp"></div></div>
+</div>
+</div>
+<div class="config-section home collapsed" id="sec-home">
+<div class="config-header" onclick="toggleSection('sec-home')">
+<h3>🏠 Zuhause Konfiguration</h3>
+<span class="toggle-icon">▶</span>
+</div>
+<div class="config-content">
+<div class="config-grid">
+<div class="config-group">
+<label>Adresse / Name</label>
+<input id="homeAddr" placeholder="z. B. Rathaus München" type="text"/>
+</div>
+<div class="config-group">
+<label>Breitengrad</label>
+<input id="homeLat" onchange="autoSave('home')" step="0.000001" type="number"/>
+</div>
+<div class="config-group">
+<label>Längengrad</label>
+<input id="homeLon" onchange="autoSave('home')" step="0.000001" type="number"/>
+</div>
+<div class="config-group">
+<label>Radius (m)</label>
+<input id="homeRad" onchange="autoSave('home')" step="1" type="number"/>
+</div>
+</div>
+<div class="config-actions">
+<button class="btn" onclick="searchAddress('home')">🔎 Adresse aus Text suchen</button>
+<button class="btn btn-secondary" onclick="useGPS('home')">📍 GPS-Position verwenden</button>
+<button class="btn btn-secondary" onclick="saveCfg()">Speichern</button>
+</div>
+<div class="small-note">⚠️ Tipp: Später auch automatisch per "🔍 Standorte prüfen &amp; automatisch finden".</div>
+<div class="map-container"><div class="map" id="mapHome"></div></div>
+</div>
+</div>
+<div class="config-section misc collapsed" id="sec-misc">
+<div class="config-header" onclick="toggleSection('sec-misc')">
+<h3>⚙️ Allgemeine Einstellungen &amp; Feiertage</h3>
+<span class="toggle-icon">▶</span>
+</div>
+<div class="config-content">
+<div class="config-grid">
+<div class="config-group">
+<label>Tages-Offset</label>
+<input id="dayOffset" max="2" min="-2" placeholder="0" step="1" type="number" value="0"/>
+</div>
+<div class="config-group">
+<label>Stunden-Offset</label>
+<input id="hourOffset" max="24" min="-24" placeholder="0" step="1" type="number" value="0"/>
+</div>
+<div class="config-group">
+<label>Zeitzonenmodus</label>
+<select id="tzMode" onchange="document.getElementById('tzManualString').style.display = this.value === 'manual' ? 'block' : 'none';">
+<option value="auto">Auto</option>
+<option value="manual">Manuell</option>
+</select><select id="tzManualString" style="display: none; margin-top: 5px;"><option value="Europe/Berlin">Europe/Berlin</option><option value="Europe/London">Europe/London</option><option value="UTC">UTC</option></select>
+</div>
+<div class="config-group">
+<label>¼h-Rundung der Zeiten</label>
+<label class="toggle-switch-wrap">
+<span class="toggle-switch">
+<input checked="" id="roundQuarter" onchange="renderCal()" type="checkbox"/>
+<span class="toggle-slider"></span>
+</span>
                                 Kommen &amp; Gehen runden
                             </label>
-                        </div>
-                    </div>
-                    <div class="config-group" style="margin-top: 15px;">
-                        <label>JSON-Namenskonfiguration (optional, Format: {"YYYY-MM-DD":"Name"})</label>
-                        <textarea id="jsonConfig" style="height: 80px;" placeholder='{ "2026-04-09": "Max Mustermann" }'></textarea>
-                    </div>
-                    <div class="config-actions">
-                        <button class="btn" onclick="applyTimezoneSettings()">Einstellungen anwenden</button>
-                        <button class="btn btn-warning" onclick="openHolidayEditor()">&#x1F389; Feiertage bearbeiten</button>
-                        <button class="btn btn-secondary" onclick="fetchHolidaysFromAPI()">&#x1F4E5; Feiertage von API laden</button>
-                        <span id="holidayApiStatus" style="font-size:12px;color:#666;margin-left:4px;"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
+</div>
+</div>
 
-        <h2 class="step-header">2. GPS-Strecke laden</h2>
-        <div class="upload-section">
-            <div class="file-input-wrapper">
-                <input type="file" id="trackFile" class="file-input" accept=".gpx,.kml,.csv,.json" multiple>
-                <label for="trackFile" class="file-input-label">&#x1F4CD; Strecke laden (GPX/KML/CSV/Timeline)</label>
-            </div>
-            <div class="file-input-wrapper">
-                <input type="file" id="importFile" class="file-input" accept=".json" />
-                <label for="importFile" class="file-input-label btn-secondary">&#x1F4C2; Backup Import</label>
-            </div>
-            <button class="btn btn-secondary" onclick="exportData()">&#x1F4BE; Export</button>
-            <button class="btn btn-danger" onclick="resetAll()">&#x1F5D1;&#xFE0F; Reset</button>
-            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-            <div id="importStatus" style="font-size:13px;color:#006400;font-weight:500;padding:4px 8px;background:#e6f5e6;border-radius:6px;margin-left:12px;min-width:280px;display:none;">
+<div class="config-actions">
+<button class="btn" onclick="applyTimezoneSettings()">Einstellungen anwenden</button>
+<button class="btn btn-warning" onclick="openHolidayEditor()">🎉 Feiertage bearbeiten</button>
+<button class="btn btn-secondary" onclick="fetchHolidaysFromAPI()">📥 Feiertage von API laden</button>
+<span id="holidayApiStatus" style="font-size:12px;color:#666;margin-left:4px;"></span>
+</div>
+</div>
+</div>
+</div>
+<h2 class="step-header">2. GPS-Strecke laden</h2>
+<div class="upload-section">
+<div class="file-input-wrapper">
+<input accept=".gpx,.kml,.csv,.json" class="file-input" id="trackFile" multiple="" type="file"/>
+<label class="file-input-label" for="trackFile">📍 Strecke laden (GPX/KML/CSV/Timeline)</label>
+</div>
+<div class="file-input-wrapper">
+<input accept=".json" class="file-input" id="importFile" type="file">
+<label class="file-input-label btn-secondary" for="importFile">📂 Backup Import</label>
+</input></div>
+<button class="btn btn-secondary" onclick="exportData()">💾 Export</button>
+<button class="btn btn-danger" onclick="resetAll()">🗑️ Reset</button>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div id="importStatus" style="font-size:13px;color:#006400;font-weight:500;padding:4px 8px;background:#e6f5e6;border-radius:6px;margin-left:12px;min-width:280px;display:none;">
                 ✅ <strong>Feiertage von Bayern \(BY\) verwendet</strong> – erkannt für <span id="detectedYears"></span>
-            </div>
-        </div>
-
-        <div class="assistant-section" id="assistantBox" style="display: none;">
-            <p id="assistantText"><strong>Standorte unbekannt oder keine Zeiten gefunden nach dem Laden?</strong> Lass den Tracker deine echten Standorte anhand der Route ermitteln:</p>
-            <button class="btn btn-warning" onclick="checkLocations()" style="width: 100%; max-width: 400px;">&#x1F50D; Standorte pr&uuml;fen &amp; automatisch finden</button>
-        </div>
-
-        <h2 class="step-header">3. Auswertung &amp; Zeiten</h2>
-        <div class="stats-wrap">
-            <div class="stats-grid">
-                <div class="stat-card"><div class="stat-val" id="statDays">0</div><div class="stat-lbl">Tage</div></div>
-                <div class="stat-card"><div class="stat-val" id="statWork">0:00</div><div class="stat-lbl">Arbeitszeit</div></div>
-                <div class="stat-card"><div class="stat-val" id="statTarget">0:00</div><div class="stat-lbl">Sollzeit</div></div>
-                <div class="stat-card"><div class="stat-val" id="statDiff">0:00</div><div class="stat-lbl">Differenz</div></div>
-                <div class="stat-card"><div class="stat-val" id="statDistance">0.0 km</div><div class="stat-lbl">Gesamtstrecke</div></div>
-                <div class="stat-card"><div class="stat-val" id="statCommute">0.0 km</div><div class="stat-lbl">Pendeldistanz</div></div>
-            </div>
-        </div>
-
-        <div class="calendar-wrap">
-            <div class="calendar-header">
-                <div class="calendar-title"><h2 id="monthLabel">Monat</h2></div>
-                <div class="calendar-controls" style="display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: flex-start;">
-                    <button class="btn btn-secondary" onclick="toggleSimpleView()" id="simpleViewBtn">Einfache Ansicht</button>
-                    <div style="display: flex; flex-wrap: nowrap; gap: 8px; width: 100%; justify-content: flex-start;">
-                        <button class="btn btn-secondary" onclick="changeMonth(-1)" style="flex: 1;">&#x25C0; Vorheriger</button>
-                        <button class="btn btn-secondary" onclick="changeMonth(0)" style="flex: 1;">Heute</button>
-                        <button class="btn btn-secondary" onclick="changeMonth(1)" style="flex: 1;">N&auml;chster &#x25B6;</button>
-                    </div>
-                </div>
-            </div>
-            <div class="calendar-list" id="calendarList"></div>
-        </div>
-
-        <div class="footer">
-            <div class="footer-info">
-                <p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v2.0.0</a></p>
-                <p>Entwickelt von <b>Sebastian R&ouml;&szlig;er</b></p>
-                <p>
-                    <a href="https://github.com/basecore/arbeitszeit-tracker" target="_blank">GitHub Projekt</a> &nbsp;|&nbsp;
+</div>
+</div>
+<div class="assistant-section" id="assistantBox" style="display: none;">
+<p id="assistantText"><strong>Standorte unbekannt oder keine Zeiten gefunden nach dem Laden?</strong> Lass den Tracker deine echten Standorte anhand der Route ermitteln:</p>
+<button class="btn btn-warning" onclick="checkLocations()" style="width: 100%; max-width: 400px;">🔍 Standorte prüfen &amp; automatisch finden</button>
+</div>
+<h2 class="step-header">3. Auswertung &amp; Zeiten</h2>
+<div class="stats-wrap">
+<div class="stats-grid">
+<div class="stat-card"><div class="stat-val" id="statDays">0</div><div class="stat-lbl">Tage</div></div>
+<div class="stat-card"><div class="stat-val" id="statWork">0:00</div><div class="stat-lbl">Arbeitszeit</div></div>
+<div class="stat-card"><div class="stat-val" id="statTarget">0:00</div><div class="stat-lbl">Sollzeit</div></div>
+<div class="stat-card"><div class="stat-val" id="statDiff">0:00</div><div class="stat-lbl">Differenz</div></div>
+<div class="stat-card"><div class="stat-val" id="statDistance">0.0 km</div><div class="stat-lbl">Gesamtstrecke</div></div>
+<div class="stat-card"><div class="stat-val" id="statCommute">0.0 km</div><div class="stat-lbl">Pendeldistanz</div></div>
+</div>
+</div>
+<div class="calendar-wrap">
+<div class="calendar-header">
+<div class="calendar-title"><h2 id="monthLabel">Monat</h2></div>
+<div class="calendar-controls" style="display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: flex-start;">
+<button class="btn btn-secondary" id="simpleViewBtn" onclick="toggleSimpleView()">Einfache Ansicht</button>
+<div style="display: flex; flex-wrap: nowrap; gap: 8px; width: 100%; justify-content: flex-start;">
+<button class="btn btn-secondary" onclick="changeMonth(-1)" style="flex: 1;">◀ Vorheriger</button>
+<button class="btn btn-secondary" onclick="changeMonth(0)" style="flex: 1;">Heute</button>
+<button class="btn btn-secondary" onclick="changeMonth(1)" style="flex: 1;">Nächster ▶</button>
+</div>
+</div>
+</div>
+<div class="calendar-list" id="calendarList"></div>
+</div>
+<div class="footer">
+<div class="footer-info">
+<p><a href="https://basecore.github.io/arbeitszeit-tracker/#">Version v2.0.0</a></p>
+<p>Entwickelt von <b>Sebastian Rößer</b></p>
+<p>
+<a href="https://github.com/basecore/arbeitszeit-tracker" target="_blank">GitHub Projekt</a>  | 
                     <a href="https://github.com/basecore/arbeitszeit-tracker/issues" target="_blank">Hilfe / Issues</a>
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modals -->
-    <div class="modal" id="locationModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Standorte pr&uuml;fen &amp; ermitteln</h3>
-                <span class="modal-close" onclick="closeModal('locationModal')">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div id="checkMap" style="height: 400px; border-radius: 10px; overflow: hidden; margin-bottom: 15px;"></div>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">
-                    <div id="checkResult">Klicke auf "Standorte automatisch finden", um Adressen und Koordinaten basierend auf deinen hochgeladenen GPS-Routen zu ermitteln.</div>
-                </div>
-                <div class="config-actions">
-                    <button class="btn btn-warning" onclick="autoFindLocations()">&#x1F4CD; Standorte automatisch finden</button>
-                    <button class="btn btn-save" onclick="applyFoundLocations()" id="btnApplyLocs" style="display:none;">&#x1F4BE; Gefundene Standorte &uuml;bernehmen</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="traceModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="traceTitle">Route</h3>
-                <span class="modal-close" onclick="closeModal('traceModal')">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div id="traceMap"></div>
-                <div class="trace-legend">
-                    <span><div class="box" style="background: var(--route-hin);"></div> Hinweg</span>
-                    <span><div class="box" style="background: var(--route-rueck);"></div> R&uuml;ckweg</span>
-                    <span><div class="box" style="background: var(--route-pause);"></div> Pause/Verlassen</span>
-                    <span><div class="box" style="background: var(--route-arbeit);"></div> Am Arbeitsplatz</span>
-                    <span><div class="box" style="background: var(--route-sonst);"></div> Sonstige Strecke</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="holidayModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Feiertage bearbeiten</h3>
-                <span class="modal-close" onclick="closeHolidayEditor()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <p>Feiertage manuell bearbeiten oder automatisch passend zum Bundesland und Jahr laden.</p>
-                <div class="config-grid" style="margin-bottom:12px;">
-                    <div class="config-group">
-                        <label>Bundesland</label>
-                        <select id="holidayStateManual">
-                            <option value="">Auto</option>
-                            <option value="BY">Bayern</option>
-                            <option value="BW">Baden-Württemberg</option>
-                            <option value="BE">Berlin</option>
-                            <option value="BB">Brandenburg</option>
-                            <option value="HB">Bremen</option>
-                            <option value="HH">Hamburg</option>
-                            <option value="HE">Hessen</option>
-                            <option value="MV">Mecklenburg-Vorpommern</option>
-                            <option value="NI">Niedersachsen</option>
-                            <option value="NW">Nordrhein-Westfalen</option>
-                            <option value="RP">Rheinland-Pfalz</option>
-                            <option value="SL">Saarland</option>
-                            <option value="SN">Sachsen</option>
-                            <option value="ST">Sachsen-Anhalt</option>
-                            <option value="SH">Schleswig-Holstein</option>
-                            <option value="TH">Thüringen</option>
-                        </select>
-                    </div>
-                    <div class="config-group">
-                        <label>Jahr</label>
-                        <input type="number" id="holidayYearManual" min="2000" max="2100" step="1" />
-                    </div>
-                </div>
-                <div class="config-actions" style="margin-bottom:12px;">
-                    <button class="btn btn-secondary" onclick="loadManualHolidays()">Feiertage laden</button>
-                </div>
-                <p>Oder JSON mit <code>"YYYY-MM-DD": "Bezeichnung"</code> bearbeiten:</p>
-                <textarea id="holidayEditor"></textarea>
-                <div class="config-actions" style="margin-top:12px;">
-                    <button class="btn" onclick="saveHolidays()">Speichern</button>
-                    <button class="btn btn-secondary" onclick="closeHolidayEditor()">Schlie&szlig;en</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
+</p>
+</div>
+</div>
+</div>
+<!-- Modals -->
+<div class="modal" id="locationModal">
+<div class="modal-content">
+<div class="modal-header">
+<h3>Standorte prüfen &amp; ermitteln</h3>
+<span class="modal-close" onclick="closeModal('locationModal')">×</span>
+</div>
+<div class="modal-body">
+<div id="checkMap" style="height: 400px; border-radius: 10px; overflow: hidden; margin-bottom: 15px;"></div>
+<div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; line-height: 1.5;">
+<div id="checkResult">Klicke auf "Standorte automatisch finden", um Adressen und Koordinaten basierend auf deinen hochgeladenen GPS-Routen zu ermitteln.</div>
+</div>
+<div class="config-actions">
+<button class="btn btn-warning" onclick="autoFindLocations()">📍 Standorte automatisch finden</button>
+<button class="btn btn-save" id="btnApplyLocs" onclick="applyFoundLocations()" style="display:none;">💾 Gefundene Standorte übernehmen</button>
+</div>
+</div>
+</div>
+</div>
+<div class="modal" id="traceModal">
+<div class="modal-content">
+<div class="modal-header">
+<h3 id="traceTitle">Route</h3>
+<span class="modal-close" onclick="closeModal('traceModal')">×</span>
+</div>
+<div class="modal-body">
+<div id="traceMap"></div>
+<div class="trace-legend">
+<span><div class="box" style="background: var(--route-hin);"></div> Hinweg</span>
+<span><div class="box" style="background: var(--route-rueck);"></div> Rückweg</span>
+<span><div class="box" style="background: var(--route-pause);"></div> Pause/Verlassen</span>
+<span><div class="box" style="background: var(--route-arbeit);"></div> Am Arbeitsplatz</span>
+<span><div class="box" style="background: var(--route-sonst);"></div> Sonstige Strecke</span>
+</div>
+</div>
+</div>
+</div>
+<div class="modal" id="holidayModal">
+<div class="modal-content">
+<div class="modal-header">
+<h3>Feiertage bearbeiten</h3>
+<span class="modal-close" onclick="closeHolidayEditor()">×</span>
+</div>
+<div class="modal-body">
+<p>Feiertage manuell bearbeiten oder automatisch passend zum Bundesland und Jahr laden.</p>
+<div class="config-grid" style="margin-bottom:12px;">
+<div class="config-group">
+<label>Bundesland</label>
+<select id="holidayStateManual">
+<option value="">Auto</option>
+<option value="BY">Bayern</option>
+<option value="BW">Baden-Württemberg</option>
+<option value="BE">Berlin</option>
+<option value="BB">Brandenburg</option>
+<option value="HB">Bremen</option>
+<option value="HH">Hamburg</option>
+<option value="HE">Hessen</option>
+<option value="MV">Mecklenburg-Vorpommern</option>
+<option value="NI">Niedersachsen</option>
+<option value="NW">Nordrhein-Westfalen</option>
+<option value="RP">Rheinland-Pfalz</option>
+<option value="SL">Saarland</option>
+<option value="SN">Sachsen</option>
+<option value="ST">Sachsen-Anhalt</option>
+<option value="SH">Schleswig-Holstein</option>
+<option value="TH">Thüringen</option>
+</select>
+</div>
+<div class="config-group">
+<label>Jahr</label>
+<input id="holidayYearManual" max="2100" min="2000" step="1" type="number" value="2026">
+</input></div>
+</div>
+<div class="config-actions" style="margin-bottom:12px;">
+<button class="btn btn-secondary" onclick="loadManualHolidays()">Feiertage laden</button>
+</div>
+<p>Oder JSON mit <code>"YYYY-MM-DD": "Bezeichnung"</code> bearbeiten:</p>
+<textarea id="holidayEditor"></textarea>
+<div class="config-actions" style="margin-top:12px;">
+<button class="btn" onclick="saveHolidays()">Speichern</button>
+<button class="btn btn-secondary" onclick="closeHolidayEditor()">Schließen</button>
+</div>
+</div>
+</div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
         const DEFAULT_CFG = { 
             wp: { lat: 48.26134, lon: 11.67175, rad: 100, hours: 7, break: 30, addr: "Forschungszentrum Garching" }, 
             home: { lat: 48.13743, lon: 11.57549, rad: 100, addr: "Rathaus M\u00FCnchen" }, 
